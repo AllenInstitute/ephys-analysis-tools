@@ -9,7 +9,6 @@ Description: Template for creating master_jem.csv and master_jem.xlsx
 ---------------------------------------------------------------------
 """
 
-
 # Imports
 import pandas as pd
 import os
@@ -32,9 +31,9 @@ jem_dictionary = {
     # notes
     "extraction.extractionNotes": "jem-notes_extraction", "freeFailureNotes": "jem-notes_failure", "sliceNotes": "jem-notes_overall", "qcNotes": "jem-notes_qc",
     # nucleus
-    "extraction.endPipetteR": "jem-nucleus_end_seal_res", "recording.pipetteR": "jem-nucleus_pipette_res", "extraction.postPatch": "jem-nucleus_post_patch", "extraction.nucleus": "jem-nucleus_sucked",
+    "extraction.endPipetteR": "jem-res_final_seal", "recording.pipetteR": "jem-res_initial_seal", "extraction.postPatch": "jem-nucleus_post_patch", "extraction.nucleus": "jem-nucleus_sucked",
     # options
-    "attempt": "jem-options_attempt", "failureNotes": "jem-options_failure", "successNotes": "jem-options_success", "virus_enhancer": "jem-options_virus_enhancer",
+    "attempt": "jem-status_attempt", "failureNotes": "jem-status_failure", "successNotes": "jem-status_success", "virus_enhancer": "jem-virus_enhancer",
     # pressure
     "extraction.pressureApplied": "jem-pressure_extraction", "extraction.retractionPressureApplied": "jem-pressure_retraction",
     # project
@@ -43,7 +42,7 @@ jem_dictionary = {
     # region
     "roi": "jem-region_major_minor", "roi_major": "jem-region_major", "roi_minor": "jem-region_minor",
     # status
-    "approach.creCell": "jem-status_reporter", "status": "jem-status_success_fail",
+    "approach.creCell": "jem-status_reporter", "status": "jem-status_success_failure",
     # time
     "recording.timeStart": "jem-time_exp_approach_start", "extraction.timeChannelRecordingEnd": "jem-time_exp_channel_end", "extraction.timeEnd": "jem-time_exp_end_old", 
     "extraction.timeExtractionEnd": "jem-time_exp_extraction_end", "extraction.timeExtractionStart": "jem-time_exp_extraction_start",
@@ -54,8 +53,20 @@ jem_dictionary = {
 # Lists
 ivscc_rig_users = ["aarono", "balreetp", "brianle", "dijonh", "gabrielal", "jessicat", "katherineb", "kristenh", "lindsayn", "lisak", "ramr", "rustym", "sarav"]
 ivscc_rig_numbers = ["1", "2", "3", "4", "5", "6", "7", "8"]
-columns_time = ["jem-time_exp_approach_start", "jem-time_exp_channel_end", "jem-time_exp_extraction_end", "jem-time_exp_extraction_start", "jem-time_exp_retraction_end", "jem-time_exp_whole_cell_start"]  
-
+columns_time = ["jem-time_exp_approach_start", "jem-time_exp_channel_end", "jem-time_exp_extraction_end", "jem-time_exp_extraction_start", "jem-time_exp_retraction_end", "jem-time_exp_whole_cell_start"]
+master_jem_column_order = ["jem-date_patch", "jem-date_patch_y-m-d", "jem-date_patch_y", "jem-date_patch_m", "jem-date_patch_d", "jem-date_acsf", "jem-date_blank", "jem-date_internal",
+                           "jem-id_slice_specimen", "jem-id_cell_specimen", "jem-id_patched_cell_container", "jem-id_rig_user", "jem-id_rig_number",
+                           "jem-status_attempt", "jem-status_success_failure", "jem-status_success", "jem-status_failure", "jem-status_reporter",
+                           "jem-region_major_minor", "jem-region_major", "jem-region_minor",
+                           "jem-health_slice_initial", "jem-health_slice_final", "jem-health_cell", "jem-health_fill_quality",
+                           "jem-nucleus_post_patch_detail", "jem-nucleus_post_patch", "jem-nucleus_sucked",
+                           "jem-res_initial_seal", "jem-res_final_seal", "jem-depth", "jem-pressure_extraction", "jem-pressure_retraction",
+                           "jem-time_duration_exp", "jem-time_duration_ext", "jem-time_duration_ret",
+                           "jem-time_exp_approach_start", "jem-time_exp_whole_cell_start", "jem-time_exp_extraction_start", "jem-time_exp_extraction_end", "jem-time_exp_retraction_end", "jem-time_exp_channel_end",
+                           "jem-virus_enhancer", "jem-project_name", "jem-project_retrograde_labeling_hemisphere", "jem-project_retrograde_labeling_region", "jem-project_retrograde_labeling_exp",
+                           "jem-notes_overall", "jem-notes_qc", "jem-notes_extraction", "jem-notes_failure",
+                           "lims-id_species", "lims-id_cell_specimen", "lims-id_cell_specimen_id", "lims-id_slice_genotype", "lims-depth",
+                           "test-mismatch_jem_lims", "test-mismatch_id_cell_specimen", "test-mismatch_depth"]
 
 # compiled-jem-data input and output directory
 path_input = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data"
@@ -135,8 +146,8 @@ master_jem_df["jem-depth"] = pd.to_numeric(master_jem_df["jem-depth"], errors='c
 master_jem_df["lims-depth"] = pd.to_numeric(master_jem_df["lims-depth"], errors='coerce').abs()
 master_jem_df["jem-pressure_extraction"] = pd.to_numeric(master_jem_df["jem-pressure_extraction"], errors='coerce').abs()
 master_jem_df["jem-pressure_retraction"] = pd.to_numeric(master_jem_df["jem-pressure_retraction"], errors='coerce').abs()
-master_jem_df["jem-nucleus_pipette_res"] = pd.to_numeric(master_jem_df["jem-nucleus_pipette_res"], errors='coerce').abs()
-master_jem_df["jem-nucleus_end_seal_res"] = pd.to_numeric(master_jem_df["jem-nucleus_end_seal_res"], errors='coerce').abs()
+master_jem_df["jem-res_initial_seal"] = pd.to_numeric(master_jem_df["jem-res_initial_seal"], errors='coerce').abs()
+master_jem_df["jem-res_final_seal"] = pd.to_numeric(master_jem_df["jem-res_final_seal"], errors='coerce').abs()
 
 # Create duration columns
 master_jem_df["jem-time_duration_exp"] = pd.to_datetime(master_jem_df["jem-time_exp_retraction_end"]) - pd.to_datetime(master_jem_df["jem-time_exp_whole_cell_start"])
@@ -162,14 +173,14 @@ master_jem_df["jem-status_reporter"] = master_jem_df["jem-status_reporter"].repl
 
 # Convert column to integer column
 master_jem_df["jem-health_cell"] = master_jem_df["jem-health_cell"].fillna(value=0)
-master_jem_df["jem-options_attempt"] = master_jem_df["jem-options_attempt"].fillna(value=0)
+master_jem_df["jem-status_attempt"] = master_jem_df["jem-status_attempt"].fillna(value=0)
 master_jem_df["jem-health_cell"] = master_jem_df["jem-health_cell"].astype(int)
-master_jem_df["jem-options_attempt"] = master_jem_df["jem-options_attempt"].astype(int)
+master_jem_df["jem-status_attempt"] = master_jem_df["jem-status_attempt"].astype(int)
 master_jem_df["jem-id_rig_number"] = master_jem_df["jem-id_rig_number"].astype(int)
 
 # Add a new column
-master_jem_df["jem-nucleus_post_patch_detail"] = pd.np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-nucleus_end_seal_res"]>=1000), "Nuc-giga-seal",
-                                                            pd.np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-nucleus_end_seal_res"]<1000), "Nuc-low-seal",
+master_jem_df["jem-nucleus_post_patch_detail"] = pd.np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]>=1000), "Nuc-giga-seal",
+                                                            pd.np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]<1000), "Nuc-low-seal",
                                                             pd.np.where(master_jem_df["jem-nucleus_post_patch"]=="nucleus_absent", "No-seal",
                                                             pd.np.where(master_jem_df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
 
@@ -183,9 +194,9 @@ master_jem_df.drop(columns=["approach.pilotTest01", "approach.pilotTest04", "app
                            "jem_date_dt", "jem_date_m", "jem-depth_current", "jem-depth_old", "jem-time_exp_end_old",
                            "jem-time_exp_retraction_end_current", "extraction.pilotNameExtra","wellID"], inplace=True)
 
-# Sort columns alphabetically and by date
-master_jem_df = master_jem_df.sort_index(axis=1)
-master_jem_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen", "jem-options_attempt"], inplace=True)
+# Sort columns
+master_jem_df = master_jem_df.reindex(columns= master_jem_column_order)
+master_jem_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen", "jem-status_attempt"], inplace=True)
 
 # Dataframe to csvs and excel
 master_jem_df.to_csv(path_or_buf= os.path.join(path_output, "master_jem.csv"), index=False)
