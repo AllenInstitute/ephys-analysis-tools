@@ -10,46 +10,16 @@ Description: Template for creating master_jem.csv and master_jem.xlsx
 """
 
 # Imports
+import json
 import pandas as pd
 import os
 import numpy as np
 from jem_list import ivscc_rig_users_list, ivscc_rig_numbers_list, columns_time_list, column_order_list, drop_list
 
 
-# Dictionaries
-jem_dictionary = {
-    # date
-    "acsfProductionDate": "jem-date_acsf", "blankFillDate": "jem-date_blank", "internalFillDate": "jem-date_internal", "date": "jem-date_patch",
-    # depth
-    "depth": "jem-depth_current", "approach.depth": "jem-depth_old", "cell_depth": "lims-depth", #LIMS?
-    # health
-    "approach.cellHealth": "jem-health_cell", "extraction.fillquality": "jem-health_fill_quality", "approach.sliceHealth": "jem-health_slice",
-    "sliceQuality": "jem-health_slice_initial", "sliceQualityFinal": "jem-health_slice_final",
-    # id
-    "pipetteSpecName": "jem-id_cell_specimen", "container": "jem-id_patched_cell_container", "limsSpecName": "jem-id_slice_specimen",
-    "rigNumber": "jem-id_rig_number", "rigOperator": "jem-id_rig_user",
-    "name": "lims-id_cell_specimen", "specimen_ID": "lims-id_cell_specimen_id", "full_genotype": "lims-id_slice_genotype", "organism_name": "lims-id_species", #LIMS?
-    # notes
-    "extraction.extractionNotes": "jem-notes_extraction", "freeFailureNotes": "jem-notes_failure", "sliceNotes": "jem-notes_overall", "qcNotes": "jem-notes_qc",
-    # nucleus
-    "extraction.endPipetteR": "jem-res_final_seal", "recording.pipetteR": "jem-res_initial_seal", "extraction.postPatch": "jem-nucleus_post_patch", "extraction.nucleus": "jem-nucleus_sucked",
-    # options
-    "attempt": "jem-status_attempt", "failureNotes": "jem-status_failure", "successNotes": "jem-status_success", "virus_enhancer": "jem-virus_enhancer",
-    # pressure
-    "extraction.pressureApplied": "jem-pressure_extraction", "extraction.retractionPressureApplied": "jem-pressure_retraction",
-    # project
-    "approach.pilotName": "jem-project_name", "approach.project_retrograde_labeling_hemisphere": "jem-project_retrograde_labeling_hemisphere",
-    "approach.project_retrograde_labeling_region": "jem-project_retrograde_labeling_region", "approach.project_retrograde_labeling_exp": "jem-project_retrograde_labeling_exp",
-    # region
-    "roi": "jem-region_major_minor", "roi_major": "jem-region_major", "roi_minor": "jem-region_minor",
-    # status
-    "approach.creCell": "jem-status_reporter", "status": "jem-status_success_failure",
-    # time
-    "recording.timeStart": "jem-time_exp_approach_start", "extraction.timeChannelRecordingEnd": "jem-time_exp_channel_end", "extraction.timeEnd": "jem-time_exp_end_old", 
-    "extraction.timeExtractionEnd": "jem-time_exp_extraction_end", "extraction.timeExtractionStart": "jem-time_exp_extraction_start",
-    "extraction.timeRetractionEnd": "jem-time_exp_retraction_end_current", "recording.timeWholeCellStart": "jem-time_exp_whole_cell_start",
-    # test
-    "lims_check": "test-mismatch_jem_lims"}
+# Read json data from file to import jem_dictionary
+with open("jem_dictionary.json") as json_file:
+    jem_dictionary = json.load(json_file)
 
 # compiled-jem-data input and output directory
 path_input = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data"
