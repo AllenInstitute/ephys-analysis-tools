@@ -14,7 +14,7 @@ import json
 import pandas as pd
 import os
 import numpy as np
-from jem_list import ivscc_rig_users_list, ivscc_rig_numbers_list, columns_time_list, column_order_list, drop_list
+from jem_variables import ivscc_rig_users_list, ivscc_rig_numbers_list, columns_time_list, column_order_list, drop_list
 
 
 # Read json data from file to import jem_dictionary
