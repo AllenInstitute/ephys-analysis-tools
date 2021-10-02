@@ -13,6 +13,7 @@ Description: Template for creating master_jem.csv and master_jem.xlsx
 import pandas as pd
 import os
 import numpy as np
+from jem_list import ivscc_rig_users_list, ivscc_rig_numbers_list, columns_time_list, column_order_list, drop_list
 
 
 # Dictionaries
@@ -50,24 +51,6 @@ jem_dictionary = {
     # test
     "lims_check": "test-mismatch_jem_lims"}
 
-# Lists
-ivscc_rig_users = ["aarono", "balreetp", "brianle", "dijonh", "gabrielal", "jessicat", "katherineb", "kristenh", "lindsayn", "lisak", "ramr", "rustym", "sarav"]
-ivscc_rig_numbers = ["1", "2", "3", "4", "5", "6", "7", "8"]
-columns_time = ["jem-time_exp_approach_start", "jem-time_exp_channel_end", "jem-time_exp_extraction_end", "jem-time_exp_extraction_start", "jem-time_exp_retraction_end", "jem-time_exp_whole_cell_start"]
-master_jem_column_order = ["jem-date_patch", "jem-date_patch_y-m-d", "jem-date_patch_y", "jem-date_patch_m", "jem-date_patch_d", "jem-date_acsf", "jem-date_blank", "jem-date_internal",
-                           "jem-id_slice_specimen", "jem-id_cell_specimen", "jem-id_patched_cell_container", "jem-id_rig_user", "jem-id_rig_number",
-                           "jem-status_attempt", "jem-status_success_failure", "jem-status_success", "jem-status_failure", "jem-status_reporter",
-                           "jem-region_major_minor", "jem-region_major", "jem-region_minor",
-                           "jem-health_slice_initial", "jem-health_slice_final", "jem-health_cell", "jem-health_fill_quality",
-                           "jem-nucleus_post_patch_detail", "jem-nucleus_post_patch", "jem-nucleus_sucked",
-                           "jem-res_initial_seal", "jem-res_final_seal", "jem-depth", "jem-pressure_extraction", "jem-pressure_retraction",
-                           "jem-time_duration_exp", "jem-time_duration_ext", "jem-time_duration_ret",
-                           "jem-time_exp_approach_start", "jem-time_exp_whole_cell_start", "jem-time_exp_extraction_start", "jem-time_exp_extraction_end", "jem-time_exp_retraction_end", "jem-time_exp_channel_end",
-                           "jem-virus_enhancer", "jem-project_name", "jem-project_retrograde_labeling_hemisphere", "jem-project_retrograde_labeling_region", "jem-project_retrograde_labeling_exp",
-                           "jem-notes_overall", "jem-notes_qc", "jem-notes_extraction", "jem-notes_failure",
-                           "lims-id_species", "lims-id_cell_specimen", "lims-id_cell_specimen_id", "lims-id_slice_genotype", "lims-depth",
-                           "test-mismatch_jem_lims", "test-mismatch_id_cell_specimen", "test-mismatch_depth"]
-
 # compiled-jem-data input and output directory
 path_input = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data"
 path_output = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/formatted_data"
@@ -103,8 +86,8 @@ master_jem_df = pd.concat([jem_df, jem_na_df, jem_fail_df], ignore_index=True, s
 master_jem_df.rename(columns=jem_dictionary, inplace=True)
 
 # Filter dataframe to only IVSCC Group 2017-Current
-master_jem_df = master_jem_df[master_jem_df["jem-id_rig_user"].isin(ivscc_rig_users)]
-master_jem_df = master_jem_df[master_jem_df["jem-id_rig_number"].isin(ivscc_rig_numbers)]
+master_jem_df = master_jem_df[master_jem_df["jem-id_rig_user"].isin(ivscc_rig_users_list)]
+master_jem_df = master_jem_df[master_jem_df["jem-id_rig_number"].isin(ivscc_rig_numbers_list)]
 
 #Fix depth/time column and combining into one column
 v_109_df = master_jem_df[master_jem_df["formVersion"] == "1.0.9"]
@@ -118,7 +101,7 @@ split_date = master_jem_df["jem-date_patch"].str.split(" ", n=1, expand=True) # 
 master_jem_df["jem-date_patch"] = split_date[0] # Choosing column with only the dates
 
 # Remove timezones from time columns 
-for col in columns_time:
+for col in columns_time_list:
     split_timezone = master_jem_df[col].str.split(" ", n=1, expand=True) # Splitting time and timezone into 2 columns
     master_jem_df[col] = split_timezone[0] # Choosing column with only the time
 
@@ -185,17 +168,10 @@ master_jem_df["jem-nucleus_post_patch_detail"] = pd.np.where(((master_jem_df["je
                                                             pd.np.where(master_jem_df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
 
 # Drop columns
-master_jem_df.drop(columns=["approach.pilotTest01", "approach.pilotTest04", "approach.pilotTest05", "approach.pilotTestYN",
-                           "badSweeps", "experimentType", "extraction.extractionObservations", "extraction.sampleObservations",
-                           "extraction.timeRetractionStart", "extraction.tubeID", "failureCause", "flipped", "formVersion",
-                           "internalSolution.concentrationBiocytin", "internalSolution.concentrationRnaseInhibitor",
-                           "internalSolution.version", "internalSolution.volume", "jem-health_slice", "recording.accessR",
-                           "recording.humanCellTypePrediction", "recording.membraneV", "recording.rheobase", "jem_created",
-                           "jem_date_dt", "jem_date_m", "jem-depth_current", "jem-depth_old", "jem-time_exp_end_old",
-                           "jem-time_exp_retraction_end_current", "extraction.pilotNameExtra","wellID"], inplace=True)
+master_jem_df.drop(columns=drop_list, inplace=True)
 
 # Sort columns
-master_jem_df = master_jem_df.reindex(columns= master_jem_column_order)
+master_jem_df = master_jem_df.reindex(columns= column_order_list)
 master_jem_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen", "jem-status_attempt"], inplace=True)
 
 # Dataframe to csvs and excel
