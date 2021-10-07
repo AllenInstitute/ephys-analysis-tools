@@ -14,17 +14,15 @@ import json
 import pandas as pd
 import os
 import numpy as np
-from jem_variables import ivscc_rig_users_list, ivscc_rig_numbers_list, columns_time_list, column_order_list, drop_list
 
 
 # Read json data from file to import jem_dictionary
-with open("jem_dictionary.json") as json_file:
-    jem_dictionary = json.load(json_file)
+with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/jem_templates/python_files/data_variables.json") as json_file:
+    data_variables = json.load(json_file)
 
 # compiled-jem-data input and output directory
 path_input = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data"
 path_output = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/formatted_data"
-path_output_src = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data/formatted_csv"
 
 # JEM csv files
 path_jem = os.path.join(path_input, "jem_metadata.csv")
@@ -54,11 +52,11 @@ jem_na_df["container"] = jem_na_df["container"].replace({np.nan: "Not Applicable
 master_jem_df = pd.concat([jem_df, jem_na_df, jem_fail_df], ignore_index=True, sort=False)
 
 # Rename columns based on jem_dictionary
-master_jem_df.rename(columns=jem_dictionary, inplace=True)
+master_jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
 
 # Filter dataframe to only IVSCC Group 2017-Current
-master_jem_df = master_jem_df[master_jem_df["jem-id_rig_user"].isin(ivscc_rig_users_list)]
-master_jem_df = master_jem_df[master_jem_df["jem-id_rig_number"].isin(ivscc_rig_numbers_list)]
+master_jem_df = master_jem_df[master_jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
+master_jem_df = master_jem_df[master_jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
 
 #Fix depth/time column and combining into one column
 v_109_df = master_jem_df[master_jem_df["formVersion"] == "1.0.9"]
@@ -72,7 +70,7 @@ split_date = master_jem_df["jem-date_patch"].str.split(" ", n=1, expand=True) # 
 master_jem_df["jem-date_patch"] = split_date[0] # Choosing column with only the dates
 
 # Remove timezones from time columns 
-for col in columns_time_list:
+for col in data_variables["columns_time_list"]:
     split_timezone = master_jem_df[col].str.split(" ", n=1, expand=True) # Splitting time and timezone into 2 columns
     master_jem_df[col] = split_timezone[0] # Choosing column with only the time
 
@@ -104,7 +102,7 @@ master_jem_df["jem-res_initial_seal"] = pd.to_numeric(master_jem_df["jem-res_ini
 master_jem_df["jem-res_final_seal"] = pd.to_numeric(master_jem_df["jem-res_final_seal"], errors='coerce').abs()
 
 # Create duration columns
-master_jem_df["jem-time_duration_exp"] = pd.to_datetime(master_jem_df["jem-time_exp_retraction_end"]) - pd.to_datetime(master_jem_df["jem-time_exp_whole_cell_start"])
+master_jem_df["jem-time_duration_exp"] = pd.to_datetime(master_jem_df["jem-time_exp_extraction_start"]) - pd.to_datetime(master_jem_df["jem-time_exp_whole_cell_start"])
 master_jem_df["jem-time_duration_ext"] = pd.to_datetime(master_jem_df["jem-time_exp_extraction_end"]) - pd.to_datetime(master_jem_df["jem-time_exp_extraction_start"])
 master_jem_df["jem-time_duration_ret"] = pd.to_datetime(master_jem_df["jem-time_exp_retraction_end"]) - pd.to_datetime(master_jem_df["jem-time_exp_extraction_end"])
 master_jem_df["jem-time_duration_exp"] = (master_jem_df["jem-time_duration_exp"].astype('timedelta64[s]'))/60
@@ -139,15 +137,12 @@ master_jem_df["jem-nucleus_post_patch_detail"] = pd.np.where(((master_jem_df["je
                                                             pd.np.where(master_jem_df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
 
 # Drop columns
-master_jem_df.drop(columns=drop_list, inplace=True)
+master_jem_df.drop(columns=data_variables["drop_list"], inplace=True)
 
 # Sort columns
-master_jem_df = master_jem_df.reindex(columns= column_order_list)
+master_jem_df = master_jem_df.reindex(columns=data_variables["column_order_list"])
 master_jem_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen", "jem-status_attempt"], inplace=True)
 
-# Dataframe to source_code csvs and excel
-master_jem_df.to_csv(path_or_buf= os.path.join(path_output_src, "formatted_jem.csv"), index=False)
-
 # Dataframe to csvs and excel
-master_jem_df.to_csv(path_or_buf= os.path.join(path_output, "master_jem.csv"), index=False)
-master_jem_df.to_excel(excel_writer= os.path.join(path_output, "master_jem.xlsx"), index=False)
+master_jem_df.to_csv(path_or_buf=os.path.join(path_output, "master_jem.csv"), index=False)
+master_jem_df.to_excel(excel_writer=os.path.join(path_output, "master_jem.xlsx"), index=False)
