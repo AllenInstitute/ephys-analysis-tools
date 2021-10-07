@@ -1,9 +1,0 @@
-*/.ipynb_checkpoints/*
-*.csv
-*.xlsx
-*.jpg
-*.jpeg
-*.png
-*.pdf
-*.tiff
-*.pyc
