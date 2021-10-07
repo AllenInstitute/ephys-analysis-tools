@@ -24,6 +24,7 @@ with open("jem_dictionary.json") as json_file:
 # compiled-jem-data input and output directory
 path_input = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data"
 path_output = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/formatted_data"
+path_output_src = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data/formatted_csv"
 
 # JEM csv files
 path_jem = os.path.join(path_input, "jem_metadata.csv")
@@ -143,6 +144,9 @@ master_jem_df.drop(columns=drop_list, inplace=True)
 # Sort columns
 master_jem_df = master_jem_df.reindex(columns= column_order_list)
 master_jem_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen", "jem-status_attempt"], inplace=True)
+
+# Dataframe to source_code csvs and excel
+master_jem_df.to_csv(path_or_buf= os.path.join(path_output_src, "formatted_jem.csv"), index=False)
 
 # Dataframe to csvs and excel
 master_jem_df.to_csv(path_or_buf= os.path.join(path_output, "master_jem.csv"), index=False)
