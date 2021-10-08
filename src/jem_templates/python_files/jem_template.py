@@ -102,12 +102,22 @@ master_jem_df["jem-res_initial_seal"] = pd.to_numeric(master_jem_df["jem-res_ini
 master_jem_df["jem-res_final_seal"] = pd.to_numeric(master_jem_df["jem-res_final_seal"], errors='coerce').abs()
 
 # Create duration columns
-master_jem_df["jem-time_duration_exp"] = pd.to_datetime(master_jem_df["jem-time_exp_extraction_start"]) - pd.to_datetime(master_jem_df["jem-time_exp_whole_cell_start"])
-master_jem_df["jem-time_duration_ext"] = pd.to_datetime(master_jem_df["jem-time_exp_extraction_end"]) - pd.to_datetime(master_jem_df["jem-time_exp_extraction_start"])
-master_jem_df["jem-time_duration_ret"] = pd.to_datetime(master_jem_df["jem-time_exp_retraction_end"]) - pd.to_datetime(master_jem_df["jem-time_exp_extraction_end"])
-master_jem_df["jem-time_duration_exp"] = (master_jem_df["jem-time_duration_exp"].astype('timedelta64[s]'))/60
-master_jem_df["jem-time_duration_ext"] = (master_jem_df["jem-time_duration_ext"].astype('timedelta64[s]'))/60
-master_jem_df["jem-time_duration_ret"] = (master_jem_df["jem-time_duration_ret"].astype('timedelta64[s]'))/60
+master_jem_df["jem-time_duration_experiment"] = pd.to_datetime(master_jem_df["jem-time_exp_extraction_start"]) - pd.to_datetime(master_jem_df["jem-time_exp_whole_cell_start"])
+master_jem_df["jem-time_duration_extraction"] = pd.to_datetime(master_jem_df["jem-time_exp_extraction_end"]) - pd.to_datetime(master_jem_df["jem-time_exp_extraction_start"])
+master_jem_df["jem-time_duration_retraction"] = pd.to_datetime(master_jem_df["jem-time_exp_retraction_end"]) - pd.to_datetime(master_jem_df["jem-time_exp_extraction_end"])
+master_jem_df["jem-time_duration_experiment"] = (master_jem_df["jem-time_duration_experiment"].astype('timedelta64[s]'))/60
+master_jem_df["jem-time_duration_extraction"] = (master_jem_df["jem-time_duration_extraction"].astype('timedelta64[s]'))/60
+master_jem_df["jem-time_duration_retraction"] = (master_jem_df["jem-time_duration_retraction"].astype('timedelta64[s]'))/60
+
+# Convert to float
+master_jem_df["jem-time_duration_experiment"] = master_jem_df["jem-time_duration_experiment"].astype(float)
+master_jem_df["jem-time_duration_extraction"] = master_jem_df["jem-time_duration_extraction"].astype(float)
+master_jem_df["jem-time_duration_retraction"] = master_jem_df["jem-time_duration_retraction"].astype(float)
+
+# Round decimal places to 2
+master_jem_df["jem-time_duration_experiment"] = master_jem_df["jem-time_duration_experiment"].round(2)
+master_jem_df["jem-time_duration_extraction"] = master_jem_df["jem-time_duration_extraction"].round(2)
+master_jem_df["jem-time_duration_retraction"] = master_jem_df["jem-time_duration_retraction"].round(2)
 
 # Test columns
 master_jem_df["test-mismatch_depth"] = master_jem_df["jem-depth"] == master_jem_df["lims-depth"]
