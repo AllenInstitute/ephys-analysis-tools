@@ -74,7 +74,7 @@ for col in data_variables["columns_time_list"]:
     split_timezone = master_jem_df[col].str.split(" ", n=1, expand=True) # Splitting time and timezone into 2 columns
     master_jem_df[col] = split_timezone[0] # Choosing column with only the time
 
-# Add in year, monnth, day columns
+# Add in year, month, day columns
 master_jem_df["jem-date_patch_y-m-d"] = master_jem_df["jem-date_patch"]
 split_date = master_jem_df["jem-date_patch_y-m-d"].str.split("-", n=2, expand=True) # Splitting year, month and day
 master_jem_df["jem-date_patch_y"] = split_date[0] # Choosing column with years
