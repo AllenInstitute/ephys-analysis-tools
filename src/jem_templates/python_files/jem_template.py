@@ -141,10 +141,10 @@ master_jem_df["jem-status_attempt"] = master_jem_df["jem-status_attempt"].astype
 master_jem_df["jem-id_rig_number"] = master_jem_df["jem-id_rig_number"].astype(int)
 
 # Add a new column
-master_jem_df["jem-nucleus_post_patch_detail"] = pd.np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]>=1000), "Nuc-giga-seal",
-                                                            pd.np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]<1000), "Nuc-low-seal",
-                                                            pd.np.where(master_jem_df["jem-nucleus_post_patch"]=="nucleus_absent", "No-seal",
-                                                            pd.np.where(master_jem_df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
+master_jem_df["jem-nucleus_post_patch_detail"] = np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]>=1000), "Nuc-giga-seal",
+                                                            np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]<1000), "Nuc-low-seal",
+                                                            np.where(master_jem_df["jem-nucleus_post_patch"]=="nucleus_absent", "No-seal",
+                                                            np.where(master_jem_df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
 
 # Drop columns
 master_jem_df.drop(columns=data_variables["drop_list"], inplace=True)
