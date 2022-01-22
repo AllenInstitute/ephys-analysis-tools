@@ -124,10 +124,11 @@ master_jem_df["test-mismatch_depth"] = master_jem_df["jem-depth"] == master_jem_
 master_jem_df["test-mismatch_id_cell_specimen"] = master_jem_df["jem-id_cell_specimen"] == master_jem_df["lims-id_cell_specimen"]
 
 # Replace values in columns
-master_jem_df["jem-region_major_minor"] = master_jem_df["jem-region_major_minor"].replace(to_replace="layer ", value="L", regex=True)
-master_jem_df["jem-region_major_minor"] = master_jem_df["jem-region_major_minor"].replace(to_replace="/", value="-", regex=True)
-master_jem_df["jem-region_minor"] = master_jem_df["jem-region_minor"].replace(to_replace="layer ", value="L", regex=True)
-master_jem_df["jem-region_minor"] = master_jem_df["jem-region_minor"].replace(to_replace="/", value="-", regex=True)
+master_jem_df["jem-roi_major_minor"] = master_jem_df["jem-roi_major_minor"].replace(to_replace="layer ", value="L", regex=True)
+master_jem_df["jem-roi_major_minor"] = master_jem_df["jem-roi_major_minor"].replace(to_replace="/", value="-", regex=True)
+master_jem_df["jem-roi_minor"] = master_jem_df["jem-roi_minor"].replace(to_replace="layer ", value="L", regex=True)
+master_jem_df["jem-roi_minor"] = master_jem_df["jem-roi_minor"].replace(to_replace="/", value="-", regex=True)
+master_jem_df["jem-roi_minor"] = master_jem_df["jem-roi_minor"].replace({"Gpe": "GPe", "Gpi": "GPi"})
 master_jem_df["jem-health_cell"] = master_jem_df["jem-health_cell"].replace({"None": np.nan})
 master_jem_df["jem-project_name"] = master_jem_df["jem-project_name"].replace({np.nan: "None"})
 master_jem_df["jem-health_slice_initial"] = master_jem_df["jem-health_slice_initial"].replace({"Damaged": "Damage (Tissue Processing)", "Good": "Healthy","Wave of Death": "Wave of Death (after 30 min)", "'Wave of Death'": "Wave of Death (after 30 min)"})
@@ -140,11 +141,15 @@ master_jem_df["jem-health_cell"] = master_jem_df["jem-health_cell"].astype(int)
 master_jem_df["jem-status_attempt"] = master_jem_df["jem-status_attempt"].astype(int)
 master_jem_df["jem-id_rig_number"] = master_jem_df["jem-id_rig_number"].astype(int)
 
-# Add a new column
+# Add new columns
 master_jem_df["jem-nucleus_post_patch_detail"] = np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]>=1000), "Nuc-giga-seal",
-                                                            np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]<1000), "Nuc-low-seal",
-                                                            np.where(master_jem_df["jem-nucleus_post_patch"]=="nucleus_absent", "No-seal",
-                                                            np.where(master_jem_df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
+                                                 np.where(((master_jem_df["jem-nucleus_post_patch"]=="nucleus_present")|(master_jem_df["jem-nucleus_post_patch"]=="entire_cell"))&(master_jem_df["jem-res_final_seal"]<1000), "Nuc-low-seal",
+                                                 np.where(master_jem_df["jem-nucleus_post_patch"]=="nucleus_absent", "No-seal",
+                                                 np.where(master_jem_df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
+master_jem_df["jem-id_species"] = np.where(master_jem_df["jem-id_slice_specimen"].str.startswith(tuple(["H1", "H2"])), "Human",
+                                  np.where(master_jem_df["jem-id_slice_specimen"].str.startswith(tuple(["Q20.26.007", "Q21.26.003", "Q21.26.017", "Q21.26.019", "Q21.26.023"])), "NHP (Macaca mulatta)",
+                                  np.where(master_jem_df["jem-id_slice_specimen"].str.startswith(tuple(["QN", "Q19", "Q20.26.001", "Q20.26.009", "Q21.26.005", "Q21.26.006", "Q21.26.008", "Q21.26.009", "Q21.26.013", "Q21.26.015", "Q21.26.021"])), "NHP (Macaca nemestrina)",
+                                  np.where(master_jem_df["jem-id_slice_specimen"].str.startswith("SC2"), "NHP (Saimiri sciureus)", "Mouse"))))
 
 # Drop columns
 master_jem_df.drop(columns=data_variables["drop_list"], inplace=True)
