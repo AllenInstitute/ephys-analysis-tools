@@ -123,12 +123,37 @@ master_jem_df["jem-time_duration_retraction"] = master_jem_df["jem-time_duration
 master_jem_df["test-mismatch_depth"] = master_jem_df["jem-depth"] == master_jem_df["lims-depth"]
 master_jem_df["test-mismatch_id_cell_specimen"] = master_jem_df["jem-id_cell_specimen"] == master_jem_df["lims-id_cell_specimen"]
 
+# Replace values in column (roi-major_minor)
+master_jem_df["jem-roi_major_minor"] = master_jem_df["jem-roi_major_minor"].replace({"layer ": "L"}, regex=True)
+master_jem_df["jem-roi_major_minor"] = master_jem_df["jem-roi_major_minor"].replace({"/": "-"}, regex=True)
+master_jem_df["jem-roi_major_minor"] = master_jem_df["jem-roi_major_minor"].replace({"MH": "EPIMH",
+                                                                                     "LH": "EPILH",
+                                                                                     "HIPCA1": "HIP_CA1",
+                                                                                     "HIPDG-mo": "HIP_DG-mo",
+                                                                                     "HIPDG-sg": "HIP_DG-sg",
+                                                                                     "RSP1": "RSP_L1",
+                                                                                     "RSP2-3": "RSP_L2-3",
+                                                                                     "RSP5": "RSP_L5",
+                                                                                     "RSP6a": "RSP_L6a",
+                                                                                     "RSP6b": "RSP_L6b",
+                                                                                     "TCx, L2": "TCx2",
+                                                                                     "TCx, L2-3": "TCx2-3",
+                                                                                     "TCx, L3": "TCx3",
+                                                                                     "TCx, L5": "TCx5",
+                                                                                     "CB": "CBXmo"}, regex=False)
+master_jem_df["jem-roi_major_minor"] = master_jem_df["jem-roi_major_minor"].replace(data_variables["roi_dictionary"], regex=True)
+
+# Creating jem-roi_major and jem-roi_minor columns
+roi = master_jem_df["jem-roi_major_minor"].str.split("_", n=1, expand=True) # Splitting roi_major and roi_minor
+master_jem_df["jem-roi_major"] = roi[0] # Choosing column with roi_major
+master_jem_df["jem-roi_minor"] = roi[1] # Choosing column with roi_minor
+
+# Creating jem-roi_super column
+master_jem_df["jem-roi_super"] = master_jem_df["jem-roi_major"].replace({roi_cor: "Cortical" for roi_cor in data_variables["cortical_list"]}, regex=True)
+master_jem_df["jem-roi_super"] = master_jem_df["jem-roi_super"].replace({roi_sub: "Subcortical" for roi_sub in data_variables["subcortical_list"]}, regex=True)
+master_jem_df["jem-roi_super"] = master_jem_df["jem-roi_super"].replace({"NA": "Unknown"}, regex=True)
+
 # Replace values in columns
-master_jem_df["jem-roi_major_minor"] = master_jem_df["jem-roi_major_minor"].replace(to_replace="layer ", value="L", regex=True)
-master_jem_df["jem-roi_major_minor"] = master_jem_df["jem-roi_major_minor"].replace(to_replace="/", value="-", regex=True)
-master_jem_df["jem-roi_minor"] = master_jem_df["jem-roi_minor"].replace(to_replace="layer ", value="L", regex=True)
-master_jem_df["jem-roi_minor"] = master_jem_df["jem-roi_minor"].replace(to_replace="/", value="-", regex=True)
-master_jem_df["jem-roi_minor"] = master_jem_df["jem-roi_minor"].replace({"Gpe": "GPe", "Gpi": "GPi"})
 master_jem_df["jem-health_cell"] = master_jem_df["jem-health_cell"].replace({"None": np.nan})
 master_jem_df["jem-project_name"] = master_jem_df["jem-project_name"].replace({np.nan: "None"})
 master_jem_df["jem-health_slice_initial"] = master_jem_df["jem-health_slice_initial"].replace({"Damaged": "Damage (Tissue Processing)", "Good": "Healthy","Wave of Death": "Wave of Death (after 30 min)", "'Wave of Death'": "Wave of Death (after 30 min)"})
