@@ -1,0 +1,155 @@
+
+import pandas as pd
+
+def make_txcluster_palette():
+    """Grab cluster colors for Shiny data from a spreadsheet on the server. Fixes some broken ones.
+    
+    Returns
+    -------
+    cluster_palette : dict
+        A dictionary mapping clusters with their appropriate colors.
+    """
+
+    anno = pd.read_csv("//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/facs_seq/mouse_V1_ALM_20170913/cluster_anno_zy.csv")
+    cluster_palette = dict(zip(anno["cluster_label"], anno["cluster_color"]))
+    cluster_palette['Pvalb  Prdm8'] = cluster_palette['Pvalb  Prdm8   ']
+    cluster_palette['Pvalb Il1rapl2'] = cluster_palette['Pvalb Ilrapl2']
+    cluster_palette['Sncg Crispld2'] = cluster_palette['Sncg Crispld2 ']
+    
+    internal_nodes = [i for i in postpatch_pct.index if i[0] == "n"]
+    internal_nodes = internal_nodes + ["Excitatory", "Inhibitory"]
+    for i in internal_nodes:
+        cluster_palette[i] = "black"
+
+    return cluster_palette
+
+
+def make_ra_cre_dict():
+    d = {}
+    d['Gad2-IRES-Cre'] = 'Pan-inhibitory'
+    d['Rbp4-Cre_KL100'] = 'Layer 5 enriched'
+    d['Slc32a1-IRES-Cre'] = 'Pan-inhibitory'
+    d['Vip-IRES-Cre'] = 'Vip'
+    d['Sst-IRES-Cre'] = 'Sst'
+    d['Pvalb-IRES-Cre'] = 'PV'
+    d['Pvalb-T2A-CreERT2'] = 'PV'
+    d['Ndnf-IRES2-dgCre'] = 'Lamp5'
+    d['Chrna2-Cre_OE25'] = 'Sst'
+    d['Chat-IRES-Cre-neo'] = 'Vip'
+    d['Rorb-IRES2-Cre'] = 'Layer 4, 5 enriched'
+    d['Oxtr-T2A-Cre'] = 'Mixed expression'
+    d['Ntsr1-Cre_GN220'] = 'Layer 6 enriched'
+    d['Scnn1a-Tg1-Cre'] = 'Layer 4, 5 enriched'
+    d['Scnn1a-Tg2-Cre'] = 'Layer 4, 5 enriched'
+    d['Scnn1a-Tg3-Cre'] = 'Layer 4, 5 enriched'
+    d['Htr3a-Cre_NO152'] ='Vip'
+    d['Ctgf-T2A-dgCre'] = 'Layer 6 enriched'
+    d['Cux2-CreERT2'] = 'Layer 2/3, 4 enriched'
+    d['Pdyn-T2A-CreERT2'] = 'Sst'
+    d['Nr5a1-Cre'] = 'Layer 2/3, 4 enriched'
+    d['Nos1-CreERT2'] = 'Mixed expression'
+    d['Pvalb-T2A-FlpO; Vipr2-IRES2-Cre'] = 'PV'
+    d['Vipr2-IRES2-Cre; Pvalb-T2A-FlpO'] = 'PV'
+    d['Ndnf-IRES2-dgCre; Slc32a1-IRES2-FlpO'] = 'Lamp5'
+    d['Slc32a1-IRES2-FlpO; Ndnf-IRES2-dgCre'] = 'Lamp5'
+    d['Nos1-CreERT2; Sst-IRES-FlpO'] = 'Sst'
+    d['Sst-IRES-FlpO; Nos1-CreERT2'] = 'Sst'    
+    d['Slc17a6-IRES-Cre'] = 'Pan-excitatory'
+    d['Vipr2-IRES2-Cre; Slc32a1-T2A-FlpO'] = 'PV'
+    d['Slc32a1-T2A-FlpO; Vipr2-IRES2-Cre'] = 'PV'
+    d['Sst-IRES-FlpO; Crh-IRES-Cre_ZJH'] = 'Sst'
+    d['Crh-IRES-Cre_ZJH; Sst-IRES-FlpO'] = 'Sst'
+    d['Slc32a1-IRES2-FlpO; Slc17a8-IRES2-Cre'] = 'Mixed expression'
+    d['Slc17a8-IRES2-Cre; Slc32a1-IRES2-FlpO'] = 'Mixed expression'    
+    d['Sim1-Cre_KJ18'] = 'Layer 5 enriched'
+    d['Th-Cre_FI172'] = 'PV'
+    d['Tlx3-Cre_PL56'] = 'Layer 5 enriched'
+    d['Rorb-IRES2-Cre-neo'] = 'Layer 4, 5 enriched'
+    d['Nkx2-1-CreERT2'] = 'PV' 
+    d['Vipr2-IRES2-Cre'] = 'Mixed expression'
+    d['Slc17a8-iCre'] = 'Mixed expression'
+    d['Th-P2A-FlpO'] = 'PV'
+    d['Pvalb-IRES-Cre; Th-P2A-FlpO'] = 'PV'
+    d['Pvalb-T2A-FlpO; Oxtr-T2A-Cre'] = 'PV'
+    d['Oxtr-T2A-Cre; Pvalb-T2A-FlpO'] = 'PV'
+    d['Tac1-IRES2-Cre; Sst-IRES-FlpO'] = 'Sst'
+    d['Sst-IRES-FlpO; Tac1-IRES2-Cre'] = 'Sst'
+    d['Pvalb-T2A-FlpO; Chrna2-Cre_OE25'] = 'PV'
+    d['Chrna2-Cre_OE25; Pvalb-T2A-FlpO'] = 'PV'    
+    d['Glt25d2-Cre_NF107'] = 'Layer 5 enriched' 
+    d['Etv1-CreERT2; Pvalb-T2A-FlpO'] = 'PV'
+    d['Pvalb-T2A-FlpO; Etv1-CreERT2'] = 'PV'
+    d['Slc17a8-IRES2-Cre'] = 'Mixed expression'
+    d['Penk-IRES2-Cre-neo'] = 'Mixed expression'   
+    d['Sst-IRES-FlpO; Npr3-IRES2-Cre'] = 'Sst'
+    d['Npr3-IRES2-Cre; Sst-IRES-FlpO'] = 'Sst'
+    d['Sst-IRES-FlpO; Calb1-IRES2-Cre'] = 'Sst'
+    d['Calb1-IRES2-Cre; Sst-IRES-FlpO'] = 'Sst'
+    d['Vip-IRES-FlpO; Chrna2-Cre_OE25'] = 'Vip'
+    d['Chrna2-Cre_OE25; Vip-IRES-FlpO'] = 'Vip'
+    d['Sst-IRES-FlpO; Tac2-IRES2-Cre'] = 'Sst' 
+    d['Tac2-IRES2-Cre; Sst-IRES-FlpO'] = 'Sst' 
+    d['Sst-Cre'] = 'Sst'
+    d['Npy-IRES2-FlpO'] = 'unknown'
+    d['Esr2-IRES2-Cre'] = 'unknown'
+    d['Pvalb-T2A-FlpO; Slc32a1-IRES-Cre'] = 'unknown'
+    d['Slc32a1-IRES-Cre; Pvalb-T2A-FlpO'] = 'unknown'
+    d['Esr2-IRES2-Cre-neo; PhiC31-neo'] = 'unknown'
+    d['PhiC31-neo; Esr2-IRES2-Cre-neo'] = 'unknown'  
+    d['EE609-lacZ-CreERT2-Tg2'] = 'unknown'
+    d['Gng7-Cre_KH71'] = 'unknown'
+    d['Ntng2-IRES2-Cre'] = 'unknown'
+    d['Tlx3-Cre_PL56; Pvalb-T2A-FlpO'] = 'unknown'
+    d['Pvalb-T2A-FlpO; Tlx3-Cre_PL56'] = 'unknown'  
+    d['Erbb4-T2A-CreERT2'] = 'unknown'
+    d['Pvalb-T2A-Dre; Htr3a-Cre_NO152'] = 'unknown'    
+    d['Htr3a-Cre_NO152; Pvalb-T2A-Dre'] = 'unknown'
+    d['Pvalb-T2A-FlpO; Sst-IRES-Cre'] = 'unknown'
+    d['Sst-IRES-Cre; Pvalb-T2A-FlpO'] = 'unknown'
+    d['Slc32a1-IRES2-FlpO'] = 'unknown'
+    d['Snap25-IRES2-Cre'] = 'unknown'
+    d['Slc17a6-IRES2-FlpO; Ndnf-IRES2-dgCre'] = 'unknown'
+    d['Ndnf-IRES2-dgCre; Slc17a6-IRES2-FlpO'] = 'unknown'
+    d['Pvalb-IRES-Cre; Rorb-T2A-tTA2'] = 'unknown' 
+    d['Rorb-T2A-tTA2; Pvalb-IRES-Cre'] = 'unknown' 
+    d['Cart-IRES2-Cre'] = 'unknown'
+    d['Slc17a7-IRES2-Cre'] = 'unknown'
+    d['Sst-IRES-FlpO; Nos1-CreERT2'] = 'Sst'
+    d['Nos1-CreERT2; Sst-IRES-FlpO'] = 'Sst'
+    d['Calb2-IRES-Cre; Sst-IRES-FlpO'] = 'Sst'
+    d['Sst-IRES-FlpO; Calb2-IRES-Cre'] = 'Sst'
+    d['Sst-IRES-FlpO; Tac1-IRES2-Cre'] = 'Sst'
+    d['Tac1-IRES2-Cre; Sst-IRES-FlpO'] = 'Sst'
+    d['Sst-IRES-FlpO; Chrna2-Cre_OE25'] = 'Sst'
+    d['Chrna2-Cre_OE25; Sst-IRES-FlpO'] = 'Sst'
+    d['Sst-IRES-FlpO; Etv1-CreERT2'] = 'Sst'
+    d['Etv1-CreERT2; Sst-IRES-FlpO'] = 'Sst'
+    d['Pvalb-IRES-FlpO; Etv1-CreERT2'] = 'PV'
+    d['Etv1-CreERT2; Pvalb-IRES-FlpO'] = 'PV'
+    d['Sst-IRES-FlpO; Tac2-IRES2-Cre'] = 'Sst'
+    d['Tac2-IRES2-Cre; Sst-IRES-FlpO'] = 'Sst'    
+    d['Chrnb3'] = 'Sst'
+    d['Sst-IRES-FlpO; Chrnb3-Cre'] = 'Sst'
+    d['Chrnb3-Cre;Sst-IRES-FlpO'] = 'Sst'
+    d['Pvalb-T2A-Cre; Chrna2-Cre_OE25'] = 'PV'
+    d['Chrna2-Cre_OE25; Pvalb-T2A-Cre'] = 'PV'
+    d['Th-Cre_FI172; Sst-IRES-FlpO'] = 'Sst'
+    d['Sst-IRES-FlpO; Th-Cre_FI172'] = 'Sst'    
+    d['Vipr2-IRES2-Cre; Slc32a1-T2A-FlpO'] = 'PV'
+    d['Slc32a1-T2A-FlpO; Vipr2-IRES2-Cre'] = 'PV'
+    d['Vipr2-IRES2-Cre; Pvalb-T2A-FlpO'] = 'PV'
+    d['Pvalb-T2A-FlpO; Vipr2-IRES2-Cre'] = 'PV'    
+    d['Htr3a-Cre_NO152; Pvalb-T2A-FlpO'] = 'unknown'
+    d['Pvalb-T2A-FlpO; Htr3a-Cre_NO152'] = 'unknown'
+    d['Htr3a-Cre_NO152; Sst-IRES-FlpO'] = 'unknown'
+    d['Sst-IRES-FlpO; Htr3a-Cre_NO152'] = 'unknown'
+    d['Cck-IRES-Cre; Vip-IRES-FlpO'] = 'Vip'
+    d['Vip-IRES-FlpO; Cck-IRES-Cre'] = 'Vip'
+    d['Vip-IRES-Cre; Npy-IRES2-FlpO'] = 'Vip'
+    d['Npy-IRES2-FlpO; Vip-IRES-Cre'] = 'Vip'
+    d['Slc17a8-IRES2-Cre; Slc32a1-IRES2-FlpO'] = 'Mixed expression'
+    d['Slc32a1-IRES2-FlpO; Slc17a8-IRES2-Cre'] = 'Mixed expression'
+    d['Penk-IRES2-Cre-neo; Slc17a6-IRES2-FlpO'] = 'Layer 6 enriched'
+    d['Slc17a6-IRES2-FlpO; Penk-IRES2-Cre-neo'] = 'Layer 6 enriched'
+    
+    return d
