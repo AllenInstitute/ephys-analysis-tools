@@ -67,6 +67,7 @@
     "HIPb": "HIPb_",
     "CBX": "CBX_",
     "CTXsp": "CTXsp_",
+    "CCx": "CCx_L",
     "FCx": "FCx_L",
     "OCx": "OCx_L",
     "PCx": "PCx_L",
@@ -85,6 +86,7 @@
 "cortical_list":
     [    
         "CBX",
+        "CCx",
         "CTXsp",
         "FCx",
         "MOp",
