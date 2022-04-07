@@ -17,7 +17,7 @@ import numpy as np
 
 
 # Read json data from file to import jem_dictionary
-with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/jem_templates/python_files/data_variables.json") as json_file:
+with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/constants/data_variables.json") as json_file:
     data_variables = json.load(json_file)
 
 # compiled-jem-data input and output directory
