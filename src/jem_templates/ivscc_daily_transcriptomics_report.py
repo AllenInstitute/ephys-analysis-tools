@@ -22,7 +22,7 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 from datetime import datetime, date, timedelta
 from pathlib import Path, PureWindowsPath
 from funcs.file_funcs import get_jsons
-from funcs.jem_metadata_clean_up import flatten_jem_data, clean_date_field, clean_roi_field
+from funcs.functions_jem import flatten_jem_data, clean_date_field, clean_roi_field, clean_time_field, clean_num_field, replace_value
 from iofuncs import validated_input, validated_date_input,save_xlsx
 from internalfuncs import get_lims, get_specimen_id, get_modification_date
 #import time # To measure program execution time
@@ -271,6 +271,12 @@ def generate_jem_df():
     jem_df = clean_date_field(jem_df)
     # Clean and add roi fields
     jem_df = clean_roi_field(jem_df)
+    # Clean time and add duration fields
+    jem_df = clean_time_field(jem_df)
+    # Clean numerical fields
+    jem_df = clean_num_field(jem_df)
+    # Replace value in fields
+    jem_df = replace_value(jem_df)
     
     return jem_df
 

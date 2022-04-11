@@ -148,7 +148,7 @@
         "jem-time_exp_whole_cell_start",
         "jem-time_exp_extraction_start",
         "jem-time_exp_extraction_end",
-        "jem-time_exp_retraction_end",
+        "jem-time_exp_retraction_end_current",
         "jem-time_exp_channel_end"
     ],
 "column_order_list":
