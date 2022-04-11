@@ -61,7 +61,7 @@ master_jem_df = master_jem_df[master_jem_df["jem-id_rig_number"].isin(data_varia
 #Fix depth/time column and combining into one column
 v_109_df = master_jem_df[master_jem_df["formVersion"] == "1.0.9"]
 v_other_df = master_jem_df[master_jem_df["formVersion"] != "1.0.9"]
-v_109_df.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_end_old": "jem-time_exp_retraction_end"}, inplace=True)
+v_109_df.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_end_old": "jem-time_exp_retraction_end_current"}, inplace=True)
 v_other_df.rename(columns={"jem-depth_current": "jem-depth", "jem-time_exp_retraction_end_current": "jem-time_exp_retraction_end"}, inplace=True)
 master_jem_df = pd.concat([v_109_df, v_other_df], sort=True)
 
