@@ -18,6 +18,7 @@ import numpy as np
 
 from datetime import datetime, date, timedelta
 from funcs.jem_data_set import JemDataSet
+from funcs.file_funcs import get_jsons
 
 
 # Read json data from file to import jem_dictionary
@@ -233,3 +234,87 @@ def flatten_jem_data(jem_paths, start_day_str, end_day_str):
         #jem_df = pd.DataFrame(columns=output_cols)
 
     return jem_df
+
+
+#-----Ram's code-----#
+def make_metadata_csv(start_day_str):
+    """Returns dataframed and saves 2 .csv with JEM data since the provided date, for samples with and without tubes.
+    
+    Parameters
+    ----------
+    default_json_dir : string (default None)
+        Location of JEM files. None points to:
+        '//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files'
+
+    start_day_str : string (default '171001', start of IVSCC-MET pipeline)
+
+    fn : string (default 'jem_metadata')
+        Filename for output .csv file. 
+
+    Returns
+    -------
+    final_tube_df : pandas dataframe
+        Metadata for samples with tubes
+    na_df : pandas dataframe
+        Metadata for NA samples (no tube sent for amplification)
+    """
+    # Directories
+    json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
+    output_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc_data/test_data"
+
+    # Date of today
+    dt_today = datetime.today()
+    date_today = dt_today.date()
+    day_today = date_today.strftime("%y%m%d") # "YYMMDD"
+    # Date of the previous 30 days from date of today
+    date_prev_30d = date_today - timedelta(days=30)
+    day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
+
+    # Directories
+    json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
+    
+    delta_mod_date = (date_today - date_prev_30d).days + 3
+    jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
+    
+    # Flatten JSON files (previous 30 day information) to pandas dataframe 9jem_df)
+    jem_df = flatten_jem_data(jem_paths, day_prev_30d, day_today)
+    
+    # Rename columns based on jem_dictionary
+    jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
+    
+    # Filter dataframe to only IVSCC Group 2017-Current
+    jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
+    jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
+
+    # Clean and add date_fields
+    jem_df = clean_date_field(jem_df)
+    # Clean and add roi fields
+    jem_df = clean_roi_field(jem_df)
+    # Clean time and add duration fields
+    jem_df = clean_time_field(jem_df)
+    # Clean numerical fields
+    jem_df = clean_num_field(jem_df)
+    # Replace value in fields
+    jem_df = replace_value(jem_df)
+
+    # Add new columns
+    jem_df["jem-status_patch_tube"] = np.where((jem_df["jem-id_patched_cell_container"].str.startswith("P"))&(jem_df["jem-status_success_failure"] == "SUCCESS"), "Patch Tube",
+                                      np.where((jem_df["jem-id_patched_cell_container"] == "NA")&(jem_df["jem-status_success_failure"] == "SUCCESS"), "No Tube", "NA"))
+    jem_df["jem-status_patch_tube"] = jem_df["jem-status_patch_tube"].replace({"NA": np.nan})
+
+    # Sort columns
+    jem_df = jem_df.reindex(columns=data_variables["column_order_list"])
+    jem_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen", "jem-status_attempt"], inplace=True)
+
+    jem_success_df = jem_df[jem_df["jem-status_success_failure"] == "SUCCESS"]
+    jem_failure_df = jem_df[jem_df["jem-status_success_failure"] == "FAILURE"]
+
+    if len(jem_df) > 0:
+        try:
+            jem_df.to_csv(os.path.join(output_dir, "jem_metadata.csv"), encoding='utf-8-sig', index=False, date_format="%Y-%m-%d")
+            jem_success_df.to_csv(os.path.join(output_dir, "jem_metadata-success.csv"), encoding='utf-8-sig', index=False, date_format="%Y-%m-%d")
+            jem_failure_df.to_csv(os.path.join(output_dir, "jem_metadata-failure.csv"), encoding='utf-8-sig', index=False, date_format="%Y-%m-%d")
+        except IOError:
+            print("\nOh no! Unable to save spreadsheet :(\nMake sure you don't already have a file with the same name opened.")
+
+    return jem_df, jem_success_df, jem_failure_df

@@ -154,6 +154,7 @@
 "column_order_list":
     [
         "jem-date_patch",
+        "jem-time_patch",
         "jem-date_patch_y-m-d",
         "jem-date_patch_y",
         "jem-date_patch_m",
@@ -164,6 +165,7 @@
         "jem-id_species",
         "jem-id_slice_specimen",
         "jem-id_cell_specimen",
+        "jem-status_patch_tube",
         "jem-id_patched_cell_container",
         "jem-id_rig_user",
         "jem-id_rig_number",
@@ -195,7 +197,7 @@
         "jem-time_exp_whole_cell_start",
         "jem-time_exp_extraction_start",
         "jem-time_exp_extraction_end",
-        "jem-time_exp_retraction_end",
+        "jem-time_exp_retraction_end_current",
         "jem-time_exp_channel_end",
         "jem-virus_enhancer",
         "jem-project_name",
@@ -205,15 +207,7 @@
         "jem-notes_overall",
         "jem-notes_qc",
         "jem-notes_extraction",
-        "jem-notes_failure",
-        "lims-id_species",
-        "lims-id_cell_specimen",
-        "lims-id_cell_specimen_id",
-        "lims-id_slice_genotype",
-        "lims-depth",
-        "test-mismatch_jem_lims",
-        "test-mismatch_id_cell_specimen",
-        "test-mismatch_depth"
+        "jem-notes_failure"
     ],
 "drop_list":
     [
