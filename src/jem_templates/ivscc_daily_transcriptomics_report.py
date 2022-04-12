@@ -251,14 +251,7 @@ def generate_jem_df():
     # Replace tube values
     jem_df["jem-id_patched_cell_container"] = jem_df["jem-id_patched_cell_container"].replace({"NA": "Not Applicable"})
     # Replace reporter status values 
-    jem_df["jem-status_reporter"] = jem_df["jem-status_reporter"].replace({"Cre+": "Positive", "Cre-": "Negative", "human": np.nan, "None": np.nan})
-
-    # Convert string column to float column and apply absolute value to columns
-    jem_df["jem-depth_current"] = pd.to_numeric(jem_df["jem-depth_current"], errors='coerce').abs()
-    jem_df["jem-pressure_extraction"] = pd.to_numeric(jem_df["jem-pressure_extraction"], errors='coerce').abs()
-    jem_df["jem-pressure_retraction"] = pd.to_numeric(jem_df["jem-pressure_retraction"], errors='coerce').abs()
-    jem_df["jem-res_initial_seal"] = pd.to_numeric(jem_df["jem-res_initial_seal"], errors='coerce').abs()
-    jem_df["jem-res_final_seal"] = pd.to_numeric(jem_df["jem-res_final_seal"], errors='coerce').abs()
+    jem_df["jem-status_reporter"] = jem_df["jem-status_reporter"].replace({"Cre+": "Positive", "Cre-": "Negative", "human": np.nan, "NA": np.nan})
 
     # Filter to only successful experiments
     jem_df = jem_df[(jem_df["jem-status_success_failure"] == "SUCCESS")]

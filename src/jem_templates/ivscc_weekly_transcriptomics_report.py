@@ -16,7 +16,7 @@ import os
 import sys
 import pandas as pd
 from datetime import datetime, date, timedelta
-from iofuncs import validated_input, validated_date_input,save_xlsx
+from iofuncs import validated_input, validated_date_input #, save_xlsx
 from ivscc_daily_transcriptomics_report import generate_jem_df
 #import time # To measure program execution time
 
@@ -43,7 +43,7 @@ def generate_weekly_report():
     # Generate date variables
     day_prev_monday, day_curr_sunday = generate_dates()
     # User prompts
-    dt_start, dt_end = user_prompts(day_prev_monday, day_curr_sunday)
+    dt_start, dt_end, day_prev_monday, day_curr_sunday = user_prompts(day_prev_monday, day_curr_sunday)
     # Create weekly transcriptomics report name
     date_name_report = "%s-%s_%s.xlsx" %(day_prev_monday, day_curr_sunday, name_report[0:-5]) 
 
@@ -55,7 +55,7 @@ def generate_weekly_report():
     if len(jem_df) > 0:
         try:
             # Save dataframe as an excel sheet
-            save_xlsx(jem_df, dir_temporary_report, date_name_report, norm_d, head_d)
+            save_xlsx_weekly_report(jem_df, dir_temporary_report, date_name_report, norm_d, head_d)
             # Message in the terminal
             terminal_message(day_prev_monday, day_curr_sunday)
         except IOError:
@@ -101,7 +101,7 @@ def user_prompts(day_prev_monday, day_curr_sunday):
         dt_start = datetime.strptime(day_prev_monday, "%y%m%d") # datetime.datetime
         dt_end = datetime.strptime(day_curr_sunday, "%y%m%d") # datetime.datetime
 
-    return dt_start, dt_end
+    return dt_start, dt_end, day_prev_monday, day_curr_sunday
 
 
 def generate_weekly_jem_df(df, dt_start, dt_end):
@@ -134,6 +134,49 @@ def generate_weekly_jem_df(df, dt_start, dt_end):
     df.sort_values(by=["date", "tubeID"], inplace=True)
     
     return df
+
+
+def save_xlsx_weekly_report(df, dirname, spreadname, norm_d, head_d):
+    """Save an excel spreadsheet from dataframe
+    
+    Parameters
+    ----------
+    df : pandas dataframe
+    dirname : string
+    spreadname : string
+    norm_d, head_d: dictionaries
+    
+    Returns
+    -------
+    Saved .xlsx file with name spreadname in directory dirname.
+    """
+
+    # Create a Pandas Excel writer using XlsxWriter as the engine.
+    writer = pd.ExcelWriter(os.path.join(dirname, spreadname), engine="xlsxwriter", date_format="mm/dd/yyyy")
+    
+    # Convert the dataframe to an XlsxWriter Excel object.
+    df.to_excel(writer, sheet_name='Sheet1', index=False)    
+    
+    # Get the xlsxwriter workbook and worksheet objects.
+    workbook  = writer.book
+    worksheet = writer.sheets['Sheet1']
+    norm_fmt = workbook.add_format(norm_d)
+    head_fmt = workbook.add_format(head_d)
+    worksheet.set_column('A:S', 20, norm_fmt)
+    
+    # This is for weekly transcriptomics reports
+    worksheet.set_column('M:M', 20, norm_fmt) # pressureApplied
+    worksheet.set_column('O:O', 20, norm_fmt) # retractionPressureApplied
+    worksheet.set_column('R:R', 20, norm_fmt) # endPipetteR
+
+    # Write the column headers with the defined format.
+    for col_num, value in enumerate(df.columns.values):
+        worksheet.write(0, col_num, value, head_fmt)
+    try:
+        writer.save()
+    except IOError:
+        print("\nOh no! Unable to save spreadsheet :(\nMake sure you don't already have a file with the same name opened.")
+
 
 def terminal_message(day_prev_monday, day_curr_sunday):
     """

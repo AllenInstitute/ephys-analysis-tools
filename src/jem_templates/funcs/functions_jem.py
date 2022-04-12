@@ -144,7 +144,7 @@ def clean_num_field(df):
 	df["jem-pressure_retraction"] = df["jem-pressure_retraction"].astype(float)
 	df["jem-res_initial_seal"] = df["jem-res_initial_seal"].astype(float)
 	df["jem-res_final_seal"] = df["jem-res_final_seal"].astype(float)
-	# Round decimal places to 2
+	# Round decimal places to 1
 	df["jem-depth_current"] = df["jem-depth_current"].round(1)
 	df["jem-pressure_extraction"] = df["jem-pressure_extraction"].round(1)
 	df["jem-pressure_retraction"] = df["jem-pressure_retraction"].round(1)
