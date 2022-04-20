@@ -45,7 +45,7 @@ from dateutil import parser
 import pytz
 
 from cerberus import Validator, errors
-import funcs.schemas
+import functions.schemas
 
 
 import logging

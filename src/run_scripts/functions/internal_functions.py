@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import os
 from datetime import datetime
-from iofuncs import is_this_py3
+from functions.io_functions import is_this_py3
 
 def _connect(user="limsreader", host="limsdb2", database="lims2", password="limsro", port=5432):
     import pg8000

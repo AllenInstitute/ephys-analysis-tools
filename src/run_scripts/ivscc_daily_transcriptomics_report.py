@@ -21,10 +21,10 @@ from pandas.tseries.offsets import CustomBusinessDay
 from pandas.tseries.holiday import USFederalHolidayCalendar
 from datetime import datetime, date, timedelta
 from pathlib import Path, PureWindowsPath
-from funcs.file_funcs import get_jsons
-from funcs.functions_jem import flatten_jem_data, clean_date_field, clean_roi_field, clean_time_field, clean_num_field, replace_value
-from iofuncs import validated_input, validated_date_input,save_xlsx
-from internalfuncs import get_lims, get_specimen_id, get_modification_date
+from functions.file_functions import get_jsons
+from functions.jem_functions import flatten_jem_data, clean_date_field, clean_roi_field, clean_time_field, clean_num_field, replace_value
+from functions.io_functions import validated_input, validated_date_input,save_xlsx
+from functions.internal_functions import get_lims, get_specimen_id, get_modification_date
 #import time # To measure program execution time
 
 

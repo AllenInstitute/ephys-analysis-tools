@@ -16,7 +16,7 @@ import os
 import sys
 import pandas as pd
 from datetime import datetime, date, timedelta
-from iofuncs import validated_input, validated_date_input #, save_xlsx
+from functions.io_functions import validated_input, validated_date_input
 from ivscc_daily_transcriptomics_report import generate_jem_df
 #import time # To measure program execution time
 
@@ -113,10 +113,10 @@ def generate_weekly_jem_df(df, dt_start, dt_end):
     """
     
     output_dict = {"jem-id_patched_cell_container":"tubeID","jem-date_patch": "date", "jem-id_rig_user": "rigOperator", "jem-id_rig_number": "rigNumber", "jem-date_blank": "blankFillDate", "jem-date_internal": "internalFillDate",
-                   "jem-project_name":"pilotName", "jem-status_reporter":"creCell", "jem-roi_major_minor": "manualRoi", "jem-depth_current": "cell_depth",
+                   "jem-project_name":"pilotName", "jem-status_reporter":"creCell", "jem-roi_major_minor": "manualRoi", "jem-depth": "cell_depth",
                    "jem-time_exp_whole_cell_start":"timeWholeCellStart", "jem-time_exp_extraction_start":"timeExtractionStart",
                    "jem-pressure_extraction":"pressureApplied", "jem-time_exp_extraction_end":"timeExtractionEnd", "jem-pressure_retraction":"retractionPressureApplied",
-                   "jem-time_exp_retraction_end_current":"timeRetractionEnd", "jem-nucleus_post_patch":"postPatch", "jem-res_final_seal":"endPipetteR", "jem-virus_enhancer": "virus_enhancer"}
+                   "jem-time_exp_retraction_end":"timeRetractionEnd", "jem-nucleus_post_patch":"postPatch", "jem-res_final_seal":"endPipetteR", "jem-virus_enhancer": "virus_enhancer"}
 
     # Change values to integers
     df["jem-id_rig_number"] = df["jem-id_rig_number"].astype(str)

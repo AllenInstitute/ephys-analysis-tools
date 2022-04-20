@@ -1,4 +1,5 @@
-{"jem_dictionary":
+{
+"jem_dictionary":
     {
         "date": "jem-date_patch",
         "acsfProductionDate": "jem-date_acsf",
@@ -11,6 +12,7 @@
         "extraction.fillquality": "jem-health_fill_quality",
         "pipetteSpecName": "jem-id_cell_specimen",
         "container": "jem-id_patched_cell_container",
+        "misinformation": "jem-status_misinformation",
         "limsSpecName": "jem-id_slice_specimen",
         "rigNumber": "jem-id_rig_number",
         "rigOperator": "jem-id_rig_user",
@@ -22,8 +24,7 @@
         "extraction.nucleus": "jem-nucleus_sucked",
         "recording.pipetteR": "jem-res_initial_seal",
         "extraction.endPipetteR": "jem-res_final_seal",
-        "depth": "jem-depth_current",
-        "approach.depth": "jem-depth_old",
+        "depth": "jem-depth",
         "attempt": "jem-status_attempt",
         "status": "jem-status_success_failure",
         "successNotes": "jem-status_success",
@@ -35,6 +36,7 @@
         "extraction.pressureApplied": "jem-pressure_extraction",
         "extraction.retractionPressureApplied": "jem-pressure_retraction",
         "virus_enhancer": "jem-virus_enhancer",
+        "extraction.project_level_nucleus": "jem-project_level_nucleus",
         "approach.pilotName": "jem-project_name",
         "approach.project_retrograde_labeling_hemisphere": "jem-project_retrograde_labeling_hemisphere",
         "approach.project_retrograde_labeling_region": "jem-project_retrograde_labeling_region",
@@ -43,16 +45,49 @@
         "recording.timeWholeCellStart": "jem-time_exp_whole_cell_start",
         "extraction.timeExtractionStart": "jem-time_exp_extraction_start",
         "extraction.timeExtractionEnd": "jem-time_exp_extraction_end",
-        "extraction.timeRetractionEnd": "jem-time_exp_retraction_end_current",
+        "extraction.timeRetractionEnd": "jem-time_exp_retraction_end",
         "extraction.timeChannelRecordingEnd": "jem-time_exp_channel_end",
-        "extraction.timeEnd": "jem-time_exp_end_old",
-        "organism_name": "lims-id_species",
-        "name": "lims-id_cell_specimen",
-        "specimen_ID": "lims-id_cell_specimen_id",
-        "full_genotype": "lims-id_slice_genotype",
-        "cell_depth": "lims-depth",
-        "lims_check": "test-mismatch_jem_lims"
+        "approach.depth": "jem-depth_old",
+        "extraction.timeEnd": "jem-time_exp_retraction_end_old"
     },
+"lims_dictionary":
+{
+    "id_species": "lims-id_species",
+    "donor_name": "lims-id_slice_specimen",
+    "name": "lims-id_cell_specimen",
+    "patched_cell_container": "lims-id_patched_cell_container",
+    "id_cell_specimen_id": "lims-id_cell_specimen_id",
+    "id_slice_genotype": "lims-id_slice_genotype"
+},
+"roi_dictionary_regex_false":
+{
+    "MH": "EPIMH",
+    "LH": "EPILH",
+    "HIPCA1": "HIP_CA1",
+    "HIPDG-mo": "HIP_DG-mo",
+    "HIPDG-sg": "HIP_DG-sg",
+    "RSP1": "RSP_L1",
+    "RSP2-3": "RSP_L2-3",
+    "RSP5": "RSP_L5",
+    "RSP6a": "RSP_L6a",
+    "RSP6b": "RSP_L6b",
+    "VISp, layer 1": "VISp1",
+    "VISp, layer 2/3": "VISp2/3",
+    "VISp, layer 4": "VISp4",
+    "VISp, layer 5": "VISp5",
+    "VISp, layer 6a": "VISp6a",
+    "VISp, layer 6b": "VISp6b",
+    "FCx, layer 1": "FCx1",
+    "FCx, layer 2": "FCx2",
+    "FCx, layer 3": "FCx3",
+    "FCx, layer 4": "FCx4",
+    "FCx, layer 5": "FCx5",
+    "TCx, L2": "TCx2",
+    "TCx, L2-3": "TCx2-3",
+    "TCx, L3": "TCx3",
+    "TCx, L5": "TCx5",
+    "CB": "CBXmo"
+},
 "roi_dictionary":
 {   
     "None, None": "NA_NA",
@@ -66,6 +101,7 @@
     "EPI": "EPI_",
     "HIPb": "HIPb_",
     "CBX": "CBX_",
+    "CCx": "CCx_",
     "CTXsp": "CTXsp_",
     "FCx": "FCx_L",
     "OCx": "OCx_L",
@@ -85,6 +121,7 @@
 "cortical_list":
     [    
         "CBX",
+        "CCx",
         "CTXsp",
         "FCx",
         "MOp",
@@ -148,7 +185,7 @@
         "jem-time_exp_whole_cell_start",
         "jem-time_exp_extraction_start",
         "jem-time_exp_extraction_end",
-        "jem-time_exp_retraction_end_current",
+        "jem-time_exp_retraction_end",
         "jem-time_exp_channel_end"
     ],
 "column_order_list":
@@ -162,6 +199,7 @@
         "jem-date_acsf",
         "jem-date_blank",
         "jem-date_internal",
+        "jem-status_misinformation",
         "jem-id_species",
         "jem-id_slice_specimen",
         "jem-id_cell_specimen",
@@ -197,9 +235,10 @@
         "jem-time_exp_whole_cell_start",
         "jem-time_exp_extraction_start",
         "jem-time_exp_extraction_end",
-        "jem-time_exp_retraction_end_current",
+        "jem-time_exp_retraction_end",
         "jem-time_exp_channel_end",
         "jem-virus_enhancer",
+        "jem-project_level_nucleus",
         "jem-project_name",
         "jem-project_retrograde_labeling_hemisphere",
         "jem-project_retrograde_labeling_region",
@@ -207,7 +246,13 @@
         "jem-notes_overall",
         "jem-notes_qc",
         "jem-notes_extraction",
-        "jem-notes_failure"
+        "jem-notes_failure",
+        "lims-id_species",
+        "lims-id_slice_specimen",
+        "lims-id_cell_specimen",
+        "lims-id_patched_cell_container",
+        "lims-id_cell_specimen_id",
+        "lims-id_slice_genotype"
     ],
 "drop_list":
     [
@@ -229,11 +274,7 @@
         "internalSolution.concentrationRnaseInhibitor",
         "internalSolution.version",
         "internalSolution.volume",
-        "jem-depth_current",
-        "jem-depth_old",
         "jem-health_slice",
-        "jem-time_exp_end_old",
-        "jem-time_exp_retraction_end_current",
         "jem_created",
         "jem_date_dt",
         "jem_date_m",

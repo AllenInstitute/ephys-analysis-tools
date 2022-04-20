@@ -1,6 +1,6 @@
 """
 ---------------------------------------------------------------------
-File name: lims_funcs.py
+File name: lims_functions.py
 Maintainer: Ramkumar Rajanbabu
 ---------------------------------------------------------------------
 Author: Ramkumar Rajanbabu
@@ -10,11 +10,82 @@ Description: LIMS related functions
 """
 
 
+import pandas as pd
+
+
+def _connect(user="limsreader", host="limsdb2", database="lims2", password="limsro", port=5432):
+    import pg8000
+    conn = pg8000.connect(user=user, host=host, database=database, password=password, port=port)
+    return conn, conn.cursor()
+
+
+def _select(cursor, query):
+    cursor.execute(query)
+    columns = [ d[0] for d in cursor.description ]
+    return [ dict(zip(columns, c)) for c in cursor.fetchall() ]
+
+
+def limsquery(query, user="limsreader", host="limsdb2", database="lims2", password="limsro", port=5432):
+    """Connects to the LIMS database, executes provided query and returns a dictionary with results.    
+    Parameters
+    ----------
+    query : string containing SQL query
+    user : string
+    host : string
+    database : string
+    password : string
+    port : int
+    
+    Returns
+    -------
+    results : dictionary
+    """
+    conn, cursor = _connect(user, host, database, password, port)
+    try:
+        results = _select(cursor, query)
+    finally:
+        cursor.close()
+        conn.close()
+    return results
+
+
+def is_this_py3():
+    """'Checks whether interpreter is Python 3.
+    
+    
+    Returns
+    -------
+        Boolean: True if interpreter is Python 3 else False
+    
+    """
+
+    import sys
+    if (sys.version_info > (3,0)):
+        return True
+    else:
+        return False
+
+
+def rename_byte_cols(df):
+    """A conversion tool for pg8000 byte output (for Python 3 only).
+    
+    Parameters
+    ----------
+        df (Pandas dataframe): LIMS query output with byte column names
+    
+    Returns
+    -------
+        Pandas dataframe : output with string column names
+    
+    """
+
+    rename_dict = {c:str(c, "utf-8") for c in df.columns if isinstance(c, (bytes, bytearray))}
+    df_renamed = df.rename(columns=rename_dict)
+    return df_renamed
+
+
+#-----Ram's functions----#
 def get_lims():
-	"""
-
-	"""
-
     lims_query="""
     SELECT DISTINCT cell.name, cell.patched_cell_container,
     d.external_donor_name AS id_cell_specimen_id, d.full_genotype AS id_slice_genotype, d.name AS donor_name, 
@@ -28,7 +99,6 @@ def get_lims():
     df = pd.DataFrame(limsquery(lims_query))
     if is_this_py3:
         df = rename_byte_cols(df)
-    
     return df
 
 
