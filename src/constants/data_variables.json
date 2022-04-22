@@ -57,13 +57,16 @@
     "name": "lims-id_cell_specimen",
     "patched_cell_container": "lims-id_patched_cell_container",
     "id_cell_specimen_id": "lims-id_cell_specimen_id",
-    "id_slice_genotype": "lims-id_slice_genotype"
+    "id_slice_genotype": "lims-id_slice_genotype",
+    "cell_depth": "lims-depth"
 },
 "roi_dictionary_regex_false":
 {
     "MH": "EPIMH",
     "LH": "EPILH",
     "HIPCA1": "HIP_CA1",
+    "HIPCA2": "HIP_CA2",
+    "HIPCA3": "HIP_CA3",
     "HIPDG-mo": "HIP_DG-mo",
     "HIPDG-sg": "HIP_DG-sg",
     "RSP1": "RSP_L1",
@@ -101,9 +104,10 @@
     "EPI": "EPI_",
     "HIPb": "HIPb_",
     "CBX": "CBX_",
-    "CCx": "CCx_",
+    "CCx": "CCx_L",
     "CTXsp": "CTXsp_",
     "FCx": "FCx_L",
+    "ICx": "ICx_L",
     "OCx": "OCx_L",
     "PCx": "PCx_L",
     "TCx": "TCx_L",
@@ -124,6 +128,7 @@
         "CCx",
         "CTXsp",
         "FCx",
+        "ICx",
         "MOp",
         "MOs",
         "OCx",
@@ -252,7 +257,8 @@
         "lims-id_cell_specimen",
         "lims-id_patched_cell_container",
         "lims-id_cell_specimen_id",
-        "lims-id_slice_genotype"
+        "lims-id_slice_genotype",
+        "lims-depth"
     ],
 "drop_list":
     [

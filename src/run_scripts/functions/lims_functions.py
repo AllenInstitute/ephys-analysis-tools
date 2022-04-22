@@ -87,7 +87,7 @@ def rename_byte_cols(df):
 #-----Ram's functions----#
 def get_lims():
     lims_query="""
-    SELECT DISTINCT cell.name, cell.patched_cell_container,
+    SELECT DISTINCT cell.name, cell.patched_cell_container, cell.cell_depth,
     d.external_donor_name AS id_cell_specimen_id, d.full_genotype AS id_slice_genotype, d.name AS donor_name, 
     org.name AS id_species
     FROM specimens cell 

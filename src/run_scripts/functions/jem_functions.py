@@ -204,7 +204,7 @@ def add_jem_species_field(df):
 	df["jem-id_species"] = np.where(df["jem-id_slice_specimen"].str.startswith(tuple(["H1", "H2"])), "Human",
 						   np.where(df["jem-id_slice_specimen"].str.startswith(tuple(["QM", "Q20.26.007", "Q21.26.003", "Q21.26.017", "Q21.26.019", "Q21.26.023"])), "NHP-Macaca mulatta",
 	                       np.where(df["jem-id_slice_specimen"].str.startswith(tuple(["QN", "Q19", "Q20.26.001", "Q20.26.009", "Q21.26.005", "Q21.26.006", "Q21.26.008", "Q21.26.009", "Q21.26.013", "Q21.26.015", "Q21.26.021"])), "NHP-Macaca nemestrina",
-	                       np.where(df["jem-id_slice_specimen"].str.startswith("SC2"), "NHP-Saimiri sciureus", "Mouse"))))
+	                       np.where(df["jem-id_slice_specimen"].str.startswith(tuple(["SC2", "Q21.26.020"])), "NHP-Saimiri sciureus", "Mouse"))))
 
 	return df
 
