@@ -157,25 +157,50 @@ def clean_num_field(df):
 	return df
 
 
+def get_project_channel(row):
+    """
+    Docstring
+    Parameters
+    ----------
+    row : a pandas dataframe row containing a Mouse or Human specimen
+    """
+    
+    project_name = row["jem-project_name"]
+    project_nucleus = row["jem-project_level_nucleus"]
+    if project_nucleus == "Channel_Recording":
+        return project_nucleus
+    if project_name == "Channel_Recording":
+        return "Channel_Recording"
+    else:
+        return "None"
+
+
 def replace_value(df):
 	"""
 	Replace values in fields.	
 	"""
 
 	# Replace values in columns
-	df["jem-status_misinformation"] = df["jem-status_misinformation"].replace({np.nan: "No"})
-
-	df["jem-health_cell"] = df["jem-health_cell"].replace({"None": np.nan})
-
-	df["jem-status_success_failure"] = df["jem-status_success_failure"].replace({"SUCCESS (high confidence)": "SUCCESS", "NO ATTEMPTS": "FAILURE", "Failure": "FAILURE"})
-	df["jem-status_reporter"] = df["jem-status_reporter"].replace({"Cre+": "Positive", "Cre-": "Negative", "human": np.nan, "None": np.nan})
-
-	df["jem-virus_enhancer"] = df["jem-virus_enhancer"].replace({np.nan: "None"})
-	df["jem-project_level_nucleus"] = df["jem-project_level_nucleus"].replace({np.nan: "None"})
-	df["jem-project_name"] = df["jem-project_name"].replace({np.nan: "None"})
-	df["jem-project_retrograde_labeling_hemisphere"] = df["jem-project_retrograde_labeling_hemisphere"].replace({np.nan: "None"})
-	df["jem-project_retrograde_labeling_region"] = df["jem-project_retrograde_labeling_region"].replace({np.nan: "None"})
-	df["jem-project_retrograde_labeling_exp"] = df["jem-project_retrograde_labeling_exp"].replace({np.nan: "None"})
+	if "jem-status_misinformation" in df.columns:
+		df["jem-status_misinformation"] = df["jem-status_misinformation"].replace({np.nan: "No"})
+	if "jem-health_cell" in df.columns:
+		df["jem-health_cell"] = df["jem-health_cell"].replace({"None": np.nan})
+	if "jem-status_success_failure" in df.columns:
+		df["jem-status_success_failure"] = df["jem-status_success_failure"].replace({"SUCCESS (high confidence)": "SUCCESS", "NO ATTEMPTS": "FAILURE", "Failure": "FAILURE"})
+	if "jem-status_reporter" in df.columns:
+		df["jem-status_reporter"] = df["jem-status_reporter"].replace({"Cre+": "Positive", "Cre-": "Negative", "human": np.nan, "None": np.nan})
+	if "jem-virus_enhancer" in df.columns:
+		df["jem-virus_enhancer"] = df["jem-virus_enhancer"].replace({np.nan: "None"})
+	if "jem-project_level_nucleus" in df.columns:
+		df["jem-project_level_nucleus"] = df["jem-project_level_nucleus"].replace({np.nan: "None"})
+	if "jem-project_name" in df.columns:
+		df["jem-project_name"] = df["jem-project_name"].replace({"Channel_Recording": "None", np.nan: "None"})
+	if "jem-project_retrograde_labeling_hemisphere" in df.columns:
+		df["jem-project_retrograde_labeling_hemisphere"] = df["jem-project_retrograde_labeling_hemisphere"].replace({np.nan: "None"})
+	if "jem-project_retrograde_labeling_region" in df.columns:
+		df["jem-project_retrograde_labeling_region"] = df["jem-project_retrograde_labeling_region"].replace({np.nan: "None"})
+	if "jem-project_retrograde_labeling_exp" in df.columns:
+		df["jem-project_retrograde_labeling_exp"] = df["jem-project_retrograde_labeling_exp"].replace({np.nan: "None"})
 	
 	return df
 
@@ -220,6 +245,47 @@ def add_jem_post_patch_status_field(df):
                                           np.where(((df["jem-nucleus_post_patch"]=="nucleus_present")|(df["jem-nucleus_post_patch"]=="entire_cell"))&(df["jem-res_final_seal"]<1000), "Nuc-low-seal",
                                           np.where(df["jem-nucleus_post_patch"]=="nucleus_absent", "No-seal",
                                           np.where(df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
+
+	return df
+
+
+#-----Fix JEM version issues-----#
+def fix_jem_versions(df):
+	"""
+	Docstring
+	"""
+
+	#Fix depth/time fields and combining into one field
+	df_v109 = df[df["formVersion"] == "1.0.9"]
+	df_vother = df[df["formVersion"] != "1.0.9"]
+	# Drop necessary fields for concatenating dataframes
+	if "jem-depth_old" in df.columns:
+		df_v109.drop(columns=["jem-depth", "jem-time_exp_retraction_end"], inplace=True)
+		df_vother.drop(columns=["jem-depth_old", "jem-time_exp_retraction_end_old"], inplace=True)
+	# Rename necessary fields for concatenating dataframes
+	df_v109.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_retraction_end_old": "jem-time_exp_retraction_end"}, inplace=True)
+	# Concatenate dataframes
+	df = pd.concat([df_v109, df_vother], sort=True)
+
+	return df
+
+
+def fix_jem_blank_date(df):
+	"""
+	Docstring
+	"""
+
+	#Fix depth/time fields and combining into one field
+	df_v211 = df[df["formVersion"] == "2.1.1"]
+	df_vother = df[df["formVersion"] != "2.1.1"]
+	# Drop necessary fields for concatenating dataframes
+	if "jem-date_blank_old" in df.columns:
+		df_v211.drop(columns=["jem-date_blank_old"], inplace=True)
+		df_vother.drop(columns=["jem-date_blank"], inplace=True)
+	# Rename necessary fields for concatenating dataframes
+	df_vother.rename(columns={"jem-date_blank_old": "jem-date_blank"}, inplace=True)
+	# Concatenate dataframes
+	df = pd.concat([df_v211, df_vother], sort=True)
 
 	return df
 

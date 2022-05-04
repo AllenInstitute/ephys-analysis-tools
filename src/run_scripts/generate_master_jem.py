@@ -17,7 +17,7 @@ import os
 import numpy as np
 # File imports
 from functions.jem_functions import clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
-replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field
+replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, get_project_channel
 from functions.lims_functions import get_lims
 # Test imports
 import time # To measure program execution time
@@ -45,6 +45,8 @@ def main():
 
 	# Fix jem versions
 	master_jem_df = fix_jem_versions(master_jem_df)
+	# Fix jem blank date
+	master_jem_df = fix_jem_blank_date(master_jem_df)
 	# Clean and add date_fields
 	master_jem_df = clean_date_field(master_jem_df)
 	# Clean time and add duration fields
@@ -53,6 +55,8 @@ def main():
 	master_jem_df = clean_num_field(master_jem_df)
 	# Clean and add roi fields
 	master_jem_df = clean_roi_field(master_jem_df)
+	# Clean up project_level_nucleus
+	master_jem_df["jem-project_level_nucleus"] = master_jem_df.apply(get_project_channel, axis=1)
 	# Replace value in fields
 	master_jem_df = replace_value(master_jem_df)
 	# Add patch tube field
@@ -125,6 +129,25 @@ def fix_jem_versions(df):
 	df_v109.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_retraction_end_old": "jem-time_exp_retraction_end"}, inplace=True)
 	# Concatenate dataframes
 	df = pd.concat([df_v109, df_vother], sort=True)
+
+	return df
+
+
+def fix_jem_blank_date(df):
+	"""
+	Docstring
+	"""
+
+	#Fix depth/time fields and combining into one field
+	df_v211 = df[df["formVersion"] == "2.1.1"]
+	df_vother = df[df["formVersion"] != "2.1.1"]
+	# Drop necessary fields for concatenating dataframes
+	df_v211.drop(columns=["jem-date_blank_old"], inplace=True)
+	df_vother.drop(columns=["jem-date_blank"], inplace=True)
+	# Rename necessary fields for concatenating dataframes
+	df_vother.rename(columns={"jem-date_blank_old": "jem-date_blank"}, inplace=True)
+	# Concatenate dataframes
+	df = pd.concat([df_v211, df_vother], sort=True)
 
 	return df
 

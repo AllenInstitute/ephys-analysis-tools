@@ -3,7 +3,8 @@
     {
         "date": "jem-date_patch",
         "acsfProductionDate": "jem-date_acsf",
-        "blankFillDate": "jem-date_blank",
+        "blankFillDate": "jem-date_blank_old",
+        "extraction.blankFillDate": "jem-date_blank",
         "internalFillDate": "jem-date_internal",
         "approach.sliceHealth": "jem-health_slice",
         "sliceQuality": "jem-health_slice_initial",

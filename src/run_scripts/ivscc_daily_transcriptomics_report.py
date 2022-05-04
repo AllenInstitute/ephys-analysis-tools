@@ -21,8 +21,11 @@ from pandas.tseries.offsets import CustomBusinessDay
 from pandas.tseries.holiday import USFederalHolidayCalendar
 from datetime import datetime, date, timedelta
 from pathlib import Path, PureWindowsPath
+# File imports
 from functions.file_functions import get_jsons
-from functions.jem_functions import flatten_jem_data, clean_date_field, clean_roi_field, clean_time_field, clean_num_field, replace_value
+from functions.jem_functions import flatten_jem_data, clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
+replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, \
+fix_jem_versions, fix_jem_blank_date
 from functions.io_functions import validated_input, validated_date_input,save_xlsx
 from functions.internal_functions import get_lims, get_specimen_id, get_modification_date
 #import time # To measure program execution time
@@ -259,18 +262,28 @@ def generate_jem_df():
     jem_df.dropna(subset=["jem-id_patched_cell_container"], inplace=True)
     # Filters dataframe to only patched cell containers
     jem_df = jem_df[(jem_df["jem-id_patched_cell_container"] != "Not Applicable")]
-    
+
+    # Fix jem versions
+    jem_df = fix_jem_versions(jem_df)
+    # Fix jem blank date
+    jem_df = fix_jem_blank_date(jem_df)
     # Clean and add date_fields
     jem_df = clean_date_field(jem_df)
-    # Clean and add roi fields
-    jem_df = clean_roi_field(jem_df)
     # Clean time and add duration fields
     jem_df = clean_time_field(jem_df)
     # Clean numerical fields
     jem_df = clean_num_field(jem_df)
+    # Clean and add roi fields
+    jem_df = clean_roi_field(jem_df)
     # Replace value in fields
     jem_df = replace_value(jem_df)
-    
+    # Add patch tube field
+    jem_df = add_jem_patch_tube_field(jem_df)
+    # Add species field
+    jem_df = add_jem_species_field(jem_df)
+    # Add post patch status field
+    jem_df = add_jem_post_patch_status_field(jem_df)
+
     return jem_df
 
 
@@ -330,10 +343,10 @@ def generate_lims_df(date):
 
     return lims_df
 
-
+  
 def generate_test_df(df):
     """
-    Genereate a test dataframe
+    Generate a test dataframe
     """
     
     test_df = df[["test-jem_lims", "jem-id_cell_specimen", "jem-id_patched_cell_container", "name", "patched_cell_container"]].copy()
@@ -341,6 +354,18 @@ def generate_test_df(df):
     test_df.sort_values(by="LIMS Patch Tube Name", inplace=True)
     
     return test_df
+
+
+def check_project_retrograde():
+    """
+    Docstring
+    """
+    
+    df["jem-project_name"] = df[df["jem-project_name"] == "retrograde_labeling"]
+    df["jem-status_reporter"] = df[df["jem-status_reporter"] == "Positive"]
+
+    return df
+
 
 
 def terminal_message(saved_location, report_location, df):
