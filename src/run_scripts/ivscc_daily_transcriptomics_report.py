@@ -25,7 +25,7 @@ from pathlib import Path, PureWindowsPath
 from functions.file_functions import get_jsons
 from functions.jem_functions import flatten_jem_data, clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
 replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, \
-fix_jem_versions, fix_jem_blank_date
+fix_jem_versions, fix_jem_blank_date, get_project_channel
 from functions.io_functions import validated_input, validated_date_input,save_xlsx
 from functions.internal_functions import get_lims, get_specimen_id, get_modification_date
 #import time # To measure program execution time
@@ -275,6 +275,8 @@ def generate_jem_df():
     jem_df = clean_num_field(jem_df)
     # Clean and add roi fields
     jem_df = clean_roi_field(jem_df)
+    # Clean up project_level_nucleus
+    jem_df["jem-project_level_nucleus"] = jem_df.apply(get_project_channel, axis=1)
     # Replace value in fields
     jem_df = replace_value(jem_df)
     # Add patch tube field
