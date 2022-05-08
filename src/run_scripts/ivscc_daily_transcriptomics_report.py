@@ -22,10 +22,7 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 from datetime import datetime, date, timedelta
 from pathlib import Path, PureWindowsPath
 # File imports
-from functions.file_functions import get_jsons
-from functions.jem_functions import flatten_jem_data, clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
-replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, \
-fix_jem_versions, fix_jem_blank_date, get_project_channel
+from functions.jem_functions import generate_jem_df
 from functions.io_functions import validated_input, validated_date_input,save_xlsx
 from functions.internal_functions import get_lims, get_specimen_id, get_modification_date
 #import time # To measure program execution time
@@ -216,79 +213,6 @@ def user_prompts(last_bday, last_bday_str):
     return date_report, dt_report
 
 
-def generate_jem_df():
-    """
-    Generate a jem metadata dataframe
-    
-    date: dt_report (datetime?)
-    """
-
-    # Date of today
-    dt_today = datetime.today()
-    date_today = dt_today.date()
-    day_today = date_today.strftime("%y%m%d") # "YYMMDD"
-    # Date of the previous 30 days from date of today
-    date_prev_30d = date_today - timedelta(days=30)
-    day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
-
-    # Directories
-    json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
-    
-    delta_mod_date = (date_today - date_prev_30d).days + 3
-    jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
-    
-    # Flatten JSON files (previous 30 day information) to pandas dataframe 9jem_df)
-    jem_df = flatten_jem_data(jem_paths, day_prev_30d, day_today)
-    
-    # Rename columns based on jem_dictionary
-    jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
-    
-    # Filter dataframe to only IVSCC Group 2017-Current
-    jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
-    jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
-    
-    # Replace status values
-    jem_df["jem-status_success_failure"] = jem_df["jem-status_success_failure"].replace({"SUCCESS (high confidence)": "SUCCESS",
-                                                                                         "NO ATTEMPTS": "FAILURE",
-                                                                                         "Failure": "FAILURE"})
-    # Replace tube values
-    jem_df["jem-id_patched_cell_container"] = jem_df["jem-id_patched_cell_container"].replace({"NA": "Not Applicable"})
-    # Replace reporter status values 
-    jem_df["jem-status_reporter"] = jem_df["jem-status_reporter"].replace({"Cre+": "Positive", "Cre-": "Negative", "human": np.nan, "NA": np.nan})
-
-    # Filter to only successful experiments
-    jem_df = jem_df[(jem_df["jem-status_success_failure"] == "SUCCESS")]
-    # Drop na values
-    jem_df.dropna(subset=["jem-id_patched_cell_container"], inplace=True)
-    # Filters dataframe to only patched cell containers
-    jem_df = jem_df[(jem_df["jem-id_patched_cell_container"] != "Not Applicable")]
-
-    # Fix jem versions
-    jem_df = fix_jem_versions(jem_df)
-    # Fix jem blank date
-    jem_df = fix_jem_blank_date(jem_df)
-    # Clean and add date_fields
-    jem_df = clean_date_field(jem_df)
-    # Clean time and add duration fields
-    jem_df = clean_time_field(jem_df)
-    # Clean numerical fields
-    jem_df = clean_num_field(jem_df)
-    # Clean and add roi fields
-    jem_df = clean_roi_field(jem_df)
-    # Clean up project_level_nucleus
-    jem_df["jem-project_level_nucleus"] = jem_df.apply(get_project_channel, axis=1)
-    # Replace value in fields
-    jem_df = replace_value(jem_df)
-    # Add patch tube field
-    jem_df = add_jem_patch_tube_field(jem_df)
-    # Add species field
-    jem_df = add_jem_species_field(jem_df)
-    # Add post patch status field
-    jem_df = add_jem_post_patch_status_field(jem_df)
-
-    return jem_df
-
-
 def generate_daily_jem_df(df, date):
     """
     Generate a jem metadata dataframe
@@ -363,8 +287,9 @@ def check_project_retrograde():
     Docstring
     """
     
-    df["jem-project_name"] = df[df["jem-project_name"] == "retrograde_labeling"]
-    df["jem-status_reporter"] = df[df["jem-status_reporter"] == "Positive"]
+    if ("jem-project_name" & "jem-status_reporter") in df.columns:
+        df["jem-project_name"] = df[df["jem-project_name"] == "retrograde_labeling"]
+        df["jem-status_reporter"] = df[df["jem-status_reporter"] == "Positive"]
 
     return df
 

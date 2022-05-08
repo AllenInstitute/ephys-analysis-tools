@@ -16,8 +16,9 @@ import os
 import sys
 import pandas as pd
 from datetime import datetime, date, timedelta
+# File imports
+from functions.jem_functions import generate_jem_df
 from functions.io_functions import validated_input, validated_date_input
-from ivscc_daily_transcriptomics_report import generate_jem_df
 #import time # To measure program execution time
 
 

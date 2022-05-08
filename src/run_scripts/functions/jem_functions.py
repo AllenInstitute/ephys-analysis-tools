@@ -18,6 +18,7 @@ import numpy as np
 
 from datetime import datetime, date, timedelta
 from functions.jem_data_set import JemDataSet
+from functions.file_functions import get_jsons
 
 
 # Read json data from file to import jem_dictionary
@@ -25,12 +26,82 @@ with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/cons
     data_variables = json.load(json_file)
 
 
+def generate_jem_df():
+	"""
+	Generates a jem metadata dataframe with the previous 30 days
+	of information. Specifically, used for daily and weekly
+	transcriptomics reports.
+
+	Parameters:
+		None
+
+	Returns:
+		jem_df (dataframe): a pandas dataframe.
+	"""
+
+    # Date of today
+    dt_today = datetime.today()
+    date_today = dt_today.date()
+    day_today = date_today.strftime("%y%m%d") # "YYMMDD"
+    # Date of the previous 30 days from date of today
+    date_prev_30d = date_today - timedelta(days=30)
+    day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
+
+    # Directories
+    json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
+    
+    delta_mod_date = (date_today - date_prev_30d).days + 3
+    jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
+    # Flatten JSON files (previous 30 day information) to pandas dataframe 9jem_df)
+    jem_df = flatten_jem_data(jem_paths, day_prev_30d, day_today)
+    
+    # Rename columns based on jem_dictionary
+    jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
+    # Filter dataframe to only IVSCC Group 2017-Current
+    jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
+    jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
+
+    # Fix jem versions
+    jem_df = fix_jem_versions(jem_df)
+    # Fix jem blank date
+    jem_df = fix_jem_blank_date(jem_df)
+    # Clean and add date_fields
+    jem_df = clean_date_field(jem_df)
+    # Clean time and add duration fields
+    jem_df = clean_time_field(jem_df)
+    # Clean numerical fields
+    jem_df = clean_num_field(jem_df)
+    # Clean and add roi fields
+    jem_df = clean_roi_field(jem_df)
+    # Clean up project_level_nucleus
+    jem_df["jem-project_level_nucleus"] = jem_df.apply(get_project_channel, axis=1)
+    # Replace value in fields
+    jem_df = replace_value(jem_df)
+    # Add patch tube field
+    jem_df = add_jem_patch_tube_field(jem_df)
+    # Add species field
+    jem_df = add_jem_species_field(jem_df)
+    # Add post patch status field
+    jem_df = add_jem_post_patch_status_field(jem_df)
+
+    # Filter to only successful experiments
+    jem_df = jem_df[(jem_df["jem-status_success_failure"] == "SUCCESS")]
+    # Filters dataframe to only patched cell containers
+    jem_df = jem_df[(jem_df["jem-status_patch_tube"] == "Patch Tube")]
+
+    return jem_df
+
+
 #-----Clean-up JEM fields-----#
 def clean_date_field(df):
 	"""
-	1) Cleans up date fields in JEM metadata. 
+	Cleans up date fields in JEM metadata.
 
-	df: a pandas dataframe (default=jem_df)
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
 	"""
 
 	# Split datetime field into date and time field
@@ -63,36 +134,42 @@ def clean_date_field(df):
 
 
 def clean_roi_field(df):
-    """
-    1) Cleans up roi field in JEM metadata.
-    2) Creates roi_super, roi_major, roi_minor fields.
+	"""
+	Cleans up roi fields and adds new roi fields in JEM metadata.
 
-    df: a pandas dataframe (default=jem_df)
-    """
+	Parameters: 
+		df (dataframe): a pandas dataframe.
 
-    # Replace values in column (roi-major_minor)
-    df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace({"layer ": "L", "/": "-"}, regex=True)
-    df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary_regex_false"], regex=False)
-    df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary"], regex=True)
-    # Creating roi_major and roi_minor columns
-    roi = df["jem-roi_major_minor"].str.split("_", n=1, expand=True) # Splitting roi_major and roi_minor
-    df["jem-roi_major"] = roi[0] # Choosing column with roi_major
-    df["jem-roi_minor"] = roi[1] # Choosing column with roi_minor
-    # Creating roi_super column
-    df["jem-roi_super"] = df["jem-roi_major"].replace({roi_cor: "Cortical" for roi_cor in data_variables["cortical_list"]}, regex=True)
-    df["jem-roi_super"] = df["jem-roi_super"].replace({roi_sub: "Subcortical" for roi_sub in data_variables["subcortical_list"]}, regex=True)
-    df["jem-roi_super"] = df["jem-roi_super"].replace({"NA": "Unknown"}, regex=True)
+	Returns:
+		df (dataframe): a pandas dataframe.
+	"""
 
-    return df
+	# Replace values in column (roi-major_minor)
+	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace({"layer ": "L", "/": "-"}, regex=True)
+	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary_regex_false"], regex=False)
+	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary"], regex=True)
+	# Creating roi_major and roi_minor columns
+	roi = df["jem-roi_major_minor"].str.split("_", n=1, expand=True) # Splitting roi_major and roi_minor
+	df["jem-roi_major"] = roi[0] # Choosing column with roi_major
+	df["jem-roi_minor"] = roi[1] # Choosing column with roi_minor
+	# Creating roi_super column
+	df["jem-roi_super"] = df["jem-roi_major"].replace({roi_cor: "Cortical" for roi_cor in data_variables["cortical_list"]}, regex=True)
+	df["jem-roi_super"] = df["jem-roi_super"].replace({roi_sub: "Subcortical" for roi_sub in data_variables["subcortical_list"]}, regex=True)
+	df["jem-roi_super"] = df["jem-roi_super"].replace({"NA": "Unknown"}, regex=True)
+
+	return df
 
 
 def clean_time_field(df):
 	"""
-    1) Cleans up time fields in JEM metadata.
-    2) Creates duration fields
+	Cleans up time fields and adds new duration fields in JEM metadata.
 
-    df: a pandas dataframe (default=jem_df)
-    """
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
+	"""
 
 	# Remove timezones from time columns 
 	#for col in data_variables["columns_time_list"]:
@@ -105,7 +182,8 @@ def clean_time_field(df):
 	df["jem-time_exp_extraction_start"] = df["jem-time_exp_extraction_start"].str[0:8]
 	df["jem-time_exp_extraction_end"] = df["jem-time_exp_extraction_end"].str[0:8]
 	df["jem-time_exp_retraction_end"] = df["jem-time_exp_retraction_end"].str[0:8]
-	df["jem-time_exp_channel_end"] = df["jem-time_exp_channel_end"].str[0:8]
+	if "jem-time_exp_channel_end" in df.columns:
+		df["jem-time_exp_channel_end"] = df["jem-time_exp_channel_end"].str[0:8]
     # Create duration fields
 	df["jem-time_duration_experiment"] = pd.to_datetime(df["jem-time_exp_extraction_start"]) - pd.to_datetime(df["jem-time_exp_whole_cell_start"])
 	df["jem-time_duration_extraction"] = pd.to_datetime(df["jem-time_exp_extraction_end"]) - pd.to_datetime(df["jem-time_exp_extraction_start"])
@@ -128,7 +206,13 @@ def clean_time_field(df):
 
 def clean_num_field(df):
 	"""
-	Clean numerical fields.
+	Cleans up numerical fields in JEM metadata.
+
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
 	"""
 
 	# Convert field to integer field
@@ -159,11 +243,15 @@ def clean_num_field(df):
 
 def get_project_channel(row):
     """
-    Docstring
-    Parameters
-    ----------
-    row : a pandas dataframe row containing a Mouse or Human specimen
-    """
+    Merges old and new channel recording project fields into one field.
+
+	Parameters: 
+		row: the row of a pandas dataframe.
+
+	Returns:
+		Channel_Recording (string)
+		None (string)
+	"""
     
     project_name = row["jem-project_name"]
     project_nucleus = row["jem-project_level_nucleus"]
@@ -177,7 +265,13 @@ def get_project_channel(row):
 
 def replace_value(df):
 	"""
-	Replace values in fields.	
+	Replace values of fields in JEM metadata.
+
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
 	"""
 
 	# Replace values in columns
@@ -208,9 +302,13 @@ def replace_value(df):
 #-----Add new JEM fields-----#
 def add_jem_patch_tube_field(df):
 	"""
-	1) Creates a patch tube field in JEM metadata.
+	Add a patch tube field in JEM metadata.
 
-	df: a pandas dataframe
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
 	"""
 
 	df["jem-status_patch_tube"] = np.where((df["jem-id_patched_cell_container"].str.startswith("P"))&(df["jem-status_success_failure"] == "SUCCESS"), "Patch Tube",
@@ -221,9 +319,13 @@ def add_jem_patch_tube_field(df):
 
 def add_jem_species_field(df):
 	"""
-	1) Creates a species field in JEM metadata.
+	Add a species field in JEM metadata.
 
-	df: a pandas dataframe
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
 	"""
 
 	df["jem-id_species"] = np.where(df["jem-id_slice_specimen"].str.startswith(tuple(["H1", "H2"])), "Human",
@@ -236,9 +338,13 @@ def add_jem_species_field(df):
 
 def add_jem_post_patch_status_field(df):
 	"""
-	1) Creates a post patch status field in JEM metadata.
+	Add a post patch status field in JEM metadata.
 
-	df: a pandas dataframe
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
 	"""
 
 	df["jem-nucleus_post_patch_detail"] = np.where(((df["jem-nucleus_post_patch"]=="nucleus_present")|(df["jem-nucleus_post_patch"]=="entire_cell"))&(df["jem-res_final_seal"]>=1000), "Nuc-giga-seal",
@@ -252,7 +358,13 @@ def add_jem_post_patch_status_field(df):
 #-----Fix JEM version issues-----#
 def fix_jem_versions(df):
 	"""
-	Docstring
+	Fix jem versions in JEM metadata.
+
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
 	"""
 
 	#Fix depth/time fields and combining into one field
@@ -272,7 +384,13 @@ def fix_jem_versions(df):
 
 def fix_jem_blank_date(df):
 	"""
-	Docstring
+	Merges old and new blank date fields into one field.
+
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
 	"""
 
 	#Fix depth/time fields and combining into one field
@@ -292,20 +410,17 @@ def fix_jem_blank_date(df):
 
 #-----Agata's code-----#
 def flatten_jem_data(jem_paths, start_day_str, end_day_str):
-    """Compiles JEM files from paths, returning a pandas dataframe.
-    
-    Parameters
-    ----------
-    jem_paths : list of strings
+	"""
+	Compiles JEM files from paths, returning a pandas dataframe.
 
-    start_day_str : string
+	Parameters:
+		jem_paths : list of strings
+		start_day_str : string
+		end_day_str : string
 
-    end_day_str : string
-
-    Returns
-    -------
-    jem_df : pandas dataframe
-    """
+	Returns:
+		jem_df : a pandas dataframe.
+	"""
     start_day = datetime.strptime(start_day_str, "%y%m%d").date()
     end_day = datetime.strptime(end_day_str, "%y%m%d").date()
 
