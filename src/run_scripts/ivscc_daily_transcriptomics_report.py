@@ -12,19 +12,19 @@ Description: Generate daily transcriptomics report (excel document)
 
 #-----Imports-----#
 import json
-import csv
+import numpy as np
+import pandas as pd
 import os
 import sys
-import pandas as pd
-import numpy as np
+from datetime import datetime, date, timedelta
 from pandas.tseries.offsets import CustomBusinessDay
 from pandas.tseries.holiday import USFederalHolidayCalendar
-from datetime import datetime, date, timedelta
 from pathlib import Path, PureWindowsPath
 # File imports
-from functions.jem_functions import generate_jem_df
-from functions.io_functions import validated_input, validated_date_input,save_xlsx
 from functions.internal_functions import get_lims, get_specimen_id, get_modification_date
+from functions.io_functions import validated_input, validated_date_input,save_xlsx
+from functions.jem_functions import generate_jem_df
+# Test imports
 #import time # To measure program execution time
 
 
@@ -63,9 +63,13 @@ def generate_daily_report():
     """
     Generates the daily transcriptomics report.
 
-    Output: An excel sheet with a daily transcriptomics report based on a user specified date.
-    """
+    Parameters:
+        None
 
+    Returns:
+        An excel file with a daily transcriptomics report based on a user specified date.
+    """
+    
     # Get last business day
     last_bday, last_bday_str = generate_last_business_day()
 
@@ -180,7 +184,14 @@ def generate_daily_report():
 
 def generate_last_business_day():
     """
-    Get last business day
+    Generates the previous business day.
+
+    Parameters:
+        None
+
+    Returns:
+        last_bday (datetime.date)
+        last_bday_str (string)
     """
     
     bday_us = CustomBusinessDay(calendar=USFederalHolidayCalendar())
@@ -192,7 +203,15 @@ def generate_last_business_day():
 
 def user_prompts(last_bday, last_bday_str):
     """
-    User prompts for date entry
+    Prompts the user to enter the specified date.
+
+    Parameters:
+        last_bday (datetime.date)
+        last_bday_str (string)
+
+    Returns:
+        date_report (string)
+        dt_report (datetime)
     """
 
     str_prompt1 = "\nWould you like to report on samples from %s? (y / n): "  %last_bday_str
@@ -215,10 +234,16 @@ def user_prompts(last_bday, last_bday_str):
 
 def generate_daily_jem_df(df, date):
     """
-    Generate a jem metadata dataframe
-    
-    date: dt_report (datetime?)
+    Generates a jem metadata dataframe based on the specified date.
+
+    Parameters:
+        df (dataframe): a pandas dataframe.
+        date (datetime): 
+
+    Returns:
+        df (dataframe): a pandas dataframe.
     """
+
 
     # Lists
     jem_fields = ["jem-date_patch", "jem-date_blank", "jem-id_rig_user", "jem-id_cell_specimen",
@@ -237,7 +262,13 @@ def generate_daily_jem_df(df, date):
 
 def generate_lims_df(date):
     """
-    Generate a lims dataframe
+    Generates a lims dataframe based on the specified date.
+
+    Parameters:
+        date:
+
+    Returns:
+        lims_df (dataframe): a pandas dataframe.
     """
 
     # Lists
@@ -272,7 +303,13 @@ def generate_lims_df(date):
   
 def generate_test_df(df):
     """
-    Generate a test dataframe
+    Generates a test dataframe based on the specified date.
+
+    Parameters:
+        df (dataframe): a pandas dataframe.
+
+    Returns:
+        df (dataframe): a pandas dataframe.
     """
     
     test_df = df[["test-jem_lims", "jem-id_cell_specimen", "jem-id_patched_cell_container", "name", "patched_cell_container"]].copy()
@@ -284,7 +321,13 @@ def generate_test_df(df):
 
 def check_project_retrograde():
     """
-    Docstring
+    Tests for checking retrograde projects are selected for only postive reporter cells.
+
+    Parameters:
+        None
+
+    Returns:
+        df (dataframe): a pandas dataframe.
     """
     
     if ("jem-project_name" & "jem-status_reporter") in df.columns:
@@ -297,7 +340,15 @@ def check_project_retrograde():
 
 def terminal_message(saved_location, report_location, df):
     """
-    Message in terminal
+    Generates a message in the anaconda command prompt terminal for the user.
+
+    Parameters:
+        saved_location: a location of the IVSCC directory with the copies of generated daily transcriptomics reports.
+        report_location: a location of the directory to submit the generated daily transcriptomics report.
+        df (dataframe): a pandas dataframe.
+
+    Returns:
+        print statement (string)
     """
     
     print()

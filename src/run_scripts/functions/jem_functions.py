@@ -10,15 +10,16 @@ Description: JEM related functions
 """
 
 
-# Imports
+#-----Imports-----#
+# General imports
 import json
-import pandas as pd
-import os
 import numpy as np
-
+import os
+import pandas as pd
 from datetime import datetime, date, timedelta
-from functions.jem_data_set import JemDataSet
+# File imports
 from functions.file_functions import get_jsons
+from functions.jem_data_set import JemDataSet
 
 
 # Read json data from file to import jem_dictionary
@@ -28,9 +29,8 @@ with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/cons
 
 def generate_jem_df():
 	"""
-	Generates a jem metadata dataframe with the previous 30 days
-	of information. Specifically, used for daily and weekly
-	transcriptomics reports.
+	Generates a jem metadata dataframe with the previous 30 days of information.
+	Specifically, used for daily and weekly transcriptomics reports.
 
 	Parameters:
 		None
@@ -39,57 +39,57 @@ def generate_jem_df():
 		jem_df (dataframe): a pandas dataframe.
 	"""
 
-    # Date of today
-    dt_today = datetime.today()
-    date_today = dt_today.date()
-    day_today = date_today.strftime("%y%m%d") # "YYMMDD"
-    # Date of the previous 30 days from date of today
-    date_prev_30d = date_today - timedelta(days=30)
-    day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
+	# Date of today
+	dt_today = datetime.today()
+	date_today = dt_today.date()
+	day_today = date_today.strftime("%y%m%d") # "YYMMDD"
+	# Date of the previous 30 days from date of today
+	date_prev_30d = date_today - timedelta(days=30)
+	day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
 
-    # Directories
-    json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
-    
-    delta_mod_date = (date_today - date_prev_30d).days + 3
-    jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
-    # Flatten JSON files (previous 30 day information) to pandas dataframe 9jem_df)
-    jem_df = flatten_jem_data(jem_paths, day_prev_30d, day_today)
-    
-    # Rename columns based on jem_dictionary
-    jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
-    # Filter dataframe to only IVSCC Group 2017-Current
-    jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
-    jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
+	# Directories
+	json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
 
-    # Fix jem versions
-    jem_df = fix_jem_versions(jem_df)
-    # Fix jem blank date
-    jem_df = fix_jem_blank_date(jem_df)
-    # Clean and add date_fields
-    jem_df = clean_date_field(jem_df)
-    # Clean time and add duration fields
-    jem_df = clean_time_field(jem_df)
-    # Clean numerical fields
-    jem_df = clean_num_field(jem_df)
-    # Clean and add roi fields
-    jem_df = clean_roi_field(jem_df)
-    # Clean up project_level_nucleus
-    jem_df["jem-project_level_nucleus"] = jem_df.apply(get_project_channel, axis=1)
-    # Replace value in fields
-    jem_df = replace_value(jem_df)
-    # Add patch tube field
-    jem_df = add_jem_patch_tube_field(jem_df)
-    # Add species field
-    jem_df = add_jem_species_field(jem_df)
-    # Add post patch status field
-    jem_df = add_jem_post_patch_status_field(jem_df)
+	delta_mod_date = (date_today - date_prev_30d).days + 3
+	jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
+	# Flatten JSON files (previous 30 day information) to pandas dataframe 9jem_df)
+	jem_df = flatten_jem_data(jem_paths, day_prev_30d, day_today)
 
-    # Filter to only successful experiments
-    jem_df = jem_df[(jem_df["jem-status_success_failure"] == "SUCCESS")]
-    # Filters dataframe to only patched cell containers
-    jem_df = jem_df[(jem_df["jem-status_patch_tube"] == "Patch Tube")]
+	# Rename columns based on jem_dictionary
+	jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
+	# Filter dataframe to only IVSCC Group 2017-Current
+	jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
+	jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
 
-    return jem_df
+	# Fix jem versions
+	jem_df = fix_jem_versions(jem_df)
+	# Fix jem blank date
+	jem_df = fix_jem_blank_date(jem_df)
+	# Clean and add date_fields
+	jem_df = clean_date_field(jem_df)
+	# Clean time and add duration fields
+	jem_df = clean_time_field(jem_df)
+	# Clean numerical fields
+	jem_df = clean_num_field(jem_df)
+	# Clean and add roi fields
+	jem_df = clean_roi_field(jem_df)
+	# Clean up project_level_nucleus
+	jem_df["jem-project_level_nucleus"] = jem_df.apply(get_project_channel, axis=1)
+	# Replace value in fields
+	jem_df = replace_value(jem_df)
+	# Add patch tube field
+	jem_df = add_jem_patch_tube_field(jem_df)
+	# Add species field
+	jem_df = add_jem_species_field(jem_df)
+	# Add post patch status field
+	jem_df = add_jem_post_patch_status_field(jem_df)
+
+	# Filter to only successful experiments
+	jem_df = jem_df[(jem_df["jem-status_success_failure"] == "SUCCESS")]
+	# Filters dataframe to only patched cell containers
+	jem_df = jem_df[(jem_df["jem-status_patch_tube"] == "Patch Tube")]
+
+	return jem_df
 
 
 #-----Clean-up JEM fields-----#
@@ -265,7 +265,7 @@ def get_project_channel(row):
 
 def replace_value(df):
 	"""
-	Replace values of fields in JEM metadata.
+	Replaces the values of fields in JEM metadata.
 
 	Parameters: 
 		df (dataframe): a pandas dataframe.
@@ -302,7 +302,7 @@ def replace_value(df):
 #-----Add new JEM fields-----#
 def add_jem_patch_tube_field(df):
 	"""
-	Add a patch tube field in JEM metadata.
+	Adds a patch tube field in JEM metadata.
 
 	Parameters: 
 		df (dataframe): a pandas dataframe.
@@ -319,7 +319,7 @@ def add_jem_patch_tube_field(df):
 
 def add_jem_species_field(df):
 	"""
-	Add a species field in JEM metadata.
+	Adds a species field in JEM metadata.
 
 	Parameters: 
 		df (dataframe): a pandas dataframe.
@@ -338,7 +338,7 @@ def add_jem_species_field(df):
 
 def add_jem_post_patch_status_field(df):
 	"""
-	Add a post patch status field in JEM metadata.
+	Adds a post patch status field in JEM metadata.
 
 	Parameters: 
 		df (dataframe): a pandas dataframe.
@@ -358,7 +358,7 @@ def add_jem_post_patch_status_field(df):
 #-----Fix JEM version issues-----#
 def fix_jem_versions(df):
 	"""
-	Fix jem versions in JEM metadata.
+	Fixes jem versions in JEM metadata.
 
 	Parameters: 
 		df (dataframe): a pandas dataframe.
@@ -419,22 +419,22 @@ def flatten_jem_data(jem_paths, start_day_str, end_day_str):
 		end_day_str : string
 
 	Returns:
-		jem_df : a pandas dataframe.
+		jem_df (dataframe): a pandas dataframe.
 	"""
-    start_day = datetime.strptime(start_day_str, "%y%m%d").date()
-    end_day = datetime.strptime(end_day_str, "%y%m%d").date()
+	start_day = datetime.strptime(start_day_str, "%y%m%d").date()
+	end_day = datetime.strptime(end_day_str, "%y%m%d").date()
 
-    jem_df = pd.DataFrame()
-    for jem_path in jem_paths:
-        jem = JemDataSet(jem_path)
-        expt_date = jem.get_experiment_date()
-        if (expt_date >= start_day.strftime("%Y-%m-%d")) and (expt_date <= end_day.strftime("%Y-%m-%d")):
-            slice_data = jem.get_data()
-            jem_df = pd.concat([jem_df, slice_data], axis=0, sort=True)
-    jem_df.reset_index(drop=True, inplace=True)
+	jem_df = pd.DataFrame()
+	for jem_path in jem_paths:
+	    jem = JemDataSet(jem_path)
+	    expt_date = jem.get_experiment_date()
+	    if (expt_date >= start_day.strftime("%Y-%m-%d")) and (expt_date <= end_day.strftime("%Y-%m-%d")):
+	        slice_data = jem.get_data()
+	        jem_df = pd.concat([jem_df, slice_data], axis=0, sort=True)
+	jem_df.reset_index(drop=True, inplace=True)
 
-    if len(jem_df) == 0:
-        print("No JEM data found for experiments between %s and %s" %(start_day_str, end_day_str))
-        #jem_df = pd.DataFrame(columns=output_cols)
+	if len(jem_df) == 0:
+	    print("No JEM data found for experiments between %s and %s" %(start_day_str, end_day_str))
+	    #jem_df = pd.DataFrame(columns=output_cols)
 
-    return jem_df
+	return jem_df

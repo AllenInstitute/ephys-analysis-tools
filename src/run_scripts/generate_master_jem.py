@@ -11,21 +11,31 @@ Description: Template for generating master_jem.csv and master_jem.xlsx
 
 
 #-----Imports-----#
+# General imports
 import json
-import pandas as pd
-import os
 import numpy as np
+import os
+import pandas as pd
 # File imports
 from functions.jem_functions import clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
-replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, get_project_channel
+replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, get_project_channel, \
+fix_jem_versions, fix_jem_blank_date
 from functions.lims_functions import get_lims
 # Test imports
-import time # To measure program execution time
+#import time # To measure program execution time
 
 
+#-----Functions-----#
 def main():
 	"""
-	Docstring
+	Main function to create master_jem.csv and master_jem.xlsx
+
+	Parameters:
+		None
+
+	Returns:
+		master_jem.csv (csv file)
+		master_jem.xlsx (excel file)
 	"""
 
 	# Read json data from file to import dictionaries/list
@@ -86,7 +96,13 @@ def main():
 
 def generate_master_jem_df():
 	"""
-	Docstring
+	Generates a formatted version of JEM metadata by using csv files from compiled-jem-data. 
+
+	Parameters:
+		None
+
+	Returns:
+		master_jem_df (dataframe): a pandas dataframe.
 	"""
 
 	# Directories
@@ -114,46 +130,8 @@ def generate_master_jem_df():
 	return master_jem_df
 
 
-def fix_jem_versions(df):
-	"""
-	Docstring
-	"""
-
-	#Fix depth/time fields and combining into one field
-	df_v109 = df[df["formVersion"] == "1.0.9"]
-	df_vother = df[df["formVersion"] != "1.0.9"]
-	# Drop necessary fields for concatenating dataframes
-	df_v109.drop(columns=["jem-depth", "jem-time_exp_retraction_end"], inplace=True)
-	df_vother.drop(columns=["jem-depth_old", "jem-time_exp_retraction_end_old"], inplace=True)
-	# Rename necessary fields for concatenating dataframes
-	df_v109.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_retraction_end_old": "jem-time_exp_retraction_end"}, inplace=True)
-	# Concatenate dataframes
-	df = pd.concat([df_v109, df_vother], sort=True)
-
-	return df
-
-
-def fix_jem_blank_date(df):
-	"""
-	Docstring
-	"""
-
-	#Fix depth/time fields and combining into one field
-	df_v211 = df[df["formVersion"] == "2.1.1"]
-	df_vother = df[df["formVersion"] != "2.1.1"]
-	# Drop necessary fields for concatenating dataframes
-	df_v211.drop(columns=["jem-date_blank_old"], inplace=True)
-	df_vother.drop(columns=["jem-date_blank"], inplace=True)
-	# Rename necessary fields for concatenating dataframes
-	df_vother.rename(columns={"jem-date_blank_old": "jem-date_blank"}, inplace=True)
-	# Concatenate dataframes
-	df = pd.concat([df_v211, df_vother], sort=True)
-
-	return df
-
-
 # Main
 if __name__ == '__main__':
-    start = time.time()
+    #start = time.time()
     main()
-    print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
+    #print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")

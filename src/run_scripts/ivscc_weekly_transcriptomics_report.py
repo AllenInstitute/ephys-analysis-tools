@@ -11,14 +11,14 @@ Description: Generate weekly transcriptomics report (excel document)
 
 
 #-----Imports-----#
-import csv
 import os
-import sys
 import pandas as pd
+import sys
 from datetime import datetime, date, timedelta
 # File imports
-from functions.jem_functions import generate_jem_df
 from functions.io_functions import validated_input, validated_date_input
+from functions.jem_functions import generate_jem_df
+# Test imports
 #import time # To measure program execution time
 
 
@@ -27,6 +27,8 @@ name_report = "ps_metadata_report.xlsx"
 
 # Directories
 dir_temporary_report =  "//allen/programs/celltypes/workgroups/279/Patch-Seq/transcriptomics_reports/weekly_transcriptomics_reports/temporary"
+dir_saved_report = PureWindowsPath(Path("//allen/programs/celltypes/workgroups/279/Patch-Seq/transcriptomics_reports/weekly_transcriptomics_reports/temporary"))
+dir_submit_report = PureWindowsPath(Path("//aibsfileprint/public/MolBio/RNASeq-SingleCell/PatchSeq/Ephys_daily_reports"))
 
 # Excel document details 
 norm_d = {"font_name":"Calibri", "font_size":11, "align":"left", "bold": False, "num_format":"0.0"}
@@ -37,8 +39,12 @@ head_d = norm_d.copy()
 def generate_weekly_report():
     """
     Generates the weekly transcriptomics report.
-    
-    Output: An csv with a weekly transcriptomics report based on user specified start and end date.
+
+    Parameters:
+        None
+
+    Returns:
+        An excel file with a weekly transcriptomics report based on a user specified date range.
     """
 
     # Generate date variables
@@ -58,7 +64,7 @@ def generate_weekly_report():
             # Save dataframe as an excel sheet
             save_xlsx_weekly_report(jem_df, dir_temporary_report, date_name_report, norm_d, head_d)
             # Message in the terminal
-            terminal_message(day_prev_monday, day_curr_sunday)
+            terminal_message(day_prev_monday, day_curr_sunday, dir_saved_report, dir_submit_report, jem_df)
         except IOError:
             print("\nUnable to save the excel sheet. \nMake sure you don't already have a file with the same name opened.")
     else:
@@ -66,21 +72,41 @@ def generate_weekly_report():
 
 
 def generate_dates():
+    """
+    Generates the dates of the previous Monday and current Sunday of the week.
+
+    Parameters:
+        None
+
+    Returns:
+        day_prev_monday (string): a date of the previous Monday in the format of YYMMDD. 
+        day_curr_sunday (string): a date of the current Sunday in the format of YYMMDD.
+    """
     
     #-----Dates-----#
     dt_today = datetime.today() # datetime.datetime
     num_weekdays = dt_today.weekday()
     dt_prev_monday = dt_today - timedelta(days=num_weekdays, weeks=1) # datetime.datetime
     dt_curr_sunday = dt_prev_monday + timedelta(days = 6) # datetime.datetime
-    day_prev_monday = dt_prev_monday.strftime("%y%m%d") # "YYMMDD"
-    day_curr_sunday = dt_curr_sunday.strftime("%y%m%d") # "YYMMDD"
+    day_prev_monday = dt_prev_monday.strftime("%y%m%d")
+    day_curr_sunday = dt_curr_sunday.strftime("%y%m%d")
     
     return day_prev_monday, day_curr_sunday
 
 
 def user_prompts(day_prev_monday, day_curr_sunday):
     """
-    User prompts for date entry
+    Prompts the user to enter the specified date range.
+
+    Parameters:
+        day_prev_monday (string): a date of the previous Monday in the format of YYMMDD. 
+        day_curr_sunday (string): a date of the current Sunday in the format of YYMMDD.
+
+    Returns:
+        dt_start (datetime): a datetime of the start date.
+        dt_end (datetime): a datetime of the end date.
+        day_prev_monday (string): a date of the previous Monday in the format of YYMMDD. 
+        day_curr_sunday (string): a date of the current Sunday in the format of YYMMDD.
     """
 
     # User prompts
@@ -96,21 +122,26 @@ def user_prompts(day_prev_monday, day_curr_sunday):
     if default_dates_state == "n":
         day_prev_monday = validated_date_input(str_prompt2, response2, valid_options=None)
         day_curr_sunday = validated_date_input(str_prompt3, response2, valid_options=None)
-        dt_start = datetime.strptime(day_prev_monday, "%y%m%d") # datetime.datetime
-        dt_end = datetime.strptime(day_curr_sunday, "%y%m%d") # datetime.datetime
+        dt_start = datetime.strptime(day_prev_monday, "%y%m%d")
+        dt_end = datetime.strptime(day_curr_sunday, "%y%m%d")
     else:
-        dt_start = datetime.strptime(day_prev_monday, "%y%m%d") # datetime.datetime
-        dt_end = datetime.strptime(day_curr_sunday, "%y%m%d") # datetime.datetime
+        dt_start = datetime.strptime(day_prev_monday, "%y%m%d")
+        dt_end = datetime.strptime(day_curr_sunday, "%y%m%d")
 
     return dt_start, dt_end, day_prev_monday, day_curr_sunday
 
 
 def generate_weekly_jem_df(df, dt_start, dt_end):
     """
-    Generate a jem metadata dataframe
-    
-    start_day:
-    end_day:
+    Generates a jem metadata dataframe based on the specified date range.
+
+    Parameters:
+        df (dataframe): a pandas dataframe.
+        dt_start (datetime): a datetime of the start date.
+        dt_end (datetime): a datetime of the end date.
+
+    Returns:
+        df (dataframe): a pandas dataframe.
     """
     
     output_dict = {"jem-id_patched_cell_container":"tubeID","jem-date_patch": "date", "jem-id_rig_user": "rigOperator", "jem-id_rig_number": "rigNumber", "jem-date_blank": "blankFillDate", "jem-date_internal": "internalFillDate",
@@ -138,18 +169,17 @@ def generate_weekly_jem_df(df, dt_start, dt_end):
 
 
 def save_xlsx_weekly_report(df, dirname, spreadname, norm_d, head_d):
-    """Save an excel spreadsheet from dataframe
+    """
+    Save an excel spreadsheet from dataframe.
     
-    Parameters
-    ----------
-    df : pandas dataframe
-    dirname : string
-    spreadname : string
-    norm_d, head_d: dictionaries
+    Parameters:
+        df : pandas dataframe
+        dirname : string
+        spreadname : string
+        norm_d, head_d: dictionaries
     
-    Returns
-    -------
-    Saved .xlsx file with name spreadname in directory dirname.
+    Returns:
+        Saved .xlsx file with name spreadname in directory dirname.
     """
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.
@@ -179,12 +209,29 @@ def save_xlsx_weekly_report(df, dirname, spreadname, norm_d, head_d):
         print("\nOh no! Unable to save spreadsheet :(\nMake sure you don't already have a file with the same name opened.")
 
 
-def terminal_message(day_prev_monday, day_curr_sunday):
+def terminal_message(day_prev_monday, day_curr_sunday, saved_location, report_location, df):
     """
-    Message in terminal
+    Generates a message in the anaconda command prompt terminal for the user.
+
+    Parameters:
+        day_prev_monday (string): a date of the previous Monday in the format of YYMMDD. 
+        day_curr_sunday (string): a date of the current Sunday in the format of YYMMDD.
+        saved_location: a location of the IVSCC directory with the copies of generated weekly transcriptomics reports.
+        report_location: a location of the directory to submit the generated weekly transcriptomics report.
+        df (dataframe): a pandas dataframe.
+
+    Returns:
+        print statement (string)
     """
-    
+
+    print()
     print(f"Generated report for {day_prev_monday}-{day_curr_sunday}.")
+    print()
+    print(f"Saved report location: {saved_location}")
+    print(f"Submit report location: {report_location}")
+    print(f"Total Patch Tubes: {len(df)}")
+    print()
+    print("If all present information is correct, please create a copy from the saved report location and submit the report in the submit report location.")
 
 
 if __name__ == "__main__":
