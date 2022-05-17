@@ -27,7 +27,7 @@ with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/cons
     data_variables = json.load(json_file)
 
 
-def generate_jem_df():
+def generate_jem_df(filter_tubes=None):
 	"""
 	Generates a jem metadata dataframe with the previous 30 days of information.
 	Specifically, used for daily and weekly transcriptomics reports.
@@ -87,7 +87,8 @@ def generate_jem_df():
 	# Filter to only successful experiments
 	jem_df = jem_df[(jem_df["jem-status_success_failure"] == "SUCCESS")]
 	# Filters dataframe to only patched cell containers
-	jem_df = jem_df[(jem_df["jem-status_patch_tube"] == "Patch Tube")]
+	if filter_tubes == "only_patch_tubes":
+		jem_df = jem_df[(jem_df["jem-status_patch_tube"] == "Patch Tube")]
 
 	return jem_df
 
@@ -368,8 +369,8 @@ def fix_jem_versions(df):
 	"""
 
 	#Fix depth/time fields and combining into one field
-	df_v109 = df[df["formVersion"] == "1.0.9"]
-	df_vother = df[df["formVersion"] != "1.0.9"]
+	df_v109 = df[df["jem-version_jem_form"] == "1.0.9"]
+	df_vother = df[df["jem-version_jem_form"] != "1.0.9"]
 	# Drop necessary fields for concatenating dataframes
 	if "jem-depth_old" in df.columns:
 		df_v109.drop(columns=["jem-depth", "jem-time_exp_retraction_end"], inplace=True)
@@ -393,17 +394,18 @@ def fix_jem_blank_date(df):
 		df (dataframe): a pandas dataframe.
 	"""
 
-	#Fix depth/time fields and combining into one field
-	df_v211 = df[df["formVersion"] == "2.1.1"]
-	df_vother = df[df["formVersion"] != "2.1.1"]
+	form_version_blank_old_list = ["1.0.9", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.1.0"]
+	# Creates dataframes 
+	df_blank_cur = df[~df["jem-version_jem_form"].isin(form_version_blank_old_list)]
+	df_blank_old = df[df["jem-version_jem_form"].isin(form_version_blank_old_list)]
 	# Drop necessary fields for concatenating dataframes
 	if "jem-date_blank_old" in df.columns:
-		df_v211.drop(columns=["jem-date_blank_old"], inplace=True)
-		df_vother.drop(columns=["jem-date_blank"], inplace=True)
+		df_blank_cur.drop(columns=["jem-date_blank_old"], inplace=True)
+		df_blank_old.drop(columns=["jem-date_blank"], inplace=True)
 	# Rename necessary fields for concatenating dataframes
-	df_vother.rename(columns={"jem-date_blank_old": "jem-date_blank"}, inplace=True)
+	df_blank_old.rename(columns={"jem-date_blank_old": "jem-date_blank"}, inplace=True)
 	# Concatenate dataframes
-	df = pd.concat([df_v211, df_vother], sort=True)
+	df = pd.concat([df_blank_cur, df_blank_old], sort=True)
 
 	return df
 

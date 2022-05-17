@@ -1,9 +1,9 @@
 {
 "jem_dictionary":
     {
+        "formVersion": "jem-version_jem_form",
         "date": "jem-date_patch",
         "acsfProductionDate": "jem-date_acsf",
-        "blankFillDate": "jem-date_blank_old",
         "extraction.blankFillDate": "jem-date_blank",
         "internalFillDate": "jem-date_internal",
         "approach.sliceHealth": "jem-health_slice",
@@ -49,7 +49,8 @@
         "extraction.timeRetractionEnd": "jem-time_exp_retraction_end",
         "extraction.timeChannelRecordingEnd": "jem-time_exp_channel_end",
         "approach.depth": "jem-depth_old",
-        "extraction.timeEnd": "jem-time_exp_retraction_end_old"
+        "extraction.timeEnd": "jem-time_exp_retraction_end_old",
+        "blankFillDate": "jem-date_blank_old"
     },
 "lims_dictionary":
 {
@@ -59,7 +60,8 @@
     "patched_cell_container": "lims-id_patched_cell_container",
     "id_cell_specimen_id": "lims-id_cell_specimen_id",
     "id_slice_genotype": "lims-id_slice_genotype",
-    "cell_depth": "lims-depth"
+    "cell_depth": "lims-depth",
+    "id_project_code": "lims-id_project_code"
 },
 "roi_dictionary_regex_false":
 {
@@ -254,6 +256,7 @@
         "jem-notes_extraction",
         "jem-notes_failure",
         "lims-id_species",
+        "lims-id_project_code",
         "lims-id_slice_specimen",
         "lims-id_cell_specimen",
         "lims-id_patched_cell_container",
@@ -276,7 +279,7 @@
         "extraction.tubeID",
         "failureCause",
         "flipped",
-        "formVersion",
+        "jem-version_jem_form",
         "internalSolution.concentrationBiocytin",
         "internalSolution.concentrationRnaseInhibitor",
         "internalSolution.version",

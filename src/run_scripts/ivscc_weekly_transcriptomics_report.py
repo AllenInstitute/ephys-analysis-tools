@@ -15,6 +15,7 @@ import os
 import pandas as pd
 import sys
 from datetime import datetime, date, timedelta
+from pathlib import Path, PureWindowsPath
 # File imports
 from functions.io_functions import validated_input, validated_date_input
 from functions.jem_functions import generate_jem_df
@@ -55,7 +56,7 @@ def generate_weekly_report():
     date_name_report = "%s-%s_%s.xlsx" %(day_prev_monday, day_curr_sunday, name_report[0:-5]) 
 
     # Generate jem_df
-    jem_df = generate_jem_df()
+    jem_df = generate_jem_df("only_patch_tubes")
     # Generate jem_df in weekly transcriptomics report format
     jem_df = generate_weekly_jem_df(jem_df, dt_start, dt_end)
 

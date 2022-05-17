@@ -79,7 +79,7 @@ def generate_daily_report():
     date_name_report = "%s_%s.xlsx" %(date_report, name_report)
 
     # Generate jem_df
-    jem_df = generate_jem_df()
+    jem_df = generate_jem_df("only_patch_tubes")
     # Generate jem_df in daily transcriptomics report format
     jem_df = generate_daily_jem_df(jem_df, dt_report)
 
@@ -312,7 +312,9 @@ def generate_test_df(df):
         df (dataframe): a pandas dataframe.
     """
     
-    test_df = df[["test-jem_lims", "jem-id_cell_specimen", "jem-id_patched_cell_container", "name", "patched_cell_container"]].copy()
+    test_fields = ["test-jem_lims", "jem-id_cell_specimen", "jem-id_patched_cell_container", "name", "patched_cell_container"]
+
+    test_df = df[test_fields].copy()
     test_df.rename(columns=dictionary_test, inplace=True)
     test_df.sort_values(by="LIMS Patch Tube Name", inplace=True)
     
