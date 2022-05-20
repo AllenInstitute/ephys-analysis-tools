@@ -39,6 +39,7 @@
         "virus_enhancer": "jem-virus_enhancer",
         "extraction.project_level_nucleus": "jem-project_level_nucleus",
         "approach.pilotName": "jem-project_name",
+        "approach.project_icv_injection_fluorescent_roi": "jem-project_icv_injection_fluorescent_roi",
         "approach.project_retrograde_labeling_hemisphere": "jem-project_retrograde_labeling_hemisphere",
         "approach.project_retrograde_labeling_region": "jem-project_retrograde_labeling_region",
         "approach.project_retrograde_labeling_exp": "jem-project_retrograde_labeling_exp",
@@ -125,6 +126,27 @@
     "Visp": "VISp_L",
     "VISp": "VISp_L"
 },
+"project_dictionary":
+{
+    "mouse_nhp": "102-01-045-10",
+    "human_u01": "102-01-020-20",
+    "psilocybin": "102-04-006-20",
+    "dravet": "102-04-009-10"
+},
+"daily_tx_report_dictionary":
+{
+    "jem-id_patched_cell_container": "Patch Tube Name",
+    "jem-date_blank": "Blank Fill Date",
+    "jem-date_patch": "Patch Date",
+    "lims-id_species": "Species",
+    "lims-id_cell_specimen_id": "Specimen ID",
+    "lims-id_slice_genotype": "Cell Line",
+    "jem-roi_major": "ROI Major",
+    "jem-roi_minor": "ROI Minor",
+    "jem-nucleus_post_patch": "Comments",
+    "project_code": "Project",
+    "jem-id_cell_specimen": "Cell Specimen ID"
+},
 "cortical_list":
     [    
         "CBX",
@@ -187,6 +209,19 @@
         "7",
         "8"
     ],
+"hct_rig_users_list": 
+    [
+        "briank",
+        "cristinar",
+        "jonathant", 
+        "lindsayn"
+    ],
+"hct_rig_numbers_list":
+    [
+        "HCT1",
+        "HCT2",
+        "HCT3"
+    ],
 "columns_time_list":
     [
         "jem-time_exp_approach_start",
@@ -198,6 +233,7 @@
     ],
 "column_order_list":
     [
+        "jem-version_jem_form",
         "jem-date_patch",
         "jem-time_patch",
         "jem-date_patch_y-m-d",
@@ -248,6 +284,7 @@
         "jem-virus_enhancer",
         "jem-project_level_nucleus",
         "jem-project_name",
+        "jem-project_icv_injection_fluorescent_roi",
         "jem-project_retrograde_labeling_hemisphere",
         "jem-project_retrograde_labeling_region",
         "jem-project_retrograde_labeling_exp",
@@ -279,7 +316,6 @@
         "extraction.tubeID",
         "failureCause",
         "flipped",
-        "jem-version_jem_form",
         "internalSolution.concentrationBiocytin",
         "internalSolution.concentrationRnaseInhibitor",
         "internalSolution.version",

@@ -18,17 +18,10 @@ import os
 import pandas as pd
 from datetime import datetime, date, timedelta
 # File imports
-from functions.jem_functions import generate_jem_df, flatten_jem_data, \
-fix_jem_versions, fix_jem_blank_date, \
-clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
-replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, \
-get_project_channel
+from functions.jem_functions import generate_jem_df
 from functions.lims_functions import get_lims
-
-from functions.file_functions import get_jsons
-from functions.jem_data_set import JemDataSet
 # Test imports
-#import time # To measure program execution time
+import time # To measure program execution time
 
 
 #-----Functions-----#
@@ -49,7 +42,8 @@ def main():
 					 "jem-id_patched_cell_container", "lims-id_patched_cell_container",
 					 "jem-nucleus_post_patch",
 					 "jem-status_reporter", "jem-roi_major_minor", "jem-roi_major", "jem-roi_minor",
-					 "jem-virus_enhancer", "jem-project_name",
+					 "jem-virus_enhancer",
+					 "jem-project_name", # "jem-project_icv_injection_fluorescent_roi",
 					 "jem-project_retrograde_labeling_hemisphere", "jem-project_retrograde_labeling_region", "jem-project_retrograde_labeling_exp"]
 
 
@@ -66,7 +60,7 @@ def main():
 	# Generate jem_df
 	jem_df = generate_jem_df()
 	# Generate jem_df in daily transcriptomics report format
-	jem_df = generate_daily(jem_df, dt_today) # datetime(2022, 5, 12)
+	jem_df = generate_daily(jem_df, dt_today) # datetime(2022, 5, 17) #  dt_today)
 
 	# Add lims_df
 	lims_df = get_lims()
@@ -123,6 +117,6 @@ def generate_daily(df, date):
 
 # Main
 if __name__ == "__main__":
-	#start = time.time()
+	start = time.time()
 	main()
-	#print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
+	print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
