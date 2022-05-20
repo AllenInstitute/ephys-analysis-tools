@@ -10,7 +10,13 @@ Description: LIMS related functions
 """
 
 
+import json
 import pandas as pd
+
+
+# Read json data from file to import dictionaries/list
+with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/constants/data_variables.json") as json_file:
+    data_variables = json.load(json_file)
 
 
 def _connect(user="limsreader", host="limsdb2", database="lims2", password="limsro", port=5432):
@@ -104,32 +110,58 @@ def get_lims():
     return df
 
 
-def generate_lims_df(date):
-	"""Generate a lims dataframe"""
+def generate_lims_df(group, date):
+    """
+    Generates a lims dataframe based on the specified date.
 
-	# Lists
-	hct_jt = [str(x) for x in range(101, 151, 1)] # Jonathan(101-150)
-	hct_cr = [str(x) for x in range(225, 251, 1)] # Cristina(225-250)
-	hct_bk_mk = [str(x) for x in range(301, 351, 1)] # Brian K(301-350), Meanhwan(325-350)
-	hct_ln = [str(x) for x in range(351, 401, 1)] # Lindsay(351-400)
-	hct_user_tube_num_list = hct_jt + hct_cr + hct_bk_mk + hct_ln
+    Parameters:
+        group (string): "ivscc" to exclude the hct list or "hct" to only include the hct list.
+        date (string): a date in the format of YYMMDD.
 
-	lims_df = get_lims()
-	# Filters dataframe to user specified date
-	lims_df = lims_df[lims_df["patched_cell_container"].str.contains(date)]
-	# Only run if patched cell containers were collected
-	if len(lims_df) > 0:
-		# Exclude Collaborator containers
-		lims_df = lims_df[(~lims_df["patched_cell_container"].str.startswith("PGS4")) & (~lims_df["patched_cell_container"].str.startswith("PHS4"))]
-		# Exclude HCT containers (Ex. column output: 301)
-		lims_df["exclude_container"] = lims_df["patched_cell_container"].str.slice(-7, -4)
-		lims_df = lims_df[~lims_df["exclude_container"].str.contains("|".join(hct_user_tube_num_list))]
-		# Replace values
-		lims_df["id_species"].replace({"Homo Sapiens":"Human", "Mus musculus":"Mouse"}, inplace=True)
-		lims_df["id_slice_genotype"].replace({None:""}, inplace=True)
-		# Apply specimen id
-		lims_df["id_cell_specimen_id"] = lims_df.apply(get_specimen_id, axis=1)
-		# Sort by patched_cell_container in ascending order
-		lims_df.sort_values(by="patched_cell_container", inplace=True)
-	return lims_df
+    Returns:
+        lims_df (dataframe): a pandas dataframe.
+    """
 
+    # Lists
+    hct_jt = [str(x) for x in range(101, 151, 1)] # Jonathan(101-150)
+    hct_cr = [str(x) for x in range(225, 251, 1)] # Cristina(225-250)
+    hct_bk_mk = [str(x) for x in range(301, 351, 1)] # Brian K(301-350), Meanhwan(325-350)
+    hct_ln = [str(x) for x in range(351, 401, 1)] # Lindsay(351-400)
+    hct_user_tube_num_list = hct_jt + hct_cr + hct_bk_mk + hct_ln
+
+    lims_df = get_lims()
+    # Rename columns based on jem_dictionary
+    lims_df.rename(columns=data_variables["lims_dictionary"], inplace=True)
+    # Filters dataframe to user specified date
+    lims_df = lims_df[lims_df["lims-id_patched_cell_container"].str.contains(date)]
+    # Only run if patched cell containers were collected
+    if len(lims_df) > 0:
+        # Exclude Collaborator containers
+        lims_df = lims_df[(~lims_df["lims-id_patched_cell_container"].str.startswith("PGS4")) & (~lims_df["lims-id_patched_cell_container"].str.startswith("PHS4"))]
+        if group == "ivscc":
+            # Exclude HCT containers (Ex. column output: 301)
+            lims_df["lims-exclude_container"] = lims_df["lims-id_patched_cell_container"].str.slice(-7, -4)
+            lims_df = lims_df[~lims_df["lims-exclude_container"].str.contains("|".join(hct_user_tube_num_list))]
+        if group == "hct":
+            # Include only HCT containers (Ex. column output: 301)
+            lims_df["lims-include_container"] = lims_df["lims-id_patched_cell_container"].str.slice(-7, -4)
+            lims_df = lims_df[lims_df["lims-include_container"].str.contains("|".join(hct_user_tube_num_list))]
+        # Replace values
+        lims_df["lims-id_species"].replace({"Homo Sapiens": "Human", "Mus musculus": "Mouse"}, inplace=True)
+        lims_df["lims-id_slice_genotype"].replace({None: ""}, inplace=True)
+        # Apply specimen id
+        lims_df["lims-id_cell_specimen_id"] = lims_df.apply(get_specimen_id, axis=1)
+        # Sort by patched_cell_container in ascending order
+        lims_df.sort_values(by="lims-id_patched_cell_container", inplace=True)
+
+    return lims_df
+
+
+def get_specimen_id(row):
+    species = row["lims-id_species"]
+    specimen_id = row["lims-id_cell_specimen_id"]
+    donor_name = row["lims-id_slice_specimen"]
+    if species == "Mouse":
+        return specimen_id
+    else:
+        return donor_name

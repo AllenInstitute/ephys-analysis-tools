@@ -27,13 +27,14 @@ with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/cons
     data_variables = json.load(json_file)
 
 
-def generate_jem_df(filter_tubes=None):
+def generate_jem_df(group, filter_tubes=None):
 	"""
 	Generates a jem metadata dataframe with the previous 30 days of information.
 	Specifically, used for daily and weekly transcriptomics reports.
 
 	Parameters:
-		None
+		group (string): "ivscc" or "hct".
+		filter_tubes (string): None (default) or "only_patch_tubes" to filter dataframe to only patched cell containers.
 
 	Returns:
 		jem_df (dataframe): a pandas dataframe.
@@ -48,7 +49,10 @@ def generate_jem_df(filter_tubes=None):
 	day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
 
 	# Directories
-	json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
+	if group == "ivscc":
+		json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
+	if group == "hct":
+		json_dir  = "//allen/programs/celltypes/workgroups/hct/HCT_Ephys_Data/JEM_forms"
 
 	delta_mod_date = (date_today - date_prev_30d).days + 3
 	jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
@@ -57,9 +61,15 @@ def generate_jem_df(filter_tubes=None):
 
 	# Rename columns based on jem_dictionary
 	jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
-	# Filter dataframe to only IVSCC Group 2017-Current
-	jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
-	jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
+
+	if group == "ivscc":
+		# Filter dataframe to only IVSCC Group 2017-Current
+		jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
+		jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
+	if group == "hct":
+		# Filter dataframe to only HCT Group 
+		jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["hct_rig_users_list"])]
+		jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["hct_rig_numbers_list"])]
 
 	# Fix jem versions
 	jem_df = fix_jem_versions(jem_df)
@@ -217,7 +227,7 @@ def clean_num_field(df):
 	"""
 
 	# Convert field to integer field
-	df["jem-id_rig_number"] = df["jem-id_rig_number"].astype(int)
+	#df["jem-id_rig_number"] = df["jem-id_rig_number"].astype(int)
 	#df["jem-health_cell"] = df["jem-health_cell"].astype(int)
 	#df["jem-status_attempt"] = df["jem-status_attempt"].astype(int)
 	# Convert string field to float field and apply absolute value to fields
@@ -290,6 +300,8 @@ def replace_value(df):
 		df["jem-project_level_nucleus"] = df["jem-project_level_nucleus"].replace({np.nan: "None"})
 	if "jem-project_name" in df.columns:
 		df["jem-project_name"] = df["jem-project_name"].replace({"Channel_Recording": "None", np.nan: "None"})
+	if "jem-project_icv_injection_fluorescent_roi" in df.columns:
+		df["jem-project_icv_injection_fluorescent_roi"] = df["jem-project_icv_injection_fluorescent_roi"].replace({np.nan: "None"})
 	if "jem-project_retrograde_labeling_hemisphere" in df.columns:
 		df["jem-project_retrograde_labeling_hemisphere"] = df["jem-project_retrograde_labeling_hemisphere"].replace({np.nan: "None"})
 	if "jem-project_retrograde_labeling_region" in df.columns:
@@ -394,7 +406,9 @@ def fix_jem_blank_date(df):
 		df (dataframe): a pandas dataframe.
 	"""
 
+	# Lists
 	form_version_blank_old_list = ["1.0.9", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.1.0"]
+	
 	# Creates dataframes 
 	df_blank_cur = df[~df["jem-version_jem_form"].isin(form_version_blank_old_list)]
 	df_blank_old = df[df["jem-version_jem_form"].isin(form_version_blank_old_list)]
