@@ -471,7 +471,7 @@ def generate_weekly_report(group):
     # User prompts
     dt_start, dt_end, day_prev_monday, day_curr_sunday = user_prompts_weekly(day_prev_monday, day_curr_sunday)
     # Create weekly transcriptomics report name
-    date_name_report = "%s-%s_%s.xlsx" %(day_prev_monday, day_curr_sunday, name_report[0:-5]) 
+    date_name_report = "%s-%s_%s.xlsx" %(day_prev_monday, day_curr_sunday, name_report)  #name_report[0:-5]
 
 
     # Generate lims_df and jem_df with only patch tubes
