@@ -5,6 +5,10 @@ Code base generating formatted data tables that streamlines data analysis proces
 ## Usage: Transcriptomics Reports
 *Run in Anaconda Command Prompt
 1) Navigate to the directory with the forked repository.
-`cd ...ephys_analysis_tools\src\run_scripts`
+```
+cd ...ephys_analysis_tools\src\run_scripts
+```
 2) Run the python script for transcriptomics reports.
-`python file_name.py`
+```
+python file_name.py
+```
