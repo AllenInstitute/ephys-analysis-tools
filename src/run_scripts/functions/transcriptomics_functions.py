@@ -16,6 +16,7 @@ import json
 import numpy as np
 import os
 import pandas as pd
+import sys
 from datetime import datetime, date, timedelta
 from pandas.tseries.offsets import CustomBusinessDay
 from pandas.tseries.holiday import USFederalHolidayCalendar
@@ -150,6 +151,10 @@ def generate_daily_report(group):
             test_mismatch_specimen(test_mismatch_specimen_df)   
             # Tests for mismatched jem/lims patch tube information
             test_mismatch_patch_tube(test_mismatch_container_df)
+
+            # Tests for PROJECTS
+            test_jem_projects(jem_df)
+        
         else:
             try:
                 # Renaming columns names
@@ -238,7 +243,8 @@ def generate_daily_jem_df(df, date):
     # Lists
     jem_fields = ["jem-date_patch", "jem-date_blank", "jem-id_rig_user", "jem-id_cell_specimen",
                   "jem-id_patched_cell_container", "jem-roi_major", "jem-roi_minor",
-                  "jem-nucleus_post_patch"]
+                  "jem-nucleus_post_patch",
+                  "jem-project_name", "jem-status_reporter"]
 
     # Filter dataframe to specified fields
     df = df[jem_fields]
@@ -340,7 +346,6 @@ def test_miss_lims(test_jem_df, test_mismatch_specimen_df, test_mismatch_contain
     # Row numbering
     num = 1
 
-    # Check for JEM information
     if (len(test_jem_df) > 0) & (len(test_mismatch_specimen_df) == 0) & (len(test_mismatch_container_df) == 0):
         print("\n#-----Missing LIMS Information-----#")
         print("Description:")
@@ -368,7 +373,6 @@ def test_miss_jem(test_lims_df, test_mismatch_specimen_df, test_mismatch_contain
     # Row numbering
     num = 1
 
-    # Check for JEM information
     if (len(test_lims_df) > 0) & (len(test_mismatch_specimen_df) == 0) & (len(test_mismatch_container_df) == 0):
         print("\n#-----Missing JEM Information-----#")
         print("Description:")
@@ -394,7 +398,6 @@ def test_mismatch_specimen(test_mismatch_specimen_df):
     # Row numbering
     num = 1
 
-    # Check for JEM information
     if len(test_mismatch_specimen_df) > 0:
         print("\n#-----Mismatched JEM/LIMS Specimen ID Information-----#")
         print("Description:")
@@ -412,7 +415,7 @@ def test_mismatch_patch_tube(test_mismatch_container_df):
     Tests for mismatched jem and lims patch tube.
 
     Parameters:
-        test_mismatch_container_df (dataframe): 
+        test_mismatch_container_df (dataframe): a pandas dataframe.
 
     Returns:
         print statement (string)
@@ -421,7 +424,6 @@ def test_mismatch_patch_tube(test_mismatch_container_df):
     # Row numbering
     num = 1
 
-    # Check for JEM information
     if len(test_mismatch_container_df) > 0:
         print("\n#-----Mismatched JEM/LIMS Specimen Patch Tube Information-----#")
         print("Description:")
@@ -431,6 +433,51 @@ def test_mismatch_patch_tube(test_mismatch_container_df):
             print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
             print(f"   - JEM Patch Tube: {row['jem-id_patched_cell_container']}")
             print(f"   - LIMS Patch Tube: {row['lims-id_patched_cell_container']}")
+            num+=1
+
+
+def test_jem_projects(jem_df):
+    """
+    Tests for JEM project details. 
+
+    Parameters:
+        jem_df (dataframe): a pandas dataframe.
+
+    Returns:
+        print statement (string)
+    """
+
+    # Test retrograde_labeling project has positive for status reporter
+    # Test Picrotoxin Validation project has PX tubes
+    jem_df["jem-test_projects"] = np.where((jem_df["jem-project_name"] == "retrograde_labeling") & (jem_df["jem-status_reporter"] == "Positive"), "Correct - Retrograde Labeling",
+                                  np.where((jem_df["jem-project_name"] == "retrograde_labeling") & (jem_df["jem-status_reporter"] != "Positive"), "Incorrect - Retrograde Labeling",
+                                  np.where((jem_df["jem-project_name"] == "1% Biocytin Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - 1% Biocytin",
+                                  np.where((jem_df["jem-project_name"] == "1% Biocytin Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - 1% Biocytin",  
+                                  np.where((jem_df["jem-project_name"] == "Extended PBS Morphology Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Extended PBS Morphology",
+                                  np.where((jem_df["jem-project_name"] == "Extended PBS Morphology Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Extended PBS Morphology",
+                                  np.where((jem_df["jem-project_name"] == "1% Biocytin + Extended PBS Morphology Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - 1% Biocytin + Extended PBS Morphology",
+                                  np.where((jem_df["jem-project_name"] == "1% Biocytin + Extended PBS Morphology Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - 1% Biocytin + Extended PBS Morphology",  
+                                  np.where((jem_df["jem-project_name"] == "Morphology Clearing") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Morphology Clearing",
+                                  np.where((jem_df["jem-project_name"] == "Morphology Clearing") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Morphology Clearing",
+                                  np.where((jem_df["jem-project_name"] == "Picrotoxin Validation") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Picrotoxin Validation",
+                                  np.where((jem_df["jem-project_name"] == "Picrotoxin Validation") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Picrotoxin Validation",
+                                  np.where((jem_df["jem-project_name"] == "None") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - No Project",
+                                  np.where((jem_df["jem-project_name"] == "None") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - No Project","Not Applicable"))))))))))))))
+    test_jem_proj = jem_df[jem_df["jem-test_projects"].str.startswith("Incorrect")]
+
+    # Row numbering
+    num = 1
+
+    if len(test_jem_proj) > 0:
+        print("\n#-----Incorrect JEM Project Details-----#")
+        print("Description:")
+        print("In the JEM form, please correct the project details based on the JEM Project!")
+        print()
+        for index, row in test_jem_proj.iterrows():
+            print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
+            print(f"   - JEM Project: {row['jem-project_name']}")
+            print(f"   - JEM Patch Tube: {row['jem-id_patched_cell_container']}")
+            print(f"   - JEM Reporter Status: {row['jem-status_reporter']}")
             num+=1
 
 
