@@ -58,7 +58,7 @@ def main():
 	dt_today, day_today = generate_today()
 
 	# Generate jem_df
-	jem_df = generate_jem_df()
+	jem_df = generate_jem_df("ivscc")
 	# Generate jem_df in daily transcriptomics report format
 	jem_df = generate_daily(jem_df, dt_today) # datetime(2022, 5, 17) #  dt_today)
 

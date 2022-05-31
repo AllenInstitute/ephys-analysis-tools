@@ -133,12 +133,12 @@ def generate_lims_df(group, date):
     lims_df = get_lims()
     # Rename columns based on jem_dictionary
     lims_df.rename(columns=data_variables["lims_dictionary"], inplace=True)
+    # Exclude Collaborator containers
+    lims_df = lims_df[(~lims_df["lims-id_patched_cell_container"].str.startswith("PGS4")) & (~lims_df["lims-id_patched_cell_container"].str.startswith("PHS4"))]
     # Filters dataframe to user specified date
     lims_df = lims_df[lims_df["lims-id_patched_cell_container"].str.contains(date)]
     # Only run if patched cell containers were collected
     if len(lims_df) > 0:
-        # Exclude Collaborator containers
-        lims_df = lims_df[(~lims_df["lims-id_patched_cell_container"].str.startswith("PGS4")) & (~lims_df["lims-id_patched_cell_container"].str.startswith("PHS4"))]
         if group == "ivscc":
             # Exclude HCT containers (Ex. column output: 301)
             lims_df["lims-exclude_container"] = lims_df["lims-id_patched_cell_container"].str.slice(-7, -4)
@@ -147,13 +147,14 @@ def generate_lims_df(group, date):
             # Include only HCT containers (Ex. column output: 301)
             lims_df["lims-include_container"] = lims_df["lims-id_patched_cell_container"].str.slice(-7, -4)
             lims_df = lims_df[lims_df["lims-include_container"].str.contains("|".join(hct_user_tube_wo_cr_num_list))]
-        # Replace values
-        lims_df["lims-id_species"].replace({"Homo Sapiens": "Human", "Mus musculus": "Mouse"}, inplace=True)
-        lims_df["lims-id_slice_genotype"].replace({None: ""}, inplace=True)
-        # Apply specimen id
-        lims_df["lims-id_cell_specimen_id"] = lims_df.apply(get_specimen_id, axis=1)
-        # Sort by patched_cell_container in ascending order
-        lims_df.sort_values(by="lims-id_patched_cell_container", inplace=True)
+        if len(lims_df) > 0:
+            # Replace values
+            lims_df["lims-id_species"].replace({"Homo Sapiens": "Human", "Mus musculus": "Mouse"}, inplace=True)
+            lims_df["lims-id_slice_genotype"].replace({None: ""}, inplace=True)
+            # Apply specimen id
+            lims_df["lims-id_cell_specimen_id"] = lims_df.apply(get_specimen_id, axis=1)
+            # Sort by patched_cell_container in ascending order
+            lims_df.sort_values(by="lims-id_patched_cell_container", inplace=True)
 
     return lims_df
 

@@ -152,8 +152,9 @@ def generate_daily_report(group):
             # Tests for mismatched jem/lims patch tube information
             test_mismatch_patch_tube(test_mismatch_container_df)
 
-            # Tests for PROJECTS
-            test_jem_projects(jem_df)
+            if group == "ivscc":
+                # Tests for PROJECTS
+                test_jem_projects(jem_df)
         
         else:
             try:
@@ -175,7 +176,7 @@ def generate_daily_report(group):
             except IOError:
                     print("\nUnable to save the excel sheet. \nMake sure you don't already have a file with the same name opened.")
     else:
-        sys.exit(f"""No JSON data for successful experiments on {dt_report.strftime("%m/%d/%Y")}.""")
+        sys.exit(f"""\nNo data present for successful experiments with patch tubes collected on {dt_report.strftime("%m/%d/%Y")}.""")
 
 
 def generate_last_business_day():
@@ -447,8 +448,6 @@ def test_jem_projects(jem_df):
         print statement (string)
     """
 
-    # Test retrograde_labeling project has positive for status reporter
-    # Test Picrotoxin Validation project has PX tubes
     jem_df["jem-test_projects"] = np.where((jem_df["jem-project_name"] == "retrograde_labeling") & (jem_df["jem-status_reporter"] == "Positive"), "Correct - Retrograde Labeling",
                                   np.where((jem_df["jem-project_name"] == "retrograde_labeling") & (jem_df["jem-status_reporter"] != "Positive"), "Incorrect - Retrograde Labeling",
                                   np.where((jem_df["jem-project_name"] == "1% Biocytin Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - 1% Biocytin",
@@ -544,7 +543,7 @@ def generate_weekly_report(group):
         except IOError:
             print("\nUnable to save the excel sheet. \nMake sure you don't already have a file with the same name opened.")
     else:
-        sys.exit(f"No JSON data for successful experiments on {last_monday_str}-{following_sunday_str}.")
+        sys.exit(f"\nNo data present for successful experiments with patch tubes collected on {day_prev_monday} - {day_curr_sunday}.")
 
 
 def generate_dates():
@@ -628,11 +627,11 @@ def generate_weekly_jem_df(df, dt_start, dt_end):
 
     # Filter dataframe to user specified date
     df["jem-date_patch"] = pd.to_datetime(df["jem-date_patch"])
-    df = df[df["jem-date_patch"].between(dt_start, dt_end)]
+    df = df[df["jem-date_patch"].between(dt_start, dt_end)].copy()
     df["jem-date_patch"] = df["jem-date_patch"].dt.strftime("%m/%d/%Y")
 
     # Renaming columns names
-    df.rename(columns=output_dict, inplace=True)
+    df = df.rename(columns=output_dict)
     df = df[output_dict.values()]
 
     # Sort by date and tubeID in ascending order

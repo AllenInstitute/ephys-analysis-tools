@@ -388,7 +388,7 @@ def fix_jem_versions(df):
 		df_v109.drop(columns=["jem-depth", "jem-time_exp_retraction_end"], inplace=True)
 		df_vother.drop(columns=["jem-depth_old", "jem-time_exp_retraction_end_old"], inplace=True)
 	# Rename necessary fields for concatenating dataframes
-	df_v109.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_retraction_end_old": "jem-time_exp_retraction_end"}, inplace=True)
+	df_v109 = df_v109.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_retraction_end_old": "jem-time_exp_retraction_end"})
 	# Concatenate dataframes
 	df = pd.concat([df_v109, df_vother], sort=True)
 
@@ -410,14 +410,14 @@ def fix_jem_blank_date(df):
 	form_version_blank_old_list = ["1.0.9", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.1.0"]
 	
 	# Creates dataframes 
-	df_blank_cur = df[~df["jem-version_jem_form"].isin(form_version_blank_old_list)]
-	df_blank_old = df[df["jem-version_jem_form"].isin(form_version_blank_old_list)]
+	df_blank_cur = df[~df["jem-version_jem_form"].isin(form_version_blank_old_list)].copy()
+	df_blank_old = df[df["jem-version_jem_form"].isin(form_version_blank_old_list)].copy()
 	# Drop necessary fields for concatenating dataframes
 	if "jem-date_blank_old" in df.columns:
 		df_blank_cur.drop(columns=["jem-date_blank_old"], inplace=True)
 		df_blank_old.drop(columns=["jem-date_blank"], inplace=True)
 	# Rename necessary fields for concatenating dataframes
-	df_blank_old.rename(columns={"jem-date_blank_old": "jem-date_blank"}, inplace=True)
+	df_blank_old = df_blank_old.rename(columns={"jem-date_blank_old": "jem-date_blank"})
 	# Concatenate dataframes
 	df = pd.concat([df_blank_cur, df_blank_old], sort=True)
 
