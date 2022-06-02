@@ -1,8 +1,8 @@
-
 import os
 import fnmatch
 from datetime import datetime
 import pandas as pd
+
 
 def get_similar_values(invalid_val, valid_vals):
     '''Look for valid values that start with the first letter of user entry'''
@@ -182,3 +182,28 @@ def dist_is_editable(dist):
             print(egg_link)
             return True
     return False
+
+
+#-----Ram's imports-----#
+import json
+
+#-----Ram's functions-----#
+def load_data_variables():
+    """
+    Read and load json file (data_variables.json).
+
+    Parameters:
+        None
+
+    Returns:
+        data_variables: a json file with dictionaries and lists.
+    """
+
+    data_variables_dir = "../constants/data_variables.json"
+
+    # Open a file
+    with open(data_variables_dir) as json_file:
+        # Load a json
+        data_variables = json.load(json_file)
+
+    return data_variables

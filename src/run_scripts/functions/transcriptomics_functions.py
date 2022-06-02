@@ -22,6 +22,7 @@ from pandas.tseries.offsets import CustomBusinessDay
 from pandas.tseries.holiday import USFederalHolidayCalendar
 from pathlib import Path, PureWindowsPath
 # File imports
+from functions.file_functions import load_data_variables
 from functions.io_functions import validated_input, validated_date_input,save_xlsx
 from functions.jem_functions import generate_jem_df
 from functions.lims_functions import generate_lims_df
@@ -41,9 +42,8 @@ project_dictionary details: Old project codes
 
 
 #-----Variables-----#
-# Read json data from file to import jem_dictionary
-with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/constants/data_variables.json") as json_file:
-    data_variables = json.load(json_file)
+# Load json file
+data_variables = load_data_variables()
 
 
 #-----Daily Transcriptomics Functions-----#
@@ -120,9 +120,10 @@ def generate_daily_report(group):
         if group == "ivscc":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["lims-id_species"] == "Human"), data_variables["project_dictionary"]["human_u01"], data_variables["project_dictionary"]["mouse_nhp"])
         if group == "hct":
-            jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) | (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
-                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) | (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")), data_variables["project_dictionary"]["neuromodulation"],
-                                               np.where((jem_lims_name_df["lims-id_species"] == "Human"), data_variables["project_dictionary"]["human_u01"], data_variables["project_dictionary"]["mouse_nhp"])))
+            jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
+                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
+                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"], 
+                                               np.where((jem_lims_name_df["lims-id_species"] == "Human"), data_variables["project_dictionary"]["human_u01"], data_variables["project_dictionary"]["mouse_nhp"]))))
 
         # Create a date check for jem 
         jem_lims_name_df["jem-date_container"] = jem_lims_name_df["jem-id_patched_cell_container"].str[5:11]

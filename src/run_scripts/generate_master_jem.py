@@ -12,11 +12,11 @@ Description: Template for generating master_jem.csv and master_jem.xlsx
 
 #-----Imports-----#
 # General imports
-import json
 import numpy as np
 import os
 import pandas as pd
 # File imports
+from functions.file_functions import load_data_variables
 from functions.jem_functions import clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
 replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, get_project_channel, \
 fix_jem_versions, fix_jem_blank_date
@@ -38,9 +38,8 @@ def main():
 		master_jem.xlsx (excel file)
 	"""
 
-	# Read json data from file to import dictionaries/list
-	with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/constants/data_variables.json") as json_file:
-		data_variables = json.load(json_file)
+	# Load json file
+	data_variables = load_data_variables()
 
 	# Directories
 	path_output = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/formatted_data"

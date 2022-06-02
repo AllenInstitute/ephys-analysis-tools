@@ -18,13 +18,12 @@ import os
 import pandas as pd
 from datetime import datetime, date, timedelta
 # File imports
-from functions.file_functions import get_jsons
+from functions.file_functions import get_jsons, load_data_variables
 from functions.jem_data_set import JemDataSet
 
 
-# Read json data from file to import jem_dictionary
-with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/constants/data_variables.json") as json_file:
-    data_variables = json.load(json_file)
+# Load json file
+data_variables = load_data_variables()
 
 
 def generate_jem_df(group, filter_tubes=None):

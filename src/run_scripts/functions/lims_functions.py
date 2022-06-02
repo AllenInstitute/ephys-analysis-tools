@@ -10,13 +10,16 @@ Description: LIMS related functions
 """
 
 
+#-----Imports-----#
+# General imports
 import json
 import pandas as pd
+# File imports
+from functions.file_functions import load_data_variables
 
 
-# Read json data from file to import dictionaries/list
-with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/constants/data_variables.json") as json_file:
-    data_variables = json.load(json_file)
+# Load json file
+data_variables = load_data_variables()
 
 
 def _connect(user="limsreader", host="limsdb2", database="lims2", password="limsro", port=5432):

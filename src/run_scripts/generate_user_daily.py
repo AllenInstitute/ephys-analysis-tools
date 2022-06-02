@@ -18,6 +18,7 @@ import os
 import pandas as pd
 from datetime import datetime, date, timedelta
 # File imports
+from functions.file_functions import load_data_variables
 from functions.jem_functions import generate_jem_df
 from functions.lims_functions import get_lims
 # Test imports
@@ -47,9 +48,8 @@ def main():
 					 "jem-project_retrograde_labeling_hemisphere", "jem-project_retrograde_labeling_region", "jem-project_retrograde_labeling_exp"]
 
 
-	# Read json data from file to import dictionaries/list
-	with open("C:/Users/ramr/Documents/Github/ai_repos/ephys_analysis_tools/src/constants/data_variables.json") as json_file:
-		data_variables = json.load(json_file)
+	# Load json file
+	data_variables = load_data_variables()
 
 	# Directories
 	path_output = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/formatted_data"
