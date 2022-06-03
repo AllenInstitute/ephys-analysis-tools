@@ -39,7 +39,6 @@ import json
 import numpy as np
 import pandas as pd
 import re
-from pandas.io.json import json_normalize
 from datetime import datetime
 from dateutil import parser
 import pytz
@@ -525,9 +524,9 @@ class JemDataSet(object):
             self.get_experiment_date()
             slice_info, slice_error_dict = self.validate_slice()
             slice_info["jem_created"] = datetime.fromtimestamp(os.path.getctime(self.file_path))
-            df = json_normalize(slice_info)
+            df = pd.json_normalize(slice_info)
             try:
-                attempts = json_normalize(slice_info[self._pipette_array_name])
+                attempts = pd.json_normalize(slice_info[self._pipette_array_name])
                 self.validate_attempts(attempts)
                 attempts["limsSpecName"] = df["limsSpecName"].values[0]
                 attempts["attempt"] = [p + 1 for p in attempts.index.values]
@@ -550,7 +549,7 @@ class JemDataSet(object):
                 return None
         
             #if not any(error_dict):
-            #    attempts = json_normalize(slice_info[self._pipette_array_name])
+            #    attempts = pd.json_normalize(slice_info[self._pipette_array_name])
             #    return slice_info, attempts
             #else:
             #    return None, None
