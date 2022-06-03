@@ -380,8 +380,8 @@ def fix_jem_versions(df):
 	"""
 
 	#Fix depth/time fields and combining into one field
-	df_v109 = df[df["jem-version_jem_form"] == "1.0.9"]
-	df_vother = df[df["jem-version_jem_form"] != "1.0.9"]
+	df_v109 = df[df["jem-version_jem_form"] == "1.0.9"].copy()
+	df_vother = df[df["jem-version_jem_form"] != "1.0.9"].copy()
 	# Drop necessary fields for concatenating dataframes
 	if "jem-depth_old" in df.columns:
 		df_v109.drop(columns=["jem-depth", "jem-time_exp_retraction_end"], inplace=True)

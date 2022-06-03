@@ -22,7 +22,7 @@ replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_pat
 fix_jem_versions, fix_jem_blank_date
 from functions.lims_functions import get_lims
 # Test imports
-#import time # To measure program execution time
+import time # To measure program execution time
 
 
 #-----Functions-----#
@@ -131,6 +131,6 @@ def generate_master_jem_df():
 
 # Main
 if __name__ == '__main__':
-    #start = time.time()
+    start = time.time()
     main()
-    #print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
+    print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
