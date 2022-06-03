@@ -20,15 +20,16 @@ cd ...ephys_analysis_tools\src\run_scripts
 ```
 python file_name.py
 ```
-├── LICENSE
-├── README.md               <- The top-level README.
-├── environment.yml         <- Requirements file.
-├── constants               <- Spreadsheets, dictionaries, etc.
-├── ephys_metadata_tools    <- Source code.
-│   ├── __init__.py         <- Makes ephys_metadata_tools a Python module
-│   │
-│   └── bin                 <- Scripts
-│      └── run_collab_daily_report.py
-│
-└── setup.py                <- makes project installable (python setup.py or pip install -e .) 
-                                so ephys_metadata_tools can be imported
+
+## Project Organization
+```
+├── README.md                              <- The top-level README
+├── .gitignore                             <- Ignore file types
+├── environment.yml                        <- Requirements file
+├── src                                    <- Source code
+    ├── constants                          <- JSON
+    └── run_scripts                        <- Python run scripts
+        └── functions                      <- Python function scripts
+├── run_master_jem.bat                     <- Bat file
+└──  run_generate_user_daily.bat           <- Bat file
+```
