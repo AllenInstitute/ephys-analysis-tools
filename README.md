@@ -23,13 +23,15 @@ python file_name.py
 
 ## Project Organization
 ```
-├── README.md                              <- The top-level README
-├── .gitignore                             <- Ignore file types
-├── environment.yml                        <- Requirements file
-├── src                                    <- Source code
-    ├── constants                          <- JSON
-    └── run_scripts                        <- Python run scripts
-        └── functions                      <- Python function scripts
-├── run_master_jem.bat                     <- Bat file
-└──  run_generate_user_daily.bat           <- Bat file
+├── README.md                                            <- The top-level README
+├── .gitignore                                           <- Ignore file types
+├── environment.yml                                      <- Requirements file
+├── src                                                  <- Source code
+    ├── constants                                        <- JSON
+    └── run_scripts                                      <- Python run scripts
+        └── functions                                    <- Python function scripts
+├── run_master_jem.bat                                   <- Bat file
+├── run_generate_user_daily.bat                          <- Bat file
+├── run_ivscc_daily_transcriptomics_report.bat           <- Bat file
+└── run_ivscc_weekly_transcriptomics_report.bat          <- Bat file
 ```
