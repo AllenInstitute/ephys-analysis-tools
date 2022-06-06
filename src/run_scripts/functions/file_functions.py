@@ -199,7 +199,7 @@ def load_data_variables():
         data_variables: a json file with dictionaries and lists.
     """
 
-    data_variables_dir = "../constants/data_variables.json"
+    data_variables_dir = "../ephys_analysis_tools/src/constants/data_variables.json"
 
     # Open a file
     with open(data_variables_dir) as json_file:
