@@ -31,13 +31,13 @@ from functions.lims_functions import generate_lims_df
 #-----General Information-----#
 """
 project_dictionary details: New project codes (2021-present)
-- 102-01-045-10: CTY IVSCC (Mouse/NHP)
-- 102-01-020-20: CTY BRAIN Human Cell Types (Human Acute/Culture, U01 shipping pilot)
-- 102-04-006-20 : MSP Measuring Consciousness Ph2 (TBD)
-- 102-01-051-20: CTY Neuromodulation of NHP Cell Types
+- 102-01-045-10: CTY IVSCC (Mouse/NHP) # IVSCC (Dates?)
+- 102-04-006-20 : MSP Measuring Consciousness Ph2 (TBD) # HCT
+- 102-01-051-20: CTY Neuromodulation of NHP Cell Types # HCT
 
 project_dictionary details: Old project codes
-- 102-04-009-10: CTY SR: Targeted CNS Gene Therapy (Dravet pilot)
+- 102-01-020-20: CTY BRAIN Human Cell Types (Human Acute/Culture, U01 shipping pilot) # IVSCC (10/01/2017 - 6/03/2022) 
+- 102-04-009-10: CTY SR: Targeted CNS Gene Therapy (Dravet pilot) # IVSCC (Dates?)
 """
 
 
@@ -118,13 +118,12 @@ def generate_daily_report(group):
     if (len(jem_df) > 0) & (len(lims_df) > 0):
         # Adding new column with project codes
         if group == "ivscc":
-            jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["lims-id_species"] == "Human"), data_variables["project_dictionary"]["human_u01"], data_variables["project_dictionary"]["mouse_nhp"])
+            jem_lims_name_df["project_code"] = data_variables["project_dictionary"]["mouse_nhp"]
         if group == "hct":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
-                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"], 
-                                               np.where((jem_lims_name_df["lims-id_species"] == "Human"), data_variables["project_dictionary"]["human_u01"], data_variables["project_dictionary"]["mouse_nhp"]))))
-
+                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"], data_variables["project_dictionary"]["mouse_nhp"])))
+        
         # Create a date check for jem 
         jem_lims_name_df["jem-date_container"] = jem_lims_name_df["jem-id_patched_cell_container"].str[5:11]
         jem_lims_name_df["jem-date_container"] = pd.to_datetime(jem_lims_name_df["jem-date_container"], format='%y%m%d').dt.strftime("%m/%d/%Y")
