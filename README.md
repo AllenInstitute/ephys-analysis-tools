@@ -28,10 +28,12 @@ cd ephys_analysis_tools\src\run_scripts
 ```
 activate ephys_analysis_tools_env
 ```
-3) Run the python script for transcriptomics reports.
+3) Run the python scripts for daily/weekly transcriptomics reports.
 ```
 python ivscc_daily_transcriptomics_report.py
-OR
+```
+or
+```
 python ivscc_weekly_transcriptomics_report.py
 ```
 4) Deactivate the specified virtual environment.
