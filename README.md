@@ -6,25 +6,37 @@ Code base generating formatted data tables that streamlines data analysis proces
 - [@ramr24](https://github.com/ramr24)
 
 ## Installation:
-1) Create a new virtual environment from the .yml file. 
+1) Fork the repository.
+2) Clone the forked repository in a directory of your choice.
+3) Navigate to the directory of the forked repository.
+```
+cd ephys_analysis_tools\
+```
+4) Create a new virtual environment (ephys_analysis_tools_env) from the .yml file. 
 ```
 conda env create -f environment.yml
 ```
-2) Activate your new environment.
-```
-activate ephys_analysis_tools_env
-```
-3) Look below at Usage for detailed steps to run python scripts.
+5) Look below at Usage for detailed steps to run python scripts.
 
 ## Usage: Transcriptomics Reports
 *Run in Anaconda Command Prompt
-1) Navigate to the directory with the forked repository.
+1) Navigate to the directory of the forked repository.
 ```
-cd ...ephys_analysis_tools\src\run_scripts
+cd ephys_analysis_tools\src\run_scripts
 ```
-2) Run the python script for transcriptomics reports.
+2) Activate the specified virtual environment.
 ```
-python file_name.py
+activate ephys_analysis_tools_env
+```
+3) Run the python script for transcriptomics reports.
+```
+python ivscc_daily_transcriptomics_report.py
+OR
+python ivscc_weekly_transcriptomics_report.py
+```
+4) Deactivate the specified virtual environment.
+```
+conda deactivate
 ```
 
 ## Project Organization
