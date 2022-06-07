@@ -6,9 +6,15 @@ Code base generating formatted data tables that streamlines data analysis proces
 - [@ramr24](https://github.com/ramr24)
 
 ## Installation:
+1) Create a new virtual environment from the .yml file. 
 ```
-1) Installing environment...
+conda env create -f environment.yml
 ```
+2) Activate your new environment.
+```
+activate ephys_analysis_tools_env
+```
+3) Look below at Usage for detailed steps to run python scripts.
 
 ## Usage: Transcriptomics Reports
 *Run in Anaconda Command Prompt
