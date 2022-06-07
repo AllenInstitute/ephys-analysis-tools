@@ -200,6 +200,8 @@ def load_data_variables():
     """
 
     data_variables_dir = "../ephys_analysis_tools/src/constants/data_variables.json"
+    #"../ephys_analysis_tools/src/constants/data_variables.json" # for batch file
+    #"../constants/data_variables.json" # for running python file_name.py
 
     # Open a file
     with open(data_variables_dir) as json_file:
