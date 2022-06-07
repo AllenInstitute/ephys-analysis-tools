@@ -32,7 +32,7 @@ activate ephys_analysis_tools_env
 ```
 python ivscc_daily_transcriptomics_report.py
 ```
-or
+   or
 ```
 python ivscc_weekly_transcriptomics_report.py
 ```
