@@ -302,8 +302,11 @@ def terminal_message_daily(saved_location, report_location, df, group=None):
     print(f"Total Patch Tubes: {len(df)}")
     if group == "ivscc":
         print()
-        print("Before submitting the report, please manually compare the total number of patch tubes in Slack(# rotations_team) with the total listed above.")
-        print("Also, check the Blank Date is correct in the report.")
+        print("#-----Manual Check-----#")
+        print("- Compare the total number of patch tubes in Slack(# rotations_team) with the total listed above")
+        print("- Blank Date")
+        print("- Virus/Enhancer")
+        print("- Slice/Cell Level Projects")
     print()
     print("If all present information is correct, please create a copy from the saved report location and submit the report in the submit report location.")
 
