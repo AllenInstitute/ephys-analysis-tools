@@ -18,7 +18,17 @@ conda env create -f environment.yml
 ```
 5) Look below at Usage for detailed steps to run python scripts.
 
-## Usage: Transcriptomics Reports
+## Usage: Batch Files
+* Required: Location of Anaconda bat file --> C:\Users\%USERNAME%\Anaconda3\Scripts\activate.bat
+
+1) In File Explorer, navigate to the directory of the forked repository.
+```
+cd ephys_analysis_tools\
+```
+2) Click on the desired .bat file to run the intended program.
+
+
+## Usage: Run Transcriptomics Reports through Anconda Command Prompt
 *Run in Anaconda Command Prompt
 1) Navigate to the directory of the forked repository.
 ```
