@@ -1,4 +1,5 @@
 import os
+from pathlib import Path, PureWindowsPath
 import fnmatch
 from datetime import datetime
 import pandas as pd
@@ -199,9 +200,10 @@ def load_data_variables():
         data_variables: a json file with dictionaries and lists.
     """
 
-    data_variables_dir = "../ephys_analysis_tools/src/constants/data_variables.json"
-    #"../ephys_analysis_tools/src/constants/data_variables.json" # for batch file
-    #"../constants/data_variables.json" # for running python file_name.py
+    # Obtains absolute path of current file (os.path.abspath(__file__)) and moves up 2 directories (.parents[2])
+    src_dir = Path(os.path.abspath(__file__)).parents[2]
+    # Join paths to get to the directory with data_variables.json
+    data_variables_dir = os.path.join(src_dir, "constants", "data_variables.json").replace("\\","/")
 
     # Open a file
     with open(data_variables_dir) as json_file:
