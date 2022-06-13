@@ -43,6 +43,12 @@ python ivscc_daily_transcriptomics_report.py
 ```
 python ivscc_weekly_transcriptomics_report.py
 ```
+```
+python hct_daily_transcriptomics_report.py
+```
+```
+python hct_weekly_transcriptomics_report.py
+```
 4) Deactivate the specified virtual environment.
 ```
 conda deactivate
