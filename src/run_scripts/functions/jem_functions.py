@@ -72,8 +72,6 @@ def generate_jem_df(group, filter_tubes=None):
 
 	# Fix jem versions
 	jem_df = fix_jem_versions(jem_df)
-	# Fix jem blank date
-	jem_df = fix_jem_blank_date(jem_df)
 	# Clean and add date_fields
 	jem_df = clean_date_field(jem_df)
 	# Clean time and add duration fields
@@ -187,15 +185,15 @@ def clean_time_field(df):
 	#    df[col] = split_time_zone[0] # Choosing column with only the time
 	# Removing timezones with string slicing
 	df["jem-time_patch"] = df["jem-time_patch"].str[0:8]
-	df["jem-time_exp_approach_start"] = df["jem-time_exp_approach_start"].str[0:8]
-	df["jem-time_exp_whole_cell_start"] = df["jem-time_exp_whole_cell_start"].str[0:8]
+	df["jem-in_bath_time_start"] = df["jem-in_bath_time_start"].str[0:8]
+	df["jem-break_in_time_end"] = df["jem-break_in_time_end"].str[0:8]
 	df["jem-time_exp_extraction_start"] = df["jem-time_exp_extraction_start"].str[0:8]
 	df["jem-time_exp_extraction_end"] = df["jem-time_exp_extraction_end"].str[0:8]
 	df["jem-time_exp_retraction_end"] = df["jem-time_exp_retraction_end"].str[0:8]
 	if "jem-time_exp_channel_end" in df.columns:
 		df["jem-time_exp_channel_end"] = df["jem-time_exp_channel_end"].str[0:8]
     # Create duration fields
-	df["jem-time_duration_experiment"] = pd.to_datetime(df["jem-time_exp_extraction_start"]) - pd.to_datetime(df["jem-time_exp_whole_cell_start"])
+	df["jem-time_duration_experiment"] = pd.to_datetime(df["jem-time_exp_extraction_start"]) - pd.to_datetime(df["jem-break_in_time_end"])
 	df["jem-time_duration_extraction"] = pd.to_datetime(df["jem-time_exp_extraction_end"]) - pd.to_datetime(df["jem-time_exp_extraction_start"])
 	df["jem-time_duration_retraction"] = pd.to_datetime(df["jem-time_exp_retraction_end"]) - pd.to_datetime(df["jem-time_exp_extraction_end"])
 	# Change to seconds
@@ -233,19 +231,19 @@ def clean_num_field(df):
 	df["jem-depth"] = pd.to_numeric(df["jem-depth"], errors='coerce').abs()
 	df["jem-pressure_extraction"] = pd.to_numeric(df["jem-pressure_extraction"], errors='coerce').abs()
 	df["jem-pressure_retraction"] = pd.to_numeric(df["jem-pressure_retraction"], errors='coerce').abs()
-	df["jem-res_initial_seal"] = pd.to_numeric(df["jem-res_initial_seal"], errors='coerce').abs()
+	df["jem-in_bath_resistance"] = pd.to_numeric(df["jem-in_bath_resistance"], errors='coerce').abs()
 	df["jem-res_final_seal"] = pd.to_numeric(df["jem-res_final_seal"], errors='coerce').abs()
 	# Convert to float
 	df["jem-depth"] = df["jem-depth"].astype(float)
 	df["jem-pressure_extraction"] = df["jem-pressure_extraction"].astype(float)
 	df["jem-pressure_retraction"] = df["jem-pressure_retraction"].astype(float)
-	df["jem-res_initial_seal"] = df["jem-res_initial_seal"].astype(float)
+	df["jem-in_bath_resistance"] = df["jem-in_bath_resistance"].astype(float)
 	df["jem-res_final_seal"] = df["jem-res_final_seal"].astype(float)
 	# Round decimal places to 1
 	df["jem-depth"] = df["jem-depth"].round(1)
 	df["jem-pressure_extraction"] = df["jem-pressure_extraction"].round(1)
 	df["jem-pressure_retraction"] = df["jem-pressure_retraction"].round(1)
-	df["jem-res_initial_seal"] = df["jem-res_initial_seal"].round(1)
+	df["jem-in_bath_resistance"] = df["jem-in_bath_resistance"].round(1)
 	df["jem-res_final_seal"] = df["jem-res_final_seal"].round(1)
 
 	return df
@@ -379,24 +377,40 @@ def fix_jem_versions(df):
 		df (dataframe): a pandas dataframe.
 	"""
 
-	#Fix depth/time fields and combining into one field
-	df_v109 = df[df["jem-version_jem_form"] == "1.0.9"].copy()
-	df_vother = df[df["jem-version_jem_form"] != "1.0.9"].copy()
+	# Lists
+	form_version_depth_time_old_list = ["1.0.9"]
+	form_version_blank_old_list = ["1.0.9", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.1.0"]
+
+	# Fix depth and time fields
+	df_cur = df[~df["jem-version_jem_form"].isin(form_version_depth_time_old_list)].copy()
+	df_old = df[df["jem-version_jem_form"].isin(form_version_depth_time_old_list)].copy()
 	# Drop necessary fields for concatenating dataframes
 	if "jem-depth_old" in df.columns:
-		df_v109.drop(columns=["jem-depth", "jem-time_exp_retraction_end"], inplace=True)
-		df_vother.drop(columns=["jem-depth_old", "jem-time_exp_retraction_end_old"], inplace=True)
+		df_cur.drop(columns=["jem-depth_old", "jem-time_exp_retraction_end_old"], inplace=True)
+		df_old.drop(columns=["jem-depth", "jem-time_exp_retraction_end"], inplace=True)
 	# Rename necessary fields for concatenating dataframes
-	df_v109 = df_v109.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_retraction_end_old": "jem-time_exp_retraction_end"})
+	df_old = df_old.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_retraction_end_old": "jem-time_exp_retraction_end"})
 	# Concatenate dataframes
-	df = pd.concat([df_v109, df_vother], sort=True)
+	df = pd.concat([df_cur, df_old], sort=True)
+	
+	# Fix the blank date fields
+	df_cur = df[~df["jem-version_jem_form"].isin(form_version_blank_old_list)].copy()
+	df_old = df[df["jem-version_jem_form"].isin(form_version_blank_old_list)].copy()
+	# Drop necessary fields for concatenating dataframes
+	if "jem-date_blank_old" in df.columns:
+		df_cur.drop(columns=["jem-date_blank_old"], inplace=True)
+		df_old.drop(columns=["jem-date_blank"], inplace=True)
+	# Rename necessary fields for concatenating dataframes
+	df_old = df_old.rename(columns={"jem-date_blank_old": "jem-date_blank"})
+	# Concatenate dataframes
+	df = pd.concat([df_cur, df_old], sort=True)
 
 	return df
 
 
-def fix_jem_blank_date(df):
+def fix_jem_recording_info(df):
 	"""
-	Merges old and new blank date fields into one field.
+	Merges old and new recording infor fields into one field.
 
 	Parameters: 
 		df (dataframe): a pandas dataframe.
@@ -406,19 +420,19 @@ def fix_jem_blank_date(df):
 	"""
 
 	# Lists
-	form_version_blank_old_list = ["1.0.9", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.1.0"]
-	
+	form_version_recording_info_list = ["1.0.9", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.1.0", "2.1.1", "2.1.2"]
+
 	# Creates dataframes 
-	df_blank_cur = df[~df["jem-version_jem_form"].isin(form_version_blank_old_list)].copy()
-	df_blank_old = df[df["jem-version_jem_form"].isin(form_version_blank_old_list)].copy()
+	df_cur = df[df["jem-version_jem_form"].isin(form_version_blank_old_list)].copy()
+	df_old = df[~df["jem-version_jem_form"].isin(form_version_blank_old_list)].copy()
 	# Drop necessary fields for concatenating dataframes
-	if "jem-date_blank_old" in df.columns:
-		df_blank_cur.drop(columns=["jem-date_blank_old"], inplace=True)
-		df_blank_old.drop(columns=["jem-date_blank"], inplace=True)
+	if ["jem-in_bath_time_start_old", "jem-in_bath_resistance_old", "jem-break_in_time_end_old"] in df.columns:
+		df_cur.drop(columns=["jem-in_bath_time_start_old", "jem-in_bath_resistance_old", "jem-break_in_time_end_old"], inplace=True)
+		df_old.drop(columns=["jem-in_bath_time_start", "jem-in_bath_resistance", "jem-break_in_time_end"], inplace=True)
 	# Rename necessary fields for concatenating dataframes
-	df_blank_old = df_blank_old.rename(columns={"jem-date_blank_old": "jem-date_blank"})
+	df_old = df_old.rename(columns={"jem-in_bath_time_start_old": "jem-in_bath_time_start", "jem-in_bath_resistance_old": "jem-in_bath_resistance", "jem-break_in_time_end_old": "jem-break_in_time_end"})
 	# Concatenate dataframes
-	df = pd.concat([df_blank_cur, df_blank_old], sort=True)
+	df = pd.concat([df_cur, df_old], sort=True)
 
 	return df
 
