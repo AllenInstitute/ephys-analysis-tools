@@ -19,7 +19,7 @@ import pandas as pd
 from functions.file_functions import load_data_variables
 from functions.jem_functions import clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
 replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, get_project_channel, \
-fix_jem_versions, fix_jem_blank_date
+fix_jem_versions
 from functions.lims_functions import get_lims
 # Test imports
 import time # To measure program execution time
@@ -54,8 +54,6 @@ def main():
 
 	# Fix jem versions
 	master_jem_df = fix_jem_versions(master_jem_df)
-	# Fix jem blank date
-	master_jem_df = fix_jem_blank_date(master_jem_df)
 	# Clean and add date_fields
 	master_jem_df = clean_date_field(master_jem_df)
 	# Clean time and add duration fields
