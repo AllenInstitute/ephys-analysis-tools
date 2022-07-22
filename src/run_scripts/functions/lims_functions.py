@@ -149,7 +149,7 @@ def generate_lims_df(group, date):
         if group == "hct":
             # Include only HCT containers (Ex. column output: 301)
             lims_df["lims-include_container"] = lims_df["lims-id_patched_cell_container"].str.slice(-7, -4)
-            lims_df = lims_df[lims_df["lims-include_container"].str.contains("|".join(hct_user_tube_wo_cr_num_list))]
+            lims_df = lims_df[lims_df["lims-include_container"].str.contains("|".join(hct_user_tube_num_list))]
         if len(lims_df) > 0:
             # Replace values
             lims_df["lims-id_species"].replace({"Homo Sapiens": "Human", "Mus musculus": "Mouse"}, inplace=True)
