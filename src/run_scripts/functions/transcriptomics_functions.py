@@ -114,6 +114,10 @@ def generate_daily_report(group):
                                         np.where((jem_lims_tube_df["jem-id_cell_specimen"].isnull()), "LIMS",
                                         np.where((jem_lims_tube_df["lims-id_cell_specimen"].isnull()), "JEM",
                                         np.where((jem_lims_tube_df["jem-id_cell_specimen"] != jem_lims_tube_df["lims-id_cell_specimen"]), "Mismatched Specimen ID", "Unsure"))))
+    jem_lims_name_df["jem-test_pc_tubes"] = np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Correct - Culture JEM/LIMS Tube",
+                                            np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Incorrect - Culture JEM/LIMS Tube",
+                                            np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Incorrect - Culture JEM Tube",
+                                            np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Incorrect - Culture LIMS Tube", "Not Applicable"))))
 
     if (len(jem_df) > 0) & (len(lims_df) > 0):
         # Adding new column with project codes
@@ -143,8 +147,9 @@ def generate_daily_report(group):
         test_lims_df = test_name_df[test_name_df["test-jem_lims"] == "LIMS"]
         test_mismatch_specimen_df = test_tube_df[test_tube_df["test-jem_lims"] == "Mismatched Specimen ID"]
         test_mismatch_container_df = test_name_df[test_name_df["test-jem_lims"] == "Mismatched Patch Tube"]
+        test_pc_df = jem_lims_name_df[jem_lims_name_df["jem-test_pc_tubes"].str.startswith("Incorrect")]
 
-        if (len(test_patch_date_df) > 0) or (len(test_jem_df) > 0) or (len(test_lims_df) > 0) or (len(test_mismatch_specimen_df) > 0) or (len(test_mismatch_container_df) > 0):
+        if (len(test_patch_date_df) > 0) or (len(test_jem_df) > 0) or (len(test_lims_df) > 0) or (len(test_mismatch_specimen_df) > 0) or (len(test_mismatch_container_df) > 0) or (len(test_pc_df) > 0):
             # Tests for mismatched jem patch date and jem patch tube date
             test_mismatch_patch_date(test_patch_date_df)
             # Tests for missing LIMS information
@@ -152,12 +157,14 @@ def generate_daily_report(group):
             # Tests for missing JEM information
             test_miss_jem(test_lims_df, test_mismatch_specimen_df, test_mismatch_container_df)
             # Tests for mismatched jem/lims specimen id information
-            test_mismatch_specimen(test_mismatch_specimen_df)   
+            test_mismatch_specimen(test_mismatch_specimen_df)
             # Tests for mismatched jem/lims patch tube information
             test_mismatch_patch_tube(test_mismatch_container_df)
+            # Tests for pc tubes
+            test_pc_tubes(test_pc_df)
 
             if group == "ivscc":
-                # Tests for PROJECTS
+                # Tests for jem projects
                 test_jem_projects(jem_df)
         
         else:
@@ -302,11 +309,9 @@ def terminal_message_daily(saved_location, report_location, df, group=None):
     print(f"Total Patch Tubes: {len(df)}")
     if group == "ivscc":
         print()
-        print("#-----Manual Check-----#")
-        print("- Compare the total number of patch tubes in Slack(# rotations_team) with the total listed above")
-        print("- Blank Date")
-        print("- Virus/Enhancer")
-        print("- Slice/Cell Level Projects")
+        print("#-----Manual User Check-----#")
+        print("- Compare the total number of patch tubes in Slack (# rotations_team) with the total listed above")
+        print("- Blank Fill Date")
     print()
     print("If all present information is correct, please create a copy from the saved report location and submit the report in the submit report location.")
 
@@ -328,8 +333,7 @@ def test_mismatch_patch_date(test_patch_date_df):
 
     if (len(test_patch_date_df) > 0):
         print("\n#-----Mismatched JEM Patch Date & JEM Patch Tube Date-----#")
-        print("Description:")
-        print("In the JEM form, please correct the JEM Patch Date and Patch Tube!")
+        print("Description: In the JEM form, please correct the JEM Patch Date and Patch Tube!")
         print()
         for index, row in test_patch_date_df.iterrows():
             print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
@@ -356,8 +360,7 @@ def test_miss_lims(test_jem_df, test_mismatch_specimen_df, test_mismatch_contain
 
     if (len(test_jem_df) > 0) & (len(test_mismatch_specimen_df) == 0) & (len(test_mismatch_container_df) == 0):
         print("\n#-----Missing LIMS Information-----#")
-        print("Description:")
-        print("Please use the JEM Specimen ID and JEM Patch Tube to update LIMS!")
+        print("Description: Please use the JEM Specimen ID and JEM Patch Tube to update LIMS!")
         print()
         for index, row in test_jem_df.iterrows():
             print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
@@ -383,8 +386,7 @@ def test_miss_jem(test_lims_df, test_mismatch_specimen_df, test_mismatch_contain
 
     if (len(test_lims_df) > 0) & (len(test_mismatch_specimen_df) == 0) & (len(test_mismatch_container_df) == 0):
         print("\n#-----Missing JEM Information-----#")
-        print("Description:")
-        print("Please use the LIMS Specimen ID and LIMS Patch Tube to create a JEM form!")
+        print("Description: Please use the LIMS Specimen ID and LIMS Patch Tube to create a JEM form!")
         print()
         for index, row in test_lims_df.iterrows():
             print(f"{num}) LIMS Specimen ID: {row['lims-id_cell_specimen']}")
@@ -408,8 +410,7 @@ def test_mismatch_specimen(test_mismatch_specimen_df):
 
     if len(test_mismatch_specimen_df) > 0:
         print("\n#-----Mismatched JEM/LIMS Specimen ID Information-----#")
-        print("Description:")
-        print("Please use the JEM Patch Tube to identify the mismatched information between the JEM Specimen ID and LIMS Specimen ID!")
+        print("Description: Please use the JEM Patch Tube to identify the mismatched information between the JEM Specimen ID and LIMS Specimen ID!")
         print()
         for index, row in test_mismatch_specimen_df.iterrows():
             print(f"{num}) JEM Patch Tube: {row['jem-id_patched_cell_container']}")
@@ -434,10 +435,34 @@ def test_mismatch_patch_tube(test_mismatch_container_df):
 
     if len(test_mismatch_container_df) > 0:
         print("\n#-----Mismatched JEM/LIMS Specimen Patch Tube Information-----#")
-        print("Description:")
-        print("Please use the JEM Specimen ID to identify the mismatched information between the JEM Patch Tube and LIMS Patch Tube!")
+        print("Description: Please use the JEM Specimen ID to identify the mismatched information between the JEM Patch Tube and LIMS Patch Tube!")
         print()
         for index, row in test_mismatch_container_df.iterrows():
+            print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
+            print(f"   - JEM Patch Tube: {row['jem-id_patched_cell_container']}")
+            print(f"   - LIMS Patch Tube: {row['lims-id_patched_cell_container']}")
+            num+=1
+
+
+def test_pc_tubes(test_pc_df):
+    """
+    Tests for PC tubes.
+
+    Parameters:
+        test_pc_df (dataframe): a pandas dataframe.
+
+    Returns:
+        print statement (string)
+    """
+
+    # Row numbering
+    num = 1
+
+    if len(test_pc_df) > 0:
+        print("\n#-----Incorrect Culture Patch Tube Information-----#")
+        print("Description: Please use the JEM Specimen ID to identify and change the JEM Patch Tube and LIMS Patch Tube to start with PCS4 (Culture Tubes)!")
+        print()
+        for index, row in test_pc_df.iterrows():
             print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
             print(f"   - JEM Patch Tube: {row['jem-id_patched_cell_container']}")
             print(f"   - LIMS Patch Tube: {row['lims-id_patched_cell_container']}")
@@ -468,7 +493,7 @@ def test_jem_projects(jem_df):
                                   np.where((jem_df["jem-project_name"] == "Picrotoxin Validation") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Picrotoxin Validation",
                                   np.where((jem_df["jem-project_name"] == "Picrotoxin Validation") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Picrotoxin Validation",
                                   np.where((jem_df["jem-project_name"] == "None") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - No Project",
-                                  np.where((jem_df["jem-project_name"] == "None") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - No Project","Not Applicable"))))))))))))))
+                                  np.where((jem_df["jem-project_name"] == "None") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - No Project", "Not Applicable"))))))))))))))
     test_jem_proj = jem_df[jem_df["jem-test_projects"].str.startswith("Incorrect")]
 
     # Row numbering
@@ -476,8 +501,7 @@ def test_jem_projects(jem_df):
 
     if len(test_jem_proj) > 0:
         print("\n#-----Incorrect JEM Project Details-----#")
-        print("Description:")
-        print("In the JEM form, please correct the project details based on the JEM Project!")
+        print("Description: In the JEM form, please correct the project details based on the JEM Project!")
         print()
         for index, row in test_jem_proj.iterrows():
             print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
