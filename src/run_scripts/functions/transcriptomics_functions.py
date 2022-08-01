@@ -552,12 +552,13 @@ def generate_weekly_report(group):
 
 
     # Generate lims_df and jem_df with only patch tubes
+    # Generate jem_df in daily transcriptomics report format
     if group == "ivscc":
         jem_df = generate_jem_df("ivscc", "only_patch_tubes")
+        jem_df = generate_weekly_jem_df("ivscc", jem_df, dt_start, dt_end)
     if group == "hct":
         jem_df = generate_jem_df("hct", "only_patch_tubes")
-    # Generate jem_df in daily transcriptomics report format
-    jem_df = generate_weekly_jem_df(jem_df, dt_start, dt_end)
+        jem_df = generate_weekly_jem_df("hct", jem_df, dt_start, dt_end)
 
     if len(jem_df) > 0:
         try:
@@ -637,11 +638,12 @@ def user_prompts_weekly(day_prev_monday, day_curr_sunday):
     return dt_start, dt_end, day_prev_monday, day_curr_sunday
 
 
-def generate_weekly_jem_df(df, dt_start, dt_end):
+def generate_weekly_jem_df(group, df, dt_start, dt_end):
     """
     Generates a jem metadata dataframe based on the specified date range.
 
     Parameters:
+        group (string): "ivscc" or "hct".
         df (dataframe): a pandas dataframe.
         dt_start (datetime): a datetime of the start date.
         dt_end (datetime): a datetime of the end date.
@@ -649,11 +651,16 @@ def generate_weekly_jem_df(df, dt_start, dt_end):
     Returns:
         df (dataframe): a pandas dataframe.
     """
-    
-    output_dict = {"jem-id_patched_cell_container":"tubeID", "jem-date_patch": "date",
-                   "jem-id_rig_user": "rigOperator", "jem-id_rig_number": "rigNumber",
-                   "jem-date_blank": "blankFillDate", "jem-date_internal": "internalFillDate",
-                   "jem-roi_major_minor": "manualRoi", "jem-nucleus_post_patch":"postPatch"}
+    ivscc_output_dict = {"jem-id_patched_cell_container":"tubeID","jem-date_patch": "date", "jem-id_rig_user": "rigOperator", "jem-id_rig_number": "rigNumber", "jem-date_blank": "blankFillDate", "jem-date_internal": "internalFillDate",
+                         "jem-project_name":"pilotName", "jem-status_reporter":"creCell", "jem-roi_major_minor": "manualRoi", "jem-depth": "cell_depth",
+                         "jem-break_in_time_end":"timeWholeCellStart", "jem-time_exp_extraction_start":"timeExtractionStart",
+                         "jem-pressure_extraction":"pressureApplied", "jem-time_exp_extraction_end":"timeExtractionEnd", "jem-pressure_retraction":"retractionPressureApplied",
+                         "jem-time_exp_retraction_end":"timeRetractionEnd", "jem-nucleus_post_patch":"postPatch", "jem-res_final_seal":"endPipetteR", "jem-virus_enhancer": "virus_enhancer"}
+
+    hct_output_dict = {"jem-id_patched_cell_container":"tubeID", "jem-date_patch": "date",
+                       "jem-id_rig_user": "rigOperator", "jem-id_rig_number": "rigNumber",
+                       "jem-date_blank": "blankFillDate", "jem-date_internal": "internalFillDate",
+                       "jem-roi_major_minor": "manualRoi", "jem-nucleus_post_patch":"postPatch"}
 
     # Filter dataframe to user specified date
     df["jem-date_patch"] = pd.to_datetime(df["jem-date_patch"])
@@ -661,8 +668,12 @@ def generate_weekly_jem_df(df, dt_start, dt_end):
     df["jem-date_patch"] = df["jem-date_patch"].dt.strftime("%m/%d/%Y")
 
     # Renaming columns names
-    df = df.rename(columns=output_dict)
-    df = df[output_dict.values()]
+    if group == "ivscc":
+        df = df.rename(columns=ivscc_output_dict)
+        df = df[ivscc_output_dict.values()]
+    if group == "hct":
+        df = df.rename(columns=hct_output_dict)
+        df = df[hct_output_dict.values()]
 
     # Sort by date and tubeID in ascending order
     df.sort_values(by=["date", "tubeID"], inplace=True)
