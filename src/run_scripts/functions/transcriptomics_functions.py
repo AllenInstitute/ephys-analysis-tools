@@ -114,10 +114,11 @@ def generate_daily_report(group):
                                         np.where((jem_lims_tube_df["jem-id_cell_specimen"].isnull()), "LIMS",
                                         np.where((jem_lims_tube_df["lims-id_cell_specimen"].isnull()), "JEM",
                                         np.where((jem_lims_tube_df["jem-id_cell_specimen"] != jem_lims_tube_df["lims-id_cell_specimen"]), "Mismatched Specimen ID", "Unsure"))))
-    jem_lims_name_df["jem-test_pc_tubes"] = np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Correct - Culture JEM/LIMS Tube",
-                                            np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Incorrect - Culture JEM/LIMS Tube",
-                                            np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Incorrect - Culture JEM Tube",
-                                            np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Incorrect - Culture LIMS Tube", "Not Applicable"))))
+    # Create a new column ()
+    jem_lims_name_df["test_pc_tubes"] = np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")), "Correct - Culture JEM/LIMS Tube",
+                                        np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4", na=False)) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4", na=False)), "Incorrect - Culture JEM/LIMS Tube",
+                                        np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4", na=False)) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4", na=False)), "Incorrect - Culture JEM Tube",
+                                        np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4", na=False)) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4", na=False)), "Incorrect - Culture LIMS Tube", "Not Applicable"))))
 
     if (len(jem_df) > 0) & (len(lims_df) > 0):
         # Adding new column with project codes
@@ -147,7 +148,7 @@ def generate_daily_report(group):
         test_lims_df = test_name_df[test_name_df["test-jem_lims"] == "LIMS"]
         test_mismatch_specimen_df = test_tube_df[test_tube_df["test-jem_lims"] == "Mismatched Specimen ID"]
         test_mismatch_container_df = test_name_df[test_name_df["test-jem_lims"] == "Mismatched Patch Tube"]
-        test_pc_df = jem_lims_name_df[jem_lims_name_df["jem-test_pc_tubes"].str.startswith("Incorrect")]
+        test_pc_df = jem_lims_name_df[jem_lims_name_df["test_pc_tubes"].str.startswith("Incorrect")]
 
         if (len(test_patch_date_df) > 0) or (len(test_jem_df) > 0) or (len(test_lims_df) > 0) or (len(test_mismatch_specimen_df) > 0) or (len(test_mismatch_container_df) > 0) or (len(test_pc_df) > 0):
             # Tests for mismatched jem patch date and jem patch tube date
@@ -480,21 +481,21 @@ def test_jem_projects(jem_df):
         print statement (string)
     """
 
-    jem_df["jem-test_projects"] = np.where((jem_df["jem-project_name"] == "retrograde_labeling") & (jem_df["jem-status_reporter"] == "Positive"), "Correct - Retrograde Labeling",
-                                  np.where((jem_df["jem-project_name"] == "retrograde_labeling") & (jem_df["jem-status_reporter"] != "Positive"), "Incorrect - Retrograde Labeling",
-                                  np.where((jem_df["jem-project_name"] == "1% Biocytin Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - 1% Biocytin",
-                                  np.where((jem_df["jem-project_name"] == "1% Biocytin Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - 1% Biocytin",  
-                                  np.where((jem_df["jem-project_name"] == "Extended PBS Morphology Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Extended PBS Morphology",
-                                  np.where((jem_df["jem-project_name"] == "Extended PBS Morphology Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Extended PBS Morphology",
-                                  np.where((jem_df["jem-project_name"] == "1% Biocytin + Extended PBS Morphology Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - 1% Biocytin + Extended PBS Morphology",
-                                  np.where((jem_df["jem-project_name"] == "1% Biocytin + Extended PBS Morphology Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - 1% Biocytin + Extended PBS Morphology",  
-                                  np.where((jem_df["jem-project_name"] == "Morphology Clearing") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Morphology Clearing",
-                                  np.where((jem_df["jem-project_name"] == "Morphology Clearing") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Morphology Clearing",
-                                  np.where((jem_df["jem-project_name"] == "Picrotoxin Validation") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Picrotoxin Validation",
-                                  np.where((jem_df["jem-project_name"] == "Picrotoxin Validation") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Picrotoxin Validation",
-                                  np.where((jem_df["jem-project_name"] == "None") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - No Project",
-                                  np.where((jem_df["jem-project_name"] == "None") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - No Project", "Not Applicable"))))))))))))))
-    test_jem_proj = jem_df[jem_df["jem-test_projects"].str.startswith("Incorrect")]
+    jem_df["test_projects"] = np.where((jem_df["jem-project_name"] == "retrograde_labeling") & (jem_df["jem-status_reporter"] == "Positive"), "Correct - Retrograde Labeling",
+                              np.where((jem_df["jem-project_name"] == "retrograde_labeling") & (jem_df["jem-status_reporter"] != "Positive"), "Incorrect - Retrograde Labeling",
+                              np.where((jem_df["jem-project_name"] == "1% Biocytin Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - 1% Biocytin",
+                              np.where((jem_df["jem-project_name"] == "1% Biocytin Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - 1% Biocytin",  
+                              np.where((jem_df["jem-project_name"] == "Extended PBS Morphology Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Extended PBS Morphology",
+                              np.where((jem_df["jem-project_name"] == "Extended PBS Morphology Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Extended PBS Morphology",
+                              np.where((jem_df["jem-project_name"] == "1% Biocytin + Extended PBS Morphology Pilot") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - 1% Biocytin + Extended PBS Morphology",
+                              np.where((jem_df["jem-project_name"] == "1% Biocytin + Extended PBS Morphology Pilot") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - 1% Biocytin + Extended PBS Morphology",  
+                              np.where((jem_df["jem-project_name"] == "Morphology Clearing") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Morphology Clearing",
+                              np.where((jem_df["jem-project_name"] == "Morphology Clearing") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Morphology Clearing",
+                              np.where((jem_df["jem-project_name"] == "Picrotoxin Validation") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Picrotoxin Validation",
+                              np.where((jem_df["jem-project_name"] == "Picrotoxin Validation") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - Picrotoxin Validation",
+                              np.where((jem_df["jem-project_name"] == "None") & (~jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Correct - No Project",
+                              np.where((jem_df["jem-project_name"] == "None") & (jem_df["jem-id_patched_cell_container"].str.startswith("PXS4")), "Incorrect - No Project", "Not Applicable"))))))))))))))
+    test_jem_proj = jem_df[jem_df["test_projects"].str.startswith("Incorrect")]
 
     # Row numbering
     num = 1
