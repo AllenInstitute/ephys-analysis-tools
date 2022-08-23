@@ -70,18 +70,24 @@ def generate_jem_df(group, filter_tubes=None):
 		jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["hct_rig_users_list"])]
 		jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["hct_rig_numbers_list"])]
 
-	# Fix jem versions
-	jem_df = fix_jem_versions(jem_df)
+	if group == "ivscc":
+		# Fix jem versions
+		jem_df = fix_jem_versions(jem_df)
+	if group == "hct":
+		# Fix jem versions
+		jem_df = fix_jem_versions_hct(jem_df)
 	# Clean and add date_fields
 	jem_df = clean_date_field(jem_df)
-	# Clean time and add duration fields
-	jem_df = clean_time_field(jem_df)
-	# Clean numerical fields
-	jem_df = clean_num_field(jem_df)
+	if group == "ivscc":
+		# Clean time and add duration fields
+		jem_df = clean_time_field(jem_df)
+		# Clean numerical fields
+		jem_df = clean_num_field(jem_df)
 	# Clean and add roi fields
 	jem_df = clean_roi_field(jem_df)
-	# Clean up project_level_nucleus
-	jem_df["jem-project_level_nucleus"] = jem_df.apply(get_project_channel, axis=1)
+	if group == "ivscc":
+		# Clean up project_level_nucleus
+		jem_df["jem-project_level_nucleus"] = jem_df.apply(get_project_channel, axis=1)
 	# Replace value in fields
 	jem_df = replace_value(jem_df)
 	# Add patch tube field
@@ -406,6 +412,7 @@ def fix_jem_versions(df):
 	# Fix experiment section (jem version 2.1.3 and onwards)
 	df_cur = df[~df["jem-version_jem_form"].isin(jem_version_212_list)].copy()
 	df_old = df[df["jem-version_jem_form"].isin(jem_version_212_list)].copy()
+
 	# Drop necessary fields for concatenating dataframes
 	if "jem-in_bath_time_start_old" in df.columns:
 		df_cur.drop(columns=["jem-in_bath_time_start_old", "jem-in_bath_resistance_old", "jem-break_in_time_end_old"], inplace=True)
@@ -416,6 +423,50 @@ def fix_jem_versions(df):
 	df = pd.concat([df_cur, df_old], sort=True)
 
 	return df
+
+
+def fix_jem_versions_hct(df):
+	"""
+	Fixes jem versions in JEM metadata.
+
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
+	"""
+
+	# Lists
+	jem_version_109_list = ["1.0.9"]
+	jem_version_210_list = ["1.0.9", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.1.0"]
+	jem_version_212_list = ["1.0.9", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.5", "2.0.6", "2.0.7", "2.0.8", "2.1.0", "2.1.1", "2.1.2"]
+
+	# Fix depth and time fields (jem version 1.1.0 and onwards))
+	df_cur = df[~df["jem-version_jem_form"].isin(jem_version_109_list)].copy()
+	df_old = df[df["jem-version_jem_form"].isin(jem_version_109_list)].copy()
+	# Drop necessary fields for concatenating dataframes
+	if "jem-depth_old" in df.columns:
+		df_cur.drop(columns=["jem-depth_old", "jem-time_exp_retraction_end_old"], inplace=True)
+		df_old.drop(columns=["jem-depth", "jem-time_exp_retraction_end"], inplace=True)
+	# Rename necessary fields for concatenating dataframes
+	df_old = df_old.rename(columns={"jem-depth_old": "jem-depth", "jem-time_exp_retraction_end_old": "jem-time_exp_retraction_end"})
+	# Concatenate dataframes
+	df = pd.concat([df_cur, df_old], sort=True)
+	
+	# Fix the blank date fields (jem version 2.1.1 and onwards)
+	df_cur = df[~df["jem-version_jem_form"].isin(jem_version_210_list)].copy()
+	df_old = df[df["jem-version_jem_form"].isin(jem_version_210_list)].copy()
+	# Drop necessary fields for concatenating dataframes
+	if "jem-date_blank_old" in df.columns:
+		df_cur.drop(columns=["jem-date_blank_old"], inplace=True)
+		df_old.drop(columns=["jem-date_blank"], inplace=True)
+	# Rename necessary fields for concatenating dataframes
+	df_old = df_old.rename(columns={"jem-date_blank_old": "jem-date_blank"})
+	# Concatenate dataframes
+	df = pd.concat([df_cur, df_old], sort=True)
+
+	return df
+
 
 
 #-----Agata's code-----#
