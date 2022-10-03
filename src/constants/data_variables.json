@@ -104,7 +104,7 @@
     "TCx, L5": "TCx5",
     "CB": "CBXmo"
 },
-"roi_dictionary":
+"roi_dictionary_regex_true":
 {   
     "None, None": "NA_NA",
     "STRd": "STRd_",
@@ -135,7 +135,8 @@
     "TEa": "TEa_L",
     "VISam": "VISam_L",
     "Visp": "VISp_L",
-    "VISp": "VISp_L"
+    "VISp": "VISp_L",
+    "HBLC": "HB_LC"
 },
 "project_dictionary":
 {
@@ -194,6 +195,10 @@
         "STRv",
         "TH",
         "dLGN"
+    ],
+"brainstem_list":
+    [
+        "HB"
     ],
 "ivscc_rig_users_list": 
     [

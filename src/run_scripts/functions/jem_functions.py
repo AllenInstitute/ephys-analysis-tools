@@ -161,7 +161,7 @@ def clean_roi_field(df):
 	# Replace values in column (roi-major_minor)
 	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace({"layer ": "L", "/": "-"}, regex=True)
 	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary_regex_false"], regex=False)
-	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary"], regex=True)
+	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary_regex_true"], regex=True)
 	# Creating roi_major and roi_minor columns
 	roi = df["jem-roi_major_minor"].str.split("_", n=1, expand=True) # Splitting roi_major and roi_minor
 	df["jem-roi_major"] = roi[0] # Choosing column with roi_major
@@ -169,6 +169,7 @@ def clean_roi_field(df):
 	# Creating roi_super column
 	df["jem-roi_super"] = df["jem-roi_major"].replace({roi_cor: "Cortical" for roi_cor in data_variables["cortical_list"]}, regex=True)
 	df["jem-roi_super"] = df["jem-roi_super"].replace({roi_sub: "Subcortical" for roi_sub in data_variables["subcortical_list"]}, regex=True)
+	df["jem-roi_super"] = df["jem-roi_super"].replace({roi_bs: "Brainstem" for roi_bs in data_variables["brainstem_list"]}, regex=True)
 	df["jem-roi_super"] = df["jem-roi_super"].replace({"NA": "Unknown"}, regex=True)
 
 	return df
