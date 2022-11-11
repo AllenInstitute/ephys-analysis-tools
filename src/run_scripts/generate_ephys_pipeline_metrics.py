@@ -1,3 +1,17 @@
+"""
+-----------------------------------------------------------------------
+File name: generate_ephys_pipeline_metrics.py
+Maintainer: Ramkumar Rajanbabu
+-----------------------------------------------------------------------
+Author: Rusty Mann
+Date/time created: 11/10/2022
+Description: Template for generating ephys_pipeline_metrics.csv
+-----------------------------------------------------------------------
+"""
+
+
+#-----Imports-----#
+# General imports
 import pg8000          
 import pandas as pd
 import os
@@ -6,37 +20,19 @@ import json
 import numpy as np
 import pathlib
 from datetime import date, datetime, timedelta
+# File imports
+from functions.lims_functions import get_lims
 # import zmq
 
-def _connect(user="limsreader", host="limsdb2", database="lims2", password="limsro", port=5432):
-    conn = pg8000.connect(user=user, host=host, database=database, password=password, port=port)
-    return conn, conn.cursor()
-
-def _select(cursor, query):
-    cursor.execute(query)
-    columns = [ d[0] for d in cursor.description ]
-    return [ dict(zip(columns, c)) for c in cursor.fetchall() ]
-
-def limsquery(query, user="limsreader", host="limsdb2", database="lims2", password="limsro", port=5432):
-    """A function that takes a string containing a SQL query, connects to the LIMS database and outputs the result."""
-    conn, cursor = _connect(user, host, database, password, port)
-    try:
-        results = _select(cursor, query)
-    finally:
-        
-        cursor.close()             
-        conn.close()
-    return results
-
-def get_lims_dataframe(query):
-    '''Return a dataframe with lims query'''
-    result = limsquery(query)
-    try:
-        data_df = pd.DataFrame(data=result, columns=result[0].keys())
-    except IndexError:
-        print("Could not find results for your query.")
-        data_df = pd.DataFrame()
-    return data_df
+# def get_lims_dataframe(query):
+#     '''Return a dataframe with lims query'''
+#     result = limsquery(query)
+#     try:
+#         data_df = pd.DataFrame(data=result, columns=result[0].keys())
+#     except IndexError:
+#         print("Could not find results for your query.")
+#         data_df = pd.DataFrame()
+#     return data_df
 
 def search_fun(row):
     roi_majors_ctx = ['FCx', 'MOp', 'MOs', 'OCx', 'ORB', 'PCx', 'RSP', 'SSp', 'TCx', 'TEa', 'VISp', ]
@@ -85,91 +81,9 @@ print(datesrange)
 project_codes = ('hIVSCC-MET', 'hIVSCC-METx', 'hIVSCC-METc', 'mIVSCC-MET', 'mIVSCC-METx', 'qIVSCC-METa', 'mMPATCHx', 'H301', 'H301x')
 user_codes = ('P1', 'P2', 'P4', 'P8', 'P9', 'PA', 'PB', 'PC', 'PE', 'PJ', 'PN', 'PR', 'PX')
 
-query = """
-SELECT cell.name AS cell_name, 
-cell.id AS cell_id, 
-cell.patched_cell_container AS tube_id,
-substring(cell.patched_cell_container, 0, 3) as rig_operator,
-cell.workflow_state AS specimen_workflow_state,
-p.code AS project_code,
-err.id AS roi_result_id,
-err.storage_directory AS storage_dir,
-err.created_at AS created_date,
-err.recording_date AS recording_date,
-err.workflow_state AS roiresult_workflow_state,
-err.electrode_0_pa,
-err.failed_electrode_0,
-err.input_resistance_mohm,
-err.initial_access_resistance_mohm,
-err.input_access_resistance_ratio,
-err.seal_gohm,
-err.failed_no_seal,
-err.failed_bad_rs,
-err.failed_other,
-slice.name as slice_name,
-eff.tau,
-eff.upstroke_downstroke_ratio_short_square,
-eff.peak_v_short_square,
-eff.upstroke_downstroke_ratio_ramp,
-eff.threshold_v_ramp,
-eff.sag,
-eff.threshold_t_ramp,
-eff.slow_trough_v_ramp,
-eff.vrest, 
-eff.trough_t_ramp,
-eff.trough_v_long_square,
-eff.threshold_t_short_square,
-eff.peak_t_ramp,
-eff.fast_trough_v_ramp,
-eff.trough_t_long_square,
-eff.slow_trough_v_long_square,
-eff.trough_t_short_square,
-eff.slow_trough_t_long_square,
-eff.threshold_v_long_square,
-eff.fast_trough_t_long_square,
-eff.ri,
-eff.threshold_t_long_square,
-eff.threshold_v_short_square,
-eff.avg_isi,
-eff.vm_for_sag,
-eff.threshold_i_long_square,
-eff.threshold_i_short_square,
-eff.slow_trough_t_ramp,
-eff.peak_v_ramp,
-eff.fast_trough_v_short_square,
-eff.fast_trough_t_short_square,
-eff.fast_trough_t_ramp,
-eff.threshold_i_ramp,
-eff.slow_trough_v_short_square,
-eff.peak_t_short_square,
-eff.slow_trough_t_short_square,
-eff.trough_v_short_square,
-eff.f_i_curve_slope,
-eff.peak_t_long_square,
-eff.latency,
-eff.fast_trough_v_long_square,
-eff.upstroke_downstroke_ratio_long_square,
-eff.trough_v_ramp,
-eff.peak_v_long_square,
-eff.adaptation,
-eff.has_delay,
-eff.has_pause,
-eff.has_burst
+# Add lims_df
+df = get_lims_ephys()
 
-FROM specimens cell
-LEFT JOIN ephys_roi_results err ON cell.ephys_roi_result_id = err.id 
-LEFT JOIN projects p ON cell.project_id = p.id
-LEFT JOIN specimens slice ON cell.parent_id = slice.id
-LEFT JOIN ephys_features eff ON cell.id = eff.specimen_id
-
-WHERE p.code IN {}
-AND substring(cell.patched_cell_container, 0, 3) IN {}
-AND cell.patched_cell_container IS NOT null
-ORDER BY err.created_at
-""" .format(project_codes, user_codes)
-# AND err.storage_directory IS NOT null
-
-df = get_lims_dataframe(query)
 df.columns = df.columns.astype("str")
 print(df.dtypes)
 df['recording_date'] = df['recording_date'].dt.strftime('%Y-%m-%d')
@@ -406,20 +320,8 @@ sweep_qc_df = pd.DataFrame(columns=['cell_name'] + core1_stims)
 sweep_qc_df['cell_name'] = cells
 
 for cell_name in cells:
-    # print(cell_name)
-    sweep_qc_query = """
-        SELECT sw.specimen_id, stim.description, sw.workflow_state, sw.sweep_number, stype.name, specimens.name AS cell_name
-
-        FROM ephys_sweeps sw
-
-        JOIN ephys_stimuli stim ON stim.id = sw.ephys_stimulus_id
-        JOIN specimens ON specimens.id = sw.specimen_id
-        JOIN ephys_stimulus_types stype ON stype.id = stim.ephys_stimulus_type_id
-
-        WHERE specimens.name LIKE '{}'
-        """.format(cell_name)
-        
-    df = get_lims_dataframe(sweep_qc_query)
+   # Add lims_df
+    df = get_lims_sweep()
 
     if len(df) > 0:
 

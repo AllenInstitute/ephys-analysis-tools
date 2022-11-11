@@ -93,7 +93,131 @@ def rename_byte_cols(df):
     return df_renamed
 
 
+
+#-----Rusty's functions----#
+def get_lims_dataframe(query):
+    '''Return a dataframe with lims query'''
+    result = limsquery(query)
+    try:
+        data_df = pd.DataFrame(data=result, columns=result[0].keys())
+    except IndexError:
+        print("Could not find results for your query.")
+        data_df = pd.DataFrame()
+    return data_df
+
+
+
+
 #-----Ram's functions----#
+def get_lims_ephys():
+    lims_query = """
+    SELECT cell.name AS cell_name, 
+    cell.id AS cell_id, 
+    cell.patched_cell_container AS tube_id,
+    substring(cell.patched_cell_container, 0, 3) as rig_operator,
+    cell.workflow_state AS specimen_workflow_state,
+    p.code AS project_code,
+    err.id AS roi_result_id,
+    err.storage_directory AS storage_dir,
+    err.created_at AS created_date,
+    err.recording_date AS recording_date,
+    err.workflow_state AS roiresult_workflow_state,
+    err.electrode_0_pa,
+    err.failed_electrode_0,
+    err.input_resistance_mohm,
+    err.initial_access_resistance_mohm,
+    err.input_access_resistance_ratio,
+    err.seal_gohm,
+    err.failed_no_seal,
+    err.failed_bad_rs,
+    err.failed_other,
+    slice.name as slice_name,
+    eff.tau,
+    eff.upstroke_downstroke_ratio_short_square,
+    eff.peak_v_short_square,
+    eff.upstroke_downstroke_ratio_ramp,
+    eff.threshold_v_ramp,
+    eff.sag,
+    eff.threshold_t_ramp,
+    eff.slow_trough_v_ramp,
+    eff.vrest, 
+    eff.trough_t_ramp,
+    eff.trough_v_long_square,
+    eff.threshold_t_short_square,
+    eff.peak_t_ramp,
+    eff.fast_trough_v_ramp,
+    eff.trough_t_long_square,
+    eff.slow_trough_v_long_square,
+    eff.trough_t_short_square,
+    eff.slow_trough_t_long_square,
+    eff.threshold_v_long_square,
+    eff.fast_trough_t_long_square,
+    eff.ri,
+    eff.threshold_t_long_square,
+    eff.threshold_v_short_square,
+    eff.avg_isi,
+    eff.vm_for_sag,
+    eff.threshold_i_long_square,
+    eff.threshold_i_short_square,
+    eff.slow_trough_t_ramp,
+    eff.peak_v_ramp,
+    eff.fast_trough_v_short_square,
+    eff.fast_trough_t_short_square,
+    eff.fast_trough_t_ramp,
+    eff.threshold_i_ramp,
+    eff.slow_trough_v_short_square,
+    eff.peak_t_short_square,
+    eff.slow_trough_t_short_square,
+    eff.trough_v_short_square,
+    eff.f_i_curve_slope,
+    eff.peak_t_long_square,
+    eff.latency,
+    eff.fast_trough_v_long_square,
+    eff.upstroke_downstroke_ratio_long_square,
+    eff.trough_v_ramp,
+    eff.peak_v_long_square,
+    eff.adaptation,
+    eff.has_delay,
+    eff.has_pause,
+    eff.has_burst
+    FROM specimens cell
+    LEFT JOIN ephys_roi_results err ON cell.ephys_roi_result_id = err.id 
+    LEFT JOIN projects p ON cell.project_id = p.id
+    LEFT JOIN specimens slice ON cell.parent_id = slice.id
+    LEFT JOIN ephys_features eff ON cell.id = eff.specimen_id
+    WHERE p.code IN {}
+    AND substring(cell.patched_cell_container, 0, 3) IN {}
+    AND cell.patched_cell_container IS NOT null
+    ORDER BY err.created_at
+    """ .format(project_codes, user_codes)
+    # AND err.storage_directory IS NOT null
+
+    df = pd.DataFrame(limsquery(lims_query))
+    if is_this_py3:
+        df = rename_byte_cols(df)
+    return df
+
+
+def get_lims_sweep():
+    sweep_qc_query = """
+    SELECT sw.specimen_id, stim.description, sw.workflow_state, sw.sweep_number, stype.name, specimens.name AS cell_name
+
+    FROM ephys_sweeps sw
+
+    JOIN ephys_stimuli stim ON stim.id = sw.ephys_stimulus_id
+    JOIN specimens ON specimens.id = sw.specimen_id
+    JOIN ephys_stimulus_types stype ON stype.id = stim.ephys_stimulus_type_id
+
+    WHERE specimens.name LIKE '{}'
+    """.format(cell_name)
+        
+    df = pd.DataFrame(limsquery(sweep_qc_query))
+    if is_this_py3:
+        df = rename_byte_cols(df)
+    return df
+
+
+
 def get_lims():
     lims_query="""
     SELECT DISTINCT cell.name, cell.patched_cell_container, cell.cell_depth,
