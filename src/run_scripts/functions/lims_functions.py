@@ -110,6 +110,10 @@ def get_lims_dataframe(query):
 
 #-----Ram's functions----#
 def get_lims_ephys():
+
+    project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "mIVSCC-MET", "mIVSCC-METx", "qIVSCC-METa", "mMPATCHx", "H301", "H301x")
+    user_codes = ("P1", "P2", "P4", "P8", "P9", "PA", "PB", "PC", "PE", "PJ", "PN", "PR", "PX")
+
     lims_query = """
     SELECT cell.name AS cell_name, 
     cell.id AS cell_id, 
@@ -198,7 +202,7 @@ def get_lims_ephys():
     return df
 
 
-def get_lims_sweep():
+def get_lims_sweep(cell_name):
     sweep_qc_query = """
     SELECT sw.specimen_id, stim.description, sw.workflow_state, sw.sweep_number, stype.name, specimens.name AS cell_name
 
@@ -229,7 +233,7 @@ def get_lims():
     JOIN donors d ON d.id = cell.donor_id
     JOIN organisms org ON d.organism_id = org.id
     JOIN projects proj ON cell.project_id = proj.id
-    WHERE SUBSTRING(cell.patched_cell_container FROM 6 FOR 6) BETWEEN '170101' AND '301231'"""
+    WHERE SUBSTRING(cell.patched_cell_container FROM 6 FOR 6) BETWEEN '171001' AND '301231'"""
 
     df = pd.DataFrame(limsquery(lims_query))
     if is_this_py3:
