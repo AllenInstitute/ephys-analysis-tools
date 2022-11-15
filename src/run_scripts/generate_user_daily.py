@@ -115,7 +115,6 @@ def generate_daily(df, date):
     return df
 
 
-# Main
 if __name__ == "__main__":
 	start = time.time()
 	main()
