@@ -32,8 +32,8 @@ start = time.time()
 # Directories
 shiny_visp_mouse_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/mouse_patchseq_VISp_current/'
 shiny_mtg_human_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/human/human_patchseq_MTG_current/'
-jem_metadata_path = '//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data/'
-data_path = "//allen/programs/celltypes/workgroups/279/Power_bi/powerbi_csvs/"
+master_jem_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/formatted_data/"
+data_path = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/"
 
 
 def search_fun(row):
@@ -93,9 +93,8 @@ df = df[df['created_date'] >= start_date]
 store_dirs = list(df['storage_dir'])
 storage_dirs  = ['/'+x for x in store_dirs]
 
-print('saving lims csv')
-data_path = "//allen/programs/celltypes/workgroups/279/Power_bi/powerbi_csvs/"
-df.to_csv(data_path + 'lims_data.csv')
+#print('saving lims csv')
+#df.to_csv(data_path + 'lims_data.csv')
 
 for directory in storage_dirs:
     
@@ -281,20 +280,20 @@ df = df[col_order]
 df['storage_dir'] = df['storage_dir'].str.replace('/', "\\")
 df['storage_dir'] = '\\' + df['storage_dir']
 
-print("saving lims and json data")
-df.to_csv(data_path + "lims_and_json_data.csv")
+#print("saving lims and json data")
+#df.to_csv(data_path + "lims_and_json_data.csv")
 
 shiny_columns = ['cell_name', 'batch_vendor_name', 'patchseq_roi', 'Norm_Marker_Sum.0.4_label', 'rna_amplification_pass_fail']
 shiny_mouse = pd.read_csv(shiny_visp_mouse_path + 'mapping.df.with.bp.40.lastmap.csv', usecols=shiny_columns)
 shiny_human = pd.read_csv(shiny_mtg_human_path + 'mapping.df.lastmap.csv', usecols=shiny_columns)
 
-jem_columns = ['name', 'roi_major']
-jem_metadata = pd.read_csv(jem_metadata_path + 'jem_metadata.csv', usecols=jem_columns)
+jem_columns = ["jem-id_cell_specimen", "jem-roi_major"]
+jem_df = pd.read_csv(os.path.join(master_jem_dir, "master_jem.csv"), usecols=jem_columns) # low_memory=False)
 
 shiny = pd.concat([shiny_mouse, shiny_human])
 
 shiny_lims_json = pd.merge(left=df, right=shiny, how='left', left_on='cell_name', right_on='cell_name')
-dash_data = pd.merge(left=shiny_lims_json, right=jem_metadata, how='left', left_on='cell_name', right_on='name')
+dash_data = pd.merge(left=shiny_lims_json, right=jem_df, how='left', left_on='cell_name', right_on='name')
 dash_data["ROI Super"] = dash_data.apply(search_fun, axis=1)
 
 cell_list = list(dash_data["cell_name"])
@@ -322,7 +321,7 @@ for cell_name in cell_list:
                 sweep_qc_df.loc[cell_loc, stim] = wfs
 
 full_dash_data = dash_data.merge(sweep_qc_df, left_on="cell_name", right_on="cell_name")
-full_dash_data.to_csv(data_path + "ephys_dash_data" + ".csv", index=False)
+full_dash_data.to_csv(os.path.join(data_path, "electrophysiology_pipeline_metrics.csv"), index=False)
 
 print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
 
