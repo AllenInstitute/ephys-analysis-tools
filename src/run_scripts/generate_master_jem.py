@@ -121,14 +121,11 @@ def generate_master_jem_df():
 	jem_na_df["container"] = jem_na_df["container"].replace({np.nan: "NA"})
 	# Merge all jem dataframes
 	master_jem_df = pd.concat([jem_df, jem_na_df, jem_fail_df], ignore_index=True, sort=False)
-	# Drop columns
-	master_jem_df.drop(columns=["organism_name", "name","specimen_ID","full_genotype","cell_depth"], inplace=True)
 
 	return master_jem_df
 
 
-# Main
-if __name__ == '__main__':
+if __name__ == "__main__":
     start = time.time()
     main()
     print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
