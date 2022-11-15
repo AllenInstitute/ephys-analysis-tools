@@ -360,8 +360,6 @@
         "internalSolution.version",
         "internalSolution.volume",
         "jem_created",
-        "jem_date_dt",
-        "jem_date_m",
         "recording.accessR",
         "recording.humanCellTypePrediction",
         "recording.membraneV",
