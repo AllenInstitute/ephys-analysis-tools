@@ -55,7 +55,7 @@ def generate_jem_df(group, filter_tubes=None):
 
 	delta_mod_date = (date_today - date_prev_30d).days + 3
 	jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
-	# Flatten JSON files (previous 30 day information) to pandas dataframe 9jem_df)
+	# Flatten JSON files (previous 30 day information) to pandas dataframe jem_df)
 	jem_df = flatten_jem_data(jem_paths, day_prev_30d, day_today)
 
 	# Rename columns based on jem_dictionary
