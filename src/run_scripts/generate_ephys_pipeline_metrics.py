@@ -21,20 +21,24 @@ import numpy as np
 import pathlib
 from datetime import date, datetime, timedelta
 # File imports
-from functions.lims_functions import get_lims
+from functions.lims_functions import get_lims_ephys, get_lims_sweep
 # import zmq
+# Test imports
+import time # To measure program execution time
 
-# def get_lims_dataframe(query):
-#     '''Return a dataframe with lims query'''
-#     result = limsquery(query)
-#     try:
-#         data_df = pd.DataFrame(data=result, columns=result[0].keys())
-#     except IndexError:
-#         print("Could not find results for your query.")
-#         data_df = pd.DataFrame()
-#     return data_df
+
+start = time.time()
+
+# Directories
+shiny_visp_mouse_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/mouse_patchseq_VISp_current/'
+shiny_mtg_human_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/human/human_patchseq_MTG_current/'
+jem_metadata_path = '//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data/'
+data_path = "//allen/programs/celltypes/workgroups/279/Power_bi/powerbi_csvs/"
+
 
 def search_fun(row):
+    """
+    """
     roi_majors_ctx = ['FCx', 'MOp', 'MOs', 'OCx', 'ORB', 'PCx', 'RSP', 'SSp', 'TCx', 'TEa', 'VISp', ]
     roi_majors_subctx = ['CBX', 'CTX', 'EPI', 'HIP', 'HY', 'MB', 'PAL', 'STRd', 'STRv', 'TH', ]
     all_rois = roi_majors_ctx + roi_majors_subctx
@@ -64,8 +68,7 @@ today = date.today()
 yesterday = today - timedelta(days=1)
 yesterday
 
-start_date = '2017-01-01'
-# start_date = '2021-01-01'
+start_date = '2017-10-01'
 end_date = str(today)
 
 start_dt = datetime.strptime(start_date, '%Y-%m-%d')
@@ -77,26 +80,19 @@ end = datetime.date(end_dt)
 datesrange = pd.date_range(start=start, end=end)
 print(datesrange)
 
-# print("starting query")
-project_codes = ('hIVSCC-MET', 'hIVSCC-METx', 'hIVSCC-METc', 'mIVSCC-MET', 'mIVSCC-METx', 'qIVSCC-METa', 'mMPATCHx', 'H301', 'H301x')
-user_codes = ('P1', 'P2', 'P4', 'P8', 'P9', 'PA', 'PB', 'PC', 'PE', 'PJ', 'PN', 'PR', 'PX')
-
 # Add lims_df
 df = get_lims_ephys()
 
 df.columns = df.columns.astype("str")
-print(df.dtypes)
 df['recording_date'] = df['recording_date'].dt.strftime('%Y-%m-%d')
-# df['rec_date'] = df['recording_date'].str.slice[0,1]
-print(df['recording_date'].head())
-# print("finished query")
+
+
 df['created_date'] = pd.to_datetime(df['created_date'])
 df = df[df['created_date'] >= start_date]
-# print(df['created_date'].head())
 
 store_dirs = list(df['storage_dir'])
 storage_dirs  = ['/'+x for x in store_dirs]
-# print(storage_dirs)
+
 print('saving lims csv')
 data_path = "//allen/programs/celltypes/workgroups/279/Power_bi/powerbi_csvs/"
 df.to_csv(data_path + 'lims_data.csv')
@@ -126,7 +122,7 @@ for directory in storage_dirs:
                     qc_status = None
                 df.loc[cell_row, "QC status"] = qc_status
 
-#                 if qc_fail_tags:
+                # if qc_fail_tags:
                 df.loc[cell_row, "ephys_qc_fail_tags"] = str(qc_fail_tags)
 
                 if "electrode_0_pa missing value" in qc_fail_tags:
@@ -164,9 +160,6 @@ for directory in storage_dirs:
                 else:
                     no_Iclamp_qc = False
                 df.loc[cell_row, "No current clamps sweeps passed QC"] = no_Iclamp_qc
-                        
-#                 else:
-#                     pass
                 
             elif fil.endswith('EPHYS_NWB_STIMULUS_SUMMARY_V3_QUEUE_' + roi_id + '_output.json'):
                 recording_stopped_sweeps = []
@@ -263,10 +256,6 @@ for directory in storage_dirs:
                         else:
                             ramp_fx = "Passed"
                         df.loc[cell_row, 'ramps_fx'] = ramp_fx
-                        
-#                     else:
-#                         pass
-
 
 col_order = ['recording_date','created_date', 'cell_name', 'cell_id', 'tube_id', 'rig_operator', 'roi_result_id', 'specimen_workflow_state', 'roiresult_workflow_state', 
              'project_code', 'storage_dir', 'electrode_0_pa', 'failed_electrode_0', 'seal_gohm', 'failed_no_seal', 
@@ -291,17 +280,14 @@ df['created_date'] = df['created_date'].dt.strftime('%Y-%m-%d')
 df = df[col_order]
 df['storage_dir'] = df['storage_dir'].str.replace('/', "\\")
 df['storage_dir'] = '\\' + df['storage_dir']
-# print(df['storage_dir'].head())
+
 print("saving lims and json data")
 df.to_csv(data_path + "lims_and_json_data.csv")
-
-shiny_visp_mouse_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/mouse_patchseq_VISp_current/'
-shiny_mtg_human_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/human/human_patchseq_MTG_current/'
-jem_metadata_path = '//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data/'
 
 shiny_columns = ['cell_name', 'batch_vendor_name', 'patchseq_roi', 'Norm_Marker_Sum.0.4_label', 'rna_amplification_pass_fail']
 shiny_mouse = pd.read_csv(shiny_visp_mouse_path + 'mapping.df.with.bp.40.lastmap.csv', usecols=shiny_columns)
 shiny_human = pd.read_csv(shiny_mtg_human_path + 'mapping.df.lastmap.csv', usecols=shiny_columns)
+
 jem_columns = ['name', 'roi_major']
 jem_metadata = pd.read_csv(jem_metadata_path + 'jem_metadata.csv', usecols=jem_columns)
 
@@ -310,18 +296,16 @@ shiny = pd.concat([shiny_mouse, shiny_human])
 shiny_lims_json = pd.merge(left=df, right=shiny, how='left', left_on='cell_name', right_on='cell_name')
 dash_data = pd.merge(left=shiny_lims_json, right=jem_metadata, how='left', left_on='cell_name', right_on='name')
 dash_data["ROI Super"] = dash_data.apply(search_fun, axis=1)
-# dash_data["ROI Info"] = dash_data.apply(search_fun, axis=1)
-# dash_data[["ROI Major", "ROI Super"]] = dash_data["ROI Info"].str.split(",", expand=True)
 
-cells = list(dash_data["cell_name"])
+cell_list = list(dash_data["cell_name"])
 core1_stims = ['X1PS_SubThresh', 'X3LP_Rheo', 'X4PS_SupraThresh', 'X6SP_Rheo', 'X7Ramp']
 
 sweep_qc_df = pd.DataFrame(columns=['cell_name'] + core1_stims)
-sweep_qc_df['cell_name'] = cells
+sweep_qc_df['cell_name'] = cell_list
 
-for cell_name in cells:
+for cell_name in cell_list:
    # Add lims_df
-    df = get_lims_sweep()
+    df = get_lims_sweep(cell_name)
 
     if len(df) > 0:
 
@@ -329,22 +313,18 @@ for cell_name in cells:
 
             stim_df = df[df['description'].str.startswith(stim)]
             stim_df.sort_values(by=['sweep_number'], inplace=True)
-            # stim_idx_lst = list(stim_df['description'])
-            # index_parts = [x.split('[')[1] for x in stim_idx_lst]
-            # indices = [int(x[:-1]) for x in index_parts]
 
             if len(stim_df) > 0:
                 max_idx = int(len(stim_df))
-                # max_idx = max(indices)
-                # max_stim = stim + "[" + str(max_idx) + "]"
-                # max_stim_df = stim_df[stim_df['description'] == max_stim]
-                # wfs = list(max_stim_df['workflow_state'])[0]
                 wfs = stim_df.iloc[(max_idx-1), stim_df.columns.get_loc('workflow_state')]
 
                 cell_loc = sweep_qc_df.loc[sweep_qc_df['cell_name'] == cell_name].index[0]
                 sweep_qc_df.loc[cell_loc, stim] = wfs
 
 full_dash_data = dash_data.merge(sweep_qc_df, left_on="cell_name", right_on="cell_name")
+full_dash_data.to_csv(data_path + "ephys_dash_data" + ".csv", index=False)
+
+print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
 
 # full_dash_data = full_dash_data.rename(
 #     {
@@ -452,7 +432,3 @@ full_dash_data = dash_data.merge(sweep_qc_df, left_on="cell_name", right_on="cel
 #     }, 
 #     axis=1
 #     )
-data_path = "//allen/programs/celltypes/workgroups/279/Power_bi/powerbi_csvs/"
-# full_dash_data.to_csv(data_path + 'ephys_dash_data' + str(today) + '.csv')
-full_dash_data.to_csv(data_path + 'ephys_dash_data' + '.csv')
-
