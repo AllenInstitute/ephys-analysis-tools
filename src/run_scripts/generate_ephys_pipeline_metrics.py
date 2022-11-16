@@ -27,7 +27,7 @@ from functions.lims_functions import get_lims_ephys, get_lims_sweep
 import time # To measure program execution time
 
 
-start = time.time()
+program_start_time = time.time()
 
 # Directories
 shiny_visp_mouse_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/mouse_patchseq_VISp_current/'
@@ -46,18 +46,16 @@ def search_fun(row):
     for test_value in all_rois:
         
         try:
-            roi_major_matches = [test_value in row["roi_major"]] 
+            roi_major_matches = [test_value in row["jem-roi_major"]] 
             if test_value in roi_majors_ctx:
-                roi_super_ctx_matches = [test_value in row["roi_major"]]  
+                roi_super_ctx_matches = [test_value in row["jem-roi_major"]]  
             elif test_value in roi_majors_subctx:
-                roi_super_subctx_matches = [test_value in row["roi_major"]]
+                roi_super_subctx_matches = [test_value in row["jem-roi_major"]]
 
             if any(roi_major_matches):
                 if any(roi_super_ctx_matches):
-                    # return str(test_value) + "," + "Cortex"
                     return "cortex"
                 elif any(roi_super_subctx_matches):
-                    # return str(test_value) + "," + "Subcortex"
                     return "Subcortex"
   
         except TypeError as e:
@@ -292,8 +290,8 @@ jem_df = pd.read_csv(os.path.join(master_jem_dir, "master_jem.csv"), usecols=jem
 
 shiny = pd.concat([shiny_mouse, shiny_human])
 
-shiny_lims_json = pd.merge(left=df, right=shiny, how='left', left_on='cell_name', right_on='cell_name')
-dash_data = pd.merge(left=shiny_lims_json, right=jem_df, how='left', left_on='cell_name', right_on='name')
+shiny_lims_json = pd.merge(left=df, right=shiny, how="left", left_on="cell_name", right_on="cell_name")
+dash_data = pd.merge(left=shiny_lims_json, right=jem_df, how='left', left_on='cell_name', right_on="jem-id_cell_specimen")
 dash_data["ROI Super"] = dash_data.apply(search_fun, axis=1)
 
 cell_list = list(dash_data["cell_name"])
@@ -323,7 +321,7 @@ for cell_name in cell_list:
 full_dash_data = dash_data.merge(sweep_qc_df, left_on="cell_name", right_on="cell_name")
 full_dash_data.to_csv(os.path.join(data_path, "electrophysiology_pipeline_metrics.csv"), index=False)
 
-print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
+print("\nThe program was executed in", round(((time.time()-program_start_time)/60), 2), "minutes.")
 
 # full_dash_data = full_dash_data.rename(
 #     {
