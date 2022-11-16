@@ -82,9 +82,17 @@ def main():
 	master_lims_df.rename(columns=data_variables["lims_dictionary"], inplace=True)
 
 	# Merge jem_df and lims_df
-	master_jem_lims_df = pd.merge(left=master_jem_df, right=master_lims_df, left_on="jem-id_patched_cell_container", right_on="lims-id_patched_cell_container", how="left")
+	#master_jem_lims_df = pd.merge(left=master_jem_df, right=master_lims_df, left_on="jem-id_patched_cell_container", right_on="lims-id_patched_cell_container", how="left")
+	master_jem_lims_df = pd.merge(left=master_jem_df, right=master_lims_df, left_on="jem-id_cell_specimen", right_on="lims-id_cell_specimen", how="left")
 	# Sort columns
 	master_jem_lims_df = master_jem_lims_df.reindex(columns=data_variables["column_order_list"])
+	# Create a new column (test-jem_lims) for master_jem_lims_df 
+	master_jem_lims_df["test-jem_lims_patch_tube_congruency"] = np.where((master_jem_lims_df["jem-id_cell_specimen"] == master_jem_lims_df["lims-id_cell_specimen"])&(master_jem_lims_df["jem-id_patched_cell_container"] == master_jem_lims_df["lims-id_patched_cell_container"]), "Matching JEM & LIMS Patch Tube",
+																np.where((master_jem_lims_df["jem-id_cell_specimen"].isnull()), "Missing JEM Cell Specimen ID",
+																np.where((master_jem_lims_df["jem-id_cell_specimen"].isnull()), "Missing JEM Patch Tube",
+																np.where((master_jem_lims_df["lims-id_cell_specimen"].isnull()), "Missing LIMS Patch Tube",
+																np.where((master_jem_lims_df["jem-id_patched_cell_container"] != master_jem_lims_df["lims-id_patched_cell_container"]), "Mismatching JEM & LIMS Patch Tube", "Unsure")))))
+	# Sort values
 	master_jem_lims_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen"], ascending=[False, True, True], inplace=True)
 	# Dataframe to csvs and excel
 	master_jem_lims_df.to_csv(path_or_buf=os.path.join(path_output, "master_jem.csv"), index=False)
