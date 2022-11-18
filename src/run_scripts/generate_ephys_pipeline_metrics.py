@@ -32,35 +32,7 @@ program_start_time = time.time()
 # Directories
 shiny_visp_mouse_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/mouse_patchseq_VISp_current/'
 shiny_mtg_human_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/human/human_patchseq_MTG_current/'
-master_jem_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/formatted_data/"
 data_path = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/"
-
-
-def search_fun(row):
-    """
-    """
-    roi_majors_ctx = ['FCx', 'MOp', 'MOs', 'OCx', 'ORB', 'PCx', 'RSP', 'SSp', 'TCx', 'TEa', 'VISp', ]
-    roi_majors_subctx = ['CBX', 'CTX', 'EPI', 'HIP', 'HY', 'MB', 'PAL', 'STRd', 'STRv', 'TH', ]
-    all_rois = roi_majors_ctx + roi_majors_subctx
-    
-    for test_value in all_rois:
-        
-        try:
-            roi_major_matches = [test_value in row["jem-roi_major"]] 
-            if test_value in roi_majors_ctx:
-                roi_super_ctx_matches = [test_value in row["jem-roi_major"]]  
-            elif test_value in roi_majors_subctx:
-                roi_super_subctx_matches = [test_value in row["jem-roi_major"]]
-
-            if any(roi_major_matches):
-                if any(roi_super_ctx_matches):
-                    return "cortex"
-                elif any(roi_super_subctx_matches):
-                    return "Subcortex"
-  
-        except TypeError as e:
-            return None
-
 
 today = date.today()
 yesterday = today - timedelta(days=1)
@@ -271,8 +243,7 @@ col_order = ['recording_date','created_date', 'cell_name', 'cell_id', 'tube_id',
              'slow_trough_t_ramp', 'peak_v_ramp', 'fast_trough_v_short_square', 'fast_trough_t_short_square', 'fast_trough_t_ramp', 'threshold_i_ramp', 
              'slow_trough_v_short_square', 'peak_t_short_square', 'slow_trough_t_short_square', 'trough_v_short_square', 'f_i_curve_slope', 'peak_t_long_square',
              'latency', 'fast_trough_v_long_square', 'upstroke_downstroke_ratio_long_square', 'trough_v_ramp', 'peak_v_long_square', 'adaptation', 'has_delay', 
-             'has_pause', 'has_burst' 
-            ]
+             'has_pause', 'has_burst']
 df['created_date'] = df['created_date'].dt.strftime('%Y-%m-%d')
 df = df[col_order]
 df['storage_dir'] = df['storage_dir'].str.replace('/', "\\")
@@ -284,15 +255,9 @@ df['storage_dir'] = '\\' + df['storage_dir']
 shiny_columns = ['cell_name', 'batch_vendor_name', 'patchseq_roi', 'Norm_Marker_Sum.0.4_label', 'rna_amplification_pass_fail']
 shiny_mouse = pd.read_csv(shiny_visp_mouse_path + 'mapping.df.with.bp.40.lastmap.csv', usecols=shiny_columns)
 shiny_human = pd.read_csv(shiny_mtg_human_path + 'mapping.df.lastmap.csv', usecols=shiny_columns)
-
-jem_columns = ["jem-id_cell_specimen", "jem-roi_major"]
-jem_df = pd.read_csv(os.path.join(master_jem_dir, "master_jem.csv"), usecols=jem_columns) # low_memory=False)
-
 shiny = pd.concat([shiny_mouse, shiny_human])
 
-shiny_lims_json = pd.merge(left=df, right=shiny, how="left", left_on="cell_name", right_on="cell_name")
-dash_data = pd.merge(left=shiny_lims_json, right=jem_df, how='left', left_on='cell_name', right_on="jem-id_cell_specimen")
-dash_data["ROI Super"] = dash_data.apply(search_fun, axis=1)
+dash_data = pd.merge(left=df, right=shiny, how="left", left_on="cell_name", right_on="cell_name")
 
 cell_list = list(dash_data["cell_name"])
 core1_stims = ['X1PS_SubThresh', 'X3LP_Rheo', 'X4PS_SupraThresh', 'X6SP_Rheo', 'X7Ramp']
@@ -322,110 +287,3 @@ full_dash_data = dash_data.merge(sweep_qc_df, left_on="cell_name", right_on="cel
 full_dash_data.to_csv(os.path.join(data_path, "electrophysiology_pipeline_metrics.csv"), index=False)
 
 print("\nThe program was executed in", round(((time.time()-program_start_time)/60), 2), "minutes.")
-
-# full_dash_data = full_dash_data.rename(
-#     {
-#     "cell_name": "Cell Name",
-#     "created_date": "Created Date",
-#     "recording_date": "Recording Date",
-#     "cell_id": "Cell ID", 
-#     "tube_id": "Tube ID",
-#     "rig_operator": "Rig Operator",
-#     "roi_result_id": "ROI result id",
-#     "specimen_workflow_state": "Specimen Workflow State",
-#     "roiresult_workflow_state": "ROI Result Workflow State",
-#     "project_code": "Project Code",
-#     "storage_dir": "Storage Directory",
-#     "electrode_0_pa": "Electrode 0 pa",
-#     "failed_electrode_0": "Failed Electrode 0",
-#     "seal_gohm": "Seal GOhm",
-#     "failed_no_seal": "Failed No Seal",
-#     "input_resistance_mohm": "Input Resistance MOhm",
-#     "initial_access_resistance_mohm": "Initial Access Resistance MOhm",
-#     "input_access_resistance_ratio": "Input Access Resistance Ratio",
-#     "failed_bad_rs": "Failed Bad Rs",
-#     "failed_other": "Failed Other",
-#     "stim_summary_cell_tags": "Stimulus Summary Cell Tags",
-#     "Recording stopped before completing the experiment epoch": "Recording stopped before completing the experiment epoch",
-#     "Stimulus contains NaN values": "Stimulus contains NaN values",
-#     # "test epoch is missing": "test epoch is missing",
-#                             # {"name": ["EPHYS_NWB_STIMULUS_SUMMARY_V3_QUEUE_output.json", "stim epoch is missing"], "id": "stim epoch is missing"},
-#                             # {"name": ["EPHYS_NWB_STIMULUS_SUMMARY_V3_QUEUE_output.json", "experiment epoch is missing"], "id": "experiment epoch is missing"},
-#                             # {"name": ["EPHYS_QC_V3_QUEUE_ouput.json", "QC status"], "id": "QC status"},
-#     "ephys_qc_fail_tags": "Ephys QC Fail Tags",
-#                             # {"name": ["EPHYS_QC_V3_QUEUE_ouput.json", "electrode_0_pa missing value"], "id": "electrode_0_pa missing value"},
-#     "Invalid seal (None)": "Invalid Seal (None)",
-#     "Resistance ratio not available": "Resistance Ratio not Available",
-#     "Initial access resistance not available": "Initial Access Resistance not Available",
-#     "No sweep states available": "No Sweep States Available",
-#     "No current clamps sweeps passed QC": "No Current Clamps Sweeps Passed QC",
-#     "failed_feature_ext": "FX status",
-#     "fail_fx_message": "Fail FX Message",
-#     "longsquares_fx": "Longsquares FX",
-#     "longsquares_fail_fx_message": "Longsquares Fail FX Message",
-#     "shortsquares_fx": "Shortsquares FX",
-#     "shortsquares_fail_fx_message": "Shortsquares Fail FX Message",
-#     "ramps_fx": "Ramps FX",
-#     "ramps_fail_fx_message": "Ramps Fail FX Message",
-#     "batch_vendor_name": "Batch Name",
-#     "patchseq_roi": "Patchseq ROI",
-#     "ROI Super": "ROI Super",
-#     "roi_major": "ROI Major",
-#     "Norm_Marker_Sum.0.4_label": "NMS Status",
-#     "rna_amplification_pass_fail": "RNA Amplification Status",
-#     "tau": "Tau",
-#     "avg_isi": "Avg ISI",
-#     "sag": "Sag",
-#     "vm_for_sag": "VM for Sag",
-#     "ri": "RI",
-#     "vrest": "V-Rest",
-#     "latency": "Latency",
-#     "f_i_curve_slope": "F-I Curve Slope",
-#     "adaptation": "Adaptation",
-#     "has_delay": "Has Delay",
-#     "has_pause": "Has Pause",
-#     "has_burst": "Has Burst",
-#     "upstroke_downstroke_ratio_short_square": "Upstroke Downstroke Ratio ShortSquare",
-#     "peak_v_short_square": "Peak V ShortSquare",
-#     "peak_t_short_square": "Peak t ShortSquare",
-#     "threshold_v_short_square": "Threshold V ShortSquare",
-#     "threshold_i_short_square": "Threshold I ShortSquare",
-#     "threshold_t_short_square": "Threshold t ShortSquare",
-#     "trough_v_short_square": "Trough V ShortSquare",
-#     "trough_t_short_square": "Trough t ShortSquare",
-#     "fast_trough_v_short_square": "Fast Trough V ShortSquare",
-#     "fast_trough_t_short_square": "Fast Trough t ShortSquare",
-#     "slow_trough_v_short_square": "Slow Trough V ShortSquare",
-#     "slow_trough_t_short_square": "Slow Trough t ShortSquare",
-#     "upstroke_downstroke_ratio_long_square": "Upstroke Downstroke Ratio LongSquare",
-#     "peak_v_long_square": "Peak V LongSquare",
-#     "peak_t_long_square": "Peak t LongSquare",
-#     "threshold_v_long_square": "Threshold V LongSquare",
-#     "threshold_i_long_square": "Threshold I LongSquare",
-#     "threshold_t_long_square": "Threshold t LongSquare",
-#     "trough_v_long_square": "Trough V LongSquare",
-#     "trough_t_long_square": "Trough t LongSquare",
-#     "fast_trough_v_long_square": "Fast Trough V LongSquare",
-#     "fast_trough_t_long_square": "Fast Trough t LongSquare",
-#     "slow_trough_v_long_square": "Slow Trough V LongSquare",
-#     "slow_trough_t_long_square": "Slow Trough t LongSquare",
-#     "upstroke_downstroke_ratio_ramp": "Upstroke Downstroke Ratio Ramp",
-#     "peak_v_ramp": "Peak V Ramp",
-#     "peak_t_ramp": "Peak t Ramp",
-#     "threshold_v_ramp": "Threshold V Ramp",
-#     "threshold_i_ramp": "Threshold I Ramp",
-#     "threshold_t_ramp": "Threshold t Ramp",
-#     "trough_v_ramp": "Trough V Ramp",
-#     "trough_t_ramp": "Trough t Ramp",
-#     "fast_trough_v_ramp": "Fast Trough V Ramp",
-#     "fast_trough_t_ramp": "Fast Trough t Ramp",
-#     "slow_trough_v_ramp": "Slow Trough V Ramp",
-#     "slow_trough_t_ramp": "Slow Trough t Ramp",
-#     "X1PS_SubThresh": "X1PS_SubThresh",
-#     "X3LP_Rheo": "X3LP_Rheo",
-#     "X4PS_SupraThresh": "X4PS_SupraThresh",
-#     "X6SP_Rheo": "X6SP_Rheo",
-#     "X7Ramp": "X7Ramp"
-#     }, 
-#     axis=1
-#     )
