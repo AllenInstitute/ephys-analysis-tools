@@ -273,6 +273,8 @@ def get_project_channel(row):
         return project_nucleus
     if project_name == "Channel_Recording":
         return "Channel_Recording"
+    if project_nucleus == project_nucleus:
+        return project_nucleus
     else:
         return "None"
 
