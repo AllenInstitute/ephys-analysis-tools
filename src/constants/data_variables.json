@@ -71,7 +71,8 @@
     "id_cell_specimen_id": "lims-id_cell_specimen_id",
     "id_slice_genotype": "lims-id_slice_genotype",
     "cell_depth": "lims-depth",
-    "id_project_code": "lims-id_project_code"
+    "id_project_code": "lims-id_project_code",
+    "structure": "lims-structure"
 },
 "roi_dictionary_regex_false":
 {
@@ -333,6 +334,7 @@
         "lims-id_slice_specimen",
         "lims-id_cell_specimen",
         "lims-id_patched_cell_container",
+        "lims-structure",
         "lims-id_cell_specimen_id",
         "lims-id_slice_genotype",
         "lims-depth"
