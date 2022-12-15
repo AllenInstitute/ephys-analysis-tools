@@ -68,6 +68,7 @@
     "donor_name": "lims-id_slice_specimen",
     "name": "lims-id_cell_specimen",
     "patched_cell_container": "lims-id_patched_cell_container",
+    "histology_well_name": "lims-histology_well_name",
     "id_cell_specimen_id": "lims-id_cell_specimen_id",
     "id_slice_genotype": "lims-id_slice_genotype",
     "cell_depth": "lims-depth",
@@ -335,6 +336,7 @@
         "lims-id_cell_specimen",
         "lims-id_patched_cell_container",
         "lims-structure",
+        "lims-histology_well_name",
         "lims-id_cell_specimen_id",
         "lims-id_slice_genotype",
         "lims-depth"

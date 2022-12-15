@@ -228,6 +228,7 @@ def get_lims():
     cell.name,
     cell.patched_cell_container,
     cell.cell_depth,
+    slice.histology_well_name,
     d.external_donor_name AS id_cell_specimen_id,
     d.full_genotype AS id_slice_genotype,
     d.name AS donor_name, 
