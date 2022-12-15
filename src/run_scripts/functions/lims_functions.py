@@ -234,13 +234,15 @@ def get_lims():
     d.name AS donor_name, 
     org.name AS id_species,
     proj.code AS id_project_code,
-    structures.acronym AS structure
+    structures.acronym AS structure,
+    cell_reporters.name AS cell_reporter
     FROM specimens cell
     INNER JOIN specimens slice ON cell.parent_id = slice.id 
     INNER JOIN donors d ON d.id = cell.donor_id
     LEFT JOIN organisms org ON d.organism_id = org.id
     LEFT JOIN projects proj ON cell.project_id = proj.id
     LEFT JOIN structures ON cell.structure_id = structures.id
+    LEFT JOIN cell_reporters ON cell.cell_reporter_id = cell_reporters.id
     WHERE SUBSTRING(cell.patched_cell_container FROM 6 FOR 6) BETWEEN '171001' AND '301231'"""
 
     df = pd.DataFrame(limsquery(lims_query))
