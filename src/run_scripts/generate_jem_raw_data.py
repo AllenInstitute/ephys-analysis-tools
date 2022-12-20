@@ -1,6 +1,6 @@
 """
 -----------------------------------------------------------------------
-File name: generate_compiled_jem.py
+File name: generate_jem_raw_data.py
 Maintainer: Ramkumar Rajanbabu
 -----------------------------------------------------------------------
 Author: Ramkumar Rajanbabu
@@ -25,7 +25,7 @@ from functions.lims_functions import get_lims
 import time # To measure program execution time
 
 
-def generate_compiled_jem():
+def generate_jem_raw_data():
 	"""
 	Generates the complied jem data raw?
 
@@ -45,7 +45,7 @@ def generate_compiled_jem():
 
 	# Directories
 	json_dir  = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
-	output_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/raw_data"
+	output_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/data-sources/jem-raw-data-sources"
 
 	# Generate date variables
 	# Date of today
@@ -81,5 +81,5 @@ def generate_compiled_jem():
 
 if __name__ == "__main__":
 	start = time.time()
-	_, _ = generate_compiled_jem()
+	_, _ = generate_jem_raw_data()
 	print("\nThe program was executed in", round(((time.time()-start)/60), 2), "minutes.")
