@@ -32,7 +32,7 @@ program_start_time = time.time()
 # Directories
 shiny_visp_mouse_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/mouse_patchseq_VISp_current/'
 shiny_mtg_human_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/human/human_patchseq_MTG_current/'
-data_path = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/"
+data_path = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/data-sources"
 
 today = date.today()
 yesterday = today - timedelta(days=1)

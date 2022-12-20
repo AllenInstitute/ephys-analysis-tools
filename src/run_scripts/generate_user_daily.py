@@ -52,7 +52,7 @@ def main():
 	data_variables = load_data_variables()
 
 	# Directories
-	path_output = "//allen/programs/celltypes/workgroups/279/Patch-Seq/compiled-jem-data/formatted_data"
+	path_output = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/view-data-sources"
 
 	# Get today's date
 	dt_today, day_today = generate_today()
