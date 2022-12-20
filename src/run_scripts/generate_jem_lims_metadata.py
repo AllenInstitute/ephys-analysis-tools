@@ -43,7 +43,7 @@ def main():
 
 	# Directories
 	path_output = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/data-sources"
-	#path_output_view = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/view-data-sources"
+	path_output_view = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/view-data-sources"
 
 	# Generate jem_df
 	jem_df = generate_jem_df()
@@ -102,7 +102,7 @@ def main():
 	jem_lims_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen"], ascending=[False, True, True], inplace=True)
 	# Dataframe to csvs and excel
 	jem_lims_df.to_csv(path_or_buf=os.path.join(path_output, "jem_lims_metadata.csv"), index=False)
-	#jem_lims_df.to_excel(excel_writer=os.path.join(path_output, "jem_lims_metadata.xlsx"), index=False)
+	jem_lims_df.to_excel(excel_writer=os.path.join(path_output_view, "jem_lims_metadata.xlsx"), index=False)
 
 
 def generate_jem_df():
