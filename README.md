@@ -9,9 +9,9 @@ Code base generating formatted data tables that streamlines data analysis proces
 1) Clone the repository in a directory of your choice.
 2) Navigate to the directory of the cloned repository.
 ```
-cd ephys_analysis_tools\
+cd ephys-analysis-tools\
 ```
-3) Create a new virtual environment (ephys_analysis_tools_env) from the .yml file. 
+3) Create a new virtual environment (ephys-analysis-tools-env) from the .yml file. 
 ```
 conda env create -f environment.yml
 ```
@@ -22,7 +22,7 @@ conda env create -f environment.yml
 
 1) In File Explorer, navigate to the directory of the cloned repository.
 ```
-cd ephys_analysis_tools\
+cd ephys-analysis-tools\
 ```
 2) Click on the desired .bat file to run the intended program.
 
@@ -30,11 +30,11 @@ cd ephys_analysis_tools\
 *Run in Anaconda Command Prompt
 1) Navigate to the directory of the cloned repository.
 ```
-cd ephys_analysis_tools\src\run_scripts
+cd ephys-analysis-tools\src\run_scripts
 ```
 2) Activate the specified virtual environment.
 ```
-activate ephys_analysis_tools_env
+activate ephys-analysis-tools-env
 ```
 3) Run the python scripts for daily/weekly transcriptomics reports.
 ```
