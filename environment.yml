@@ -1,4 +1,4 @@
-name: ephys_analysis_tools_env
+name: ephys-analysis-tools-env
 channels:
   - defaults
 dependencies:
@@ -24,4 +24,4 @@ dependencies:
     - scramp==1.4.1
     - six==1.16.0
     - xlsxwriter==3.0.3
-prefix: C:\Users\ramr\Anaconda3\envs\ephys_analysis_tools_env
+prefix: C:\Users\ramr\Anaconda3\envs\ephys-analysis-tools-env
