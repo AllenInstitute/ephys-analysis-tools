@@ -59,14 +59,12 @@ conda deactivate
 ├── README.md                                            <- The top-level README
 ├── .gitignore                                           <- Ignore file types
 ├── environment.yml                                      <- Requirements file
+├── batch_files                                          <- Batch files
+    ├── hct_transcriptomic_reports                       <- Batch files related to HCT transcriptomic reports
+    ├── ivscc_data_generation                            <- Batch files related to IVSCC data generation
+    └── ivscc_transcriptomic_reports                     <- Batch files related to IVSCC transcriptomic reports
 ├── src                                                  <- Source code
     ├── constants                                        <- JSON
     └── run_scripts                                      <- Python run scripts
         └── functions                                    <- Python function scripts
-├── run_generate_master_jem.bat                          <- Bat file
-├── run_generate_user_daily.bat                          <- Bat file
-├── run_hct_daily_transcriptomics_report.bat             <- Bat file
-├── run_hct_weekly_transcriptomics_report.bat            <- Bat file
-├── run_ivscc_daily_transcriptomics_report.bat           <- Bat file
-└── run_ivscc_weekly_transcriptomics_report.bat          <- Bat file
 ```
