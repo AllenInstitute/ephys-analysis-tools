@@ -68,7 +68,7 @@ def generate_daily_report(group):
 
     if group == "ivscc":
         # Directories
-        ivscc_temporary_report_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/transcriptomics_reports/ivscc_transcriptomics_reports/daily_transcriptomics_reports/temporary"
+        ivscc_temporary_report_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/transcriptomic-reports/daily-reports/temporary"
         ivscc_saved_report_dir = PureWindowsPath(Path(ivscc_temporary_report_dir))
         # File name 
         name_report = "ps_transcriptomics_report"
@@ -533,7 +533,7 @@ def generate_weekly_report(group):
 
     if group == "ivscc":
         # Directories
-        ivscc_temporary_report_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/transcriptomics_reports/ivscc_transcriptomics_reports/weekly_transcriptomics_reports/temporary"
+        ivscc_temporary_report_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/transcriptomic-reports/weekly-reports/temporary"
         ivscc_saved_report_dir = PureWindowsPath(Path(ivscc_temporary_report_dir))
         # File name 
         name_report = "ps_transcriptomics_report"
