@@ -1,4 +1,4 @@
-# ephys_analysis_tools
+# ephys-analysis-tools
 Code base generating formatted data tables that streamlines data analysis process for ephys production metadata.
 - Required: Anaconda Command Prompt
 
