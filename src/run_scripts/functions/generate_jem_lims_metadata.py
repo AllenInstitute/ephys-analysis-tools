@@ -26,12 +26,12 @@ import time # To measure program execution time
 
 
 #-----Functions-----#
-def main():
+def main(file_type):
 	"""
 	Main function to create jem_lims_metadata.csv and jem_lims_metadata.xlsx
 
 	Parameters:
-		None
+		file_type (string): specify file type as "csv" or "xlsx"
 
 	Returns:
 		jem_lims_metadata.csv (csv file)
@@ -92,17 +92,14 @@ def main():
 																 np.where((jem_lims_df["jem-id_cell_specimen"].isnull()), "Missing JEM Cell Specimen ID",
 																 np.where((jem_lims_df["lims-id_cell_specimen"].isnull()), "Missing LIMS Cell Specimen ID",
 																 np.where((jem_lims_df["jem-id_cell_specimen"] != jem_lims_df["lims-id_cell_specimen"]), "Mismatching JEM & LIMS Cell Specimen ID", "Unsure"))))
-	# Create a new column (test-jem_lims) for jem_lims_df 
-	#jem_lims_df["test-jem_lims_patch_tube_congruency"] = np.where((jem_lims_df["jem-id_cell_specimen"] == jem_lims_df["lims-id_cell_specimen"])&(jem_lims_df["jem-id_patched_cell_container"] == jem_lims_df["lims-id_patched_cell_container"]), "Matching JEM & LIMS Patch Tube",
-	#															np.where((jem_lims_df["jem-id_cell_specimen"].isnull()), "Missing JEM Cell Specimen ID",
-	#															np.where((jem_lims_df["jem-id_cell_specimen"].isnull()), "Missing JEM Patch Tube",
-	#															np.where((jem_lims_df["lims-id_cell_specimen"].isnull()), "Missing LIMS Patch Tube",
-	#															np.where((jem_lims_df["jem-id_patched_cell_container"] != jem_lims_df["lims-id_patched_cell_container"]), "Mismatching JEM & LIMS Patch Tube", "Unsure")))))
+
 	# Sort values
 	jem_lims_df.sort_values(by=["jem-date_patch_y-m-d", "jem-id_slice_specimen", "jem-id_cell_specimen"], ascending=[False, True, True], inplace=True)
 	# Dataframe to csvs and excel
-	jem_lims_df.to_csv(path_or_buf=os.path.join(path_output, "jem_lims_metadata.csv"), index=False)
-	jem_lims_df.to_excel(excel_writer=os.path.join(path_output_view, "jem_lims_metadata.xlsx"), index=False)
+	if file_type == "csv":
+		jem_lims_df.to_csv(path_or_buf=os.path.join(path_output, "jem_lims_metadata.csv"), index=False)
+	if file_type == "xlsx":
+		jem_lims_df.to_excel(excel_writer=os.path.join(path_output_view, "jem_lims_metadata.xlsx"), index=False)
 
 
 def generate_jem_df():
