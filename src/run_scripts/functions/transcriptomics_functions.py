@@ -74,7 +74,7 @@ def generate_daily_report(group):
         name_report = "ps_transcriptomics_report"
     if group == "hct":
         # Directories
-        hct_temporary_report_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/hct-transcriptomics-reports/daily-reports/temporary"
+        hct_temporary_report_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/hct-transcriptomic-reports/daily-reports/temporary"
         hct_saved_report_dir = PureWindowsPath(Path(hct_temporary_report_dir))
         # File name 
         name_report = "ps_transcriptomics_report_HCT"
