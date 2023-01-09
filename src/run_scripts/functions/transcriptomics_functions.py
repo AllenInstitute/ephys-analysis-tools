@@ -171,7 +171,6 @@ def generate_daily_report(group):
             # Tests for blank structure field in LIMS for Non-Human Primate specimens
             test_lims_struture_nhp(test_lims_structure_nhp_df)
 
-
             if group == "ivscc":
                 # Tests for jem projects
                 test_jem_projects(jem_df)
