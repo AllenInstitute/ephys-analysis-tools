@@ -12,6 +12,7 @@
         "limsSpecName": "jem-id_slice_specimen",
         "virus_enhancer": "jem-virus_enhancer",
         "sliceNotes": "jem-notes_overall",
+        "approach.cellHealth": "jem-cell_health",
         "approach.creCell": "jem-status_reporter",
         "approach.pilotName": "jem-project_name",
         "approach.project_icv_injection_fluorescent_roi": "jem-project_icv_injection_fluorescent_roi",
@@ -297,6 +298,7 @@
         "jem-roi_major_minor",
         "jem-roi_major",
         "jem-roi_minor",
+        "jem-cell_health",
         "jem-health_fill_quality",
         "jem-nucleus_post_patch_detail",
         "jem-nucleus_post_patch",
@@ -348,7 +350,6 @@
     ],
 "drop_list":
     [
-        "approach.cellHealth",
         "approach.pilotTest01",
         "approach.pilotTest04",
         "approach.pilotTest05",
