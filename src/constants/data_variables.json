@@ -141,7 +141,8 @@
     "VISam": "VISam_L",
     "Visp": "VISp_L",
     "VISp": "VISp_L",
-    "HBLC": "HB_LC"
+    "HBLC": "HB_LC",
+    "OT": "OT_L"
 },
 "project_dictionary":
 {
