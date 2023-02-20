@@ -111,7 +111,7 @@ def get_lims_dataframe(query):
 #-----Ram's functions----#
 def get_lims_ephys():
 
-    project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "mIVSCC-MET", "mIVSCC-METx", "qIVSCC-METa", "qIVSCC-METc", "mMPATCHx", "H301", "H301x")
+    project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "mIVSCC-MET", "mIVSCC-METx", "qIVSCC-METa", "qIVSCC-METc", "MET-NM", "mMPATCHx", "H301", "H301x")
     user_codes = ("PC", "PX", "P1", "P2", "P4", "P6", "P8", "P9", "PA", "PB", "PE", "PJ", "PN", "PR", "PV")
 
     lims_query = """
