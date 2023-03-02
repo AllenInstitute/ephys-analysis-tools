@@ -260,7 +260,7 @@ shiny = pd.concat([shiny_mouse, shiny_human])
 dash_data = pd.merge(left=df, right=shiny, how="left", left_on="cell_name", right_on="cell_name")
 
 cell_list = list(dash_data["cell_name"])
-core1_stims = ['X1PS_SubThresh', 'X3LP_Rheo', 'X4PS_SupraThresh', 'X6SP_Rheo', 'X7Ramp']
+core1_stims = ['X1PS_SubThresh', 'X3LP_Rheo', 'X4PS_SupraThresh', 'X6SP_Rheo', 'X7Ramp', 'X7RAMP']
 
 sweep_qc_df = pd.DataFrame(columns=['cell_name'] + core1_stims)
 sweep_qc_df['cell_name'] = cell_list
