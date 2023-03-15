@@ -120,6 +120,12 @@ def generate_daily_report(group):
                                         np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4", na=False)) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4", na=False)), "Incorrect - Culture JEM Tube",
                                         np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("c")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4", na=False)) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4", na=False)), "Incorrect - Culture LIMS Tube", "Not Applicable"))))
 
+    # Create a new column (test-px_tubes)
+    jem_lims_name_df["test-px_tubes"] = np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("x")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PXS4")), "Correct - Experimental JEM/LIMS Tube",
+                                        np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("x")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect - Experimental JEM/LIMS Tube",
+                                        np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("x")) & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect -Experimental JEM Tube",
+                                        np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("x")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect - Experimental LIMS Tube", "Not Applicable"))))
+    
     # Create a new column (test-lims_structure) for lims_df
     lims_df["test-lims_structure"] = np.where((lims_df["lims-structure"].isnull()), "Correct",
                                      np.where((~lims_df["lims-structure"].isnull()), "Incorrect", "Not Applicable"))
@@ -153,9 +159,10 @@ def generate_daily_report(group):
         test_mismatch_specimen_df = test_tube_df[test_tube_df["test-jem_lims"] == "Mismatched Specimen ID"]
         test_mismatch_container_df = test_name_df[test_name_df["test-jem_lims"] == "Mismatched Patch Tube"]
         test_pc_df = jem_lims_name_df[jem_lims_name_df["test-pc_tubes"].str.startswith("Incorrect")]
+        test_px_df = jem_lims_name_df[jem_lims_name_df["test-px_tubes"].str.startswith("Incorrect")]
         test_lims_structure_df = lims_df[lims_df["test-lims_structure"] == "Incorrect"]
 
-        if (len(test_patch_date_df) > 0) or (len(test_jem_df) > 0) or (len(test_lims_df) > 0) or (len(test_mismatch_specimen_df) > 0) or (len(test_mismatch_container_df) > 0) or (len(test_pc_df) > 0) or (len(test_lims_structure_df) > 0):
+        if (len(test_patch_date_df) > 0) or (len(test_jem_df) > 0) or (len(test_lims_df) > 0) or (len(test_mismatch_specimen_df) > 0) or (len(test_mismatch_container_df) > 0) or (len(test_pc_df) > 0) or (len(test_px_df) > 0) or (len(test_lims_structure_df) > 0):
             # Tests for mismatched jem patch date and jem patch tube date
             test_mismatch_patch_date(test_patch_date_df)
             # Tests for missing LIMS information
@@ -168,6 +175,8 @@ def generate_daily_report(group):
             test_mismatch_patch_tube(test_mismatch_container_df)
             # Tests for pc tubes
             test_pc_tubes(test_pc_df)
+            # Tests for px tubes
+            test_px_tubes(test_px_df)
             # Tests for blank structure field in LIMS for Non-Human Primate specimens
             test_lims_structure(test_lims_structure_df)
 
@@ -471,6 +480,31 @@ def test_pc_tubes(test_pc_df):
         print("Description: Please use the JEM Specimen ID to identify and change the JEM Patch Tube and LIMS Patch Tube to start with PCS4 (Culture Tubes)!")
         print()
         for index, row in test_pc_df.iterrows():
+            print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
+            print(f"   - JEM Patch Tube: {row['jem-id_patched_cell_container']}")
+            print(f"   - LIMS Patch Tube: {row['lims-id_patched_cell_container']}")
+            num+=1
+
+
+def test_px_tubes(test_px_df):
+    """
+    Tests for PX tubes.
+
+    Parameters:
+        test_px_df (dataframe): a pandas dataframe.
+
+    Returns:
+        print statement (string)
+    """
+
+    # Row numbering
+    num = 1
+
+    if len(test_px_df) > 0:
+        print("\n#-----Incorrect Experimental Patch Tube Information-----#")
+        print("Description: Please use the JEM Specimen ID to identify and change the JEM Patch Tube and LIMS Patch Tube to start with PXS4 (Experimental Tubes)!")
+        print()
+        for index, row in test_px_df.iterrows():
             print(f"{num}) JEM Specimen ID: {row['jem-id_cell_specimen']}")
             print(f"   - JEM Patch Tube: {row['jem-id_patched_cell_container']}")
             print(f"   - LIMS Patch Tube: {row['lims-id_patched_cell_container']}")
