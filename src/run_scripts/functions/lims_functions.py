@@ -267,10 +267,10 @@ def generate_lims_df(group, date):
     hct_jt = [str(x) for x in range(101, 151, 1)]          # Jonathan(101-150)
     hct_cr = [str(x) for x in range(225, 251, 1)]          # Cristina(225-250)
     hct_bk_mk = [str(x) for x in range(301, 351, 1)]       # Brian K(301-350), Meanhwan(325-350)
-    hct_ln = [str(x) for x in range(351, 401, 1)]          # Lindsay(351-400)
+    #hct_ln = [str(x) for x in range(351, 401, 1)]          # Lindsay(351-400)
     hct_ss = [str(x) for x in range(751, 801, 1)]          # Scott(751-800)
     hct_sv = [str(x) for x in range(801, 851, 1)]          # Sara(801-850)
-    hct_user_tube_num_list = hct_jt + hct_cr + hct_bk_mk + hct_ln + hct_ss + hct_sv
+    hct_user_tube_num_list = hct_jt + hct_cr + hct_bk_mk + hct_ss + hct_sv
 
     lims_df = get_lims()
     # Rename columns based on jem_dictionary
