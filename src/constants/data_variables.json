@@ -146,7 +146,9 @@
 },
 "project_dictionary":
 {
-    "mouse_nhp": "102-01-045-10",
+    "mouse_human": "102-01-045-10",
+    "nhp": "102-01-061-20",
+    "roi_thalamus": "122-01-002-20",
     "human_u01": "102-01-020-20",
     "psilocybin": "102-04-006-20",
     "neuromodulation": "102-01-051-20",

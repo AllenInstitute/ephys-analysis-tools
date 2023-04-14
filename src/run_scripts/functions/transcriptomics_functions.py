@@ -31,7 +31,9 @@ from functions.lims_functions import generate_lims_df
 #-----General Information-----#
 """
 project_dictionary details: New project codes (2021-present)
-- 102-01-045-10: CTY IVSCC (Mouse/NHP) # IVSCC (Dates?)
+- 102-01-045-10: CTY IVSCC (Mouse/NHP) # IVSCC
+- 102-01-061-20 : CTY BICAN Human and NHP Atlas # IVSCC
+- 122-01-002-20 : AIND Thalamus U19 # IVSCC
 - 102-04-006-20 : MSP Measuring Consciousness Ph2 (TBD) # HCT
 - 102-01-051-20: CTY Neuromodulation of NHP Cell Types # HCT
 
@@ -133,7 +135,8 @@ def generate_daily_report(group):
     if (len(jem_df) > 0) & (len(lims_df) > 0):
         # Adding new column with project codes
         if group == "ivscc":
-            jem_lims_name_df["project_code"] = data_variables["project_dictionary"]["mouse_nhp"]
+            jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["lims-id_project_code"].str.startswith("q")), data_variables["project_dictionary"]["nhp"],
+                                               np.where((jem_lims_name_df["jem-roi_minor"] == "MD"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["mouse_human"]))
         if group == "hct":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
