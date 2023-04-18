@@ -140,7 +140,7 @@ def generate_daily_report(group):
         if group == "hct":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
-                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"], data_variables["project_dictionary"]["mouse_nhp"])))
+                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"], data_variables["project_dictionary"]["mouse_human"])))
         
         # Create a date check for jem 
         jem_lims_name_df["jem-date_container"] = jem_lims_name_df["jem-id_patched_cell_container"].str[5:11]
