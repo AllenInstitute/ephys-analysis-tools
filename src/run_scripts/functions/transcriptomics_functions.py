@@ -32,8 +32,8 @@ from functions.lims_functions import generate_lims_df
 """
 project_dictionary details: New project codes (2021-present)
 - 102-01-045-10: CTY IVSCC (Mouse/NHP) # IVSCC
-- 102-01-061-20 : CTY BICAN Human and NHP Atlas # IVSCC
-- 122-01-002-20 : AIND Thalamus U19 # IVSCC
+- 102-01-061-20.3 : CTY BICAN Human and NHP Atlas # IVSCC
+- 122-01-002-20.2.1 : AIND Thalamus U19 # IVSCC
 - 102-04-006-20 : MSP Measuring Consciousness Ph2 (TBD) # HCT
 - 102-01-051-20: CTY Neuromodulation of NHP Cell Types # HCT
 
