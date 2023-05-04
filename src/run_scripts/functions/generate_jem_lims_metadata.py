@@ -18,7 +18,7 @@ import pandas as pd
 # File imports
 from functions.file_functions import load_data_variables
 from functions.jem_functions import clean_date_field, clean_time_field, clean_num_field, clean_roi_field, \
-replace_value, add_jem_patch_tube_field, add_jem_species_field, add_jem_post_patch_status_field, get_project_channel, \
+replace_value, add_jem_patch_tube_field, add_jem_species_field, get_project_channel, \
 fix_jem_versions
 from functions.lims_functions import get_lims
 # Test imports
@@ -71,8 +71,6 @@ def main(file_type):
 	jem_df = add_jem_patch_tube_field(jem_df)
 	# Add species field
 	jem_df = add_jem_species_field(jem_df)
-	# Add post patch status field
-	jem_df = add_jem_post_patch_status_field(jem_df)
 
 	# Drop columns
 	jem_df.drop(columns=data_variables["drop_list"], inplace=True)

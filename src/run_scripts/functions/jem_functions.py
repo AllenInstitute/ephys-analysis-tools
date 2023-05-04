@@ -94,8 +94,6 @@ def generate_jem_df(group, filter_tubes=None):
 	jem_df = add_jem_patch_tube_field(jem_df)
 	# Add species field
 	jem_df = add_jem_species_field(jem_df)
-	# Add post patch status field
-	jem_df = add_jem_post_patch_status_field(jem_df)
 
 	# Filter to only successful experiments
 	jem_df = jem_df[(jem_df["jem-status_success_failure"] == "SUCCESS")]
@@ -311,6 +309,14 @@ def replace_value(df):
 		df["jem-project_retrograde_labeling_region"] = df["jem-project_retrograde_labeling_region"].replace({np.nan: "None"})
 	if "jem-project_retrograde_labeling_exp" in df.columns:
 		df["jem-project_retrograde_labeling_exp"] = df["jem-project_retrograde_labeling_exp"].replace({np.nan: "None"})
+	if "jem-nucleus_post_patch" in df.columns:
+		df["jem-nucleus_post_patch"] = df["jem-nucleus_post_patch"].replace({"nucleus_absent": "Nucleus Absent",
+																			 "nucleus_present": "Nucleus Present",
+																			 "Nucleated": "Nucleus Present",
+																			 "Partial-Nucleus": "Nucleus Present",
+																			 "entire_cell": "Nucleus Present",
+																			 "No-Seal": "Nucleus Absent",
+																			 "unknown": "Unknown"})
 	
 	return df
 
@@ -348,25 +354,6 @@ def add_jem_species_field(df):
 						   np.where(df["jem-id_slice_specimen"].str.startswith(tuple(["QM", "Q20.26.007", "Q21.26.003", "Q21.26.017", "Q21.26.019", "Q21.26.023"])), "NHP-Macaca mulatta",
 	                       np.where(df["jem-id_slice_specimen"].str.startswith(tuple(["QN", "Q19", "Q20.26.001", "Q20.26.009", "Q21.26.005", "Q21.26.006", "Q21.26.008", "Q21.26.009", "Q21.26.013", "Q21.26.015", "Q21.26.021"])), "NHP-Macaca nemestrina",
 	                       np.where(df["jem-id_slice_specimen"].str.startswith(tuple(["SS", "SC", "SC2", "Q21.26.020"])), "NHP-Saimiri sciureus", "Mouse"))))
-
-	return df
-
-
-def add_jem_post_patch_status_field(df):
-	"""
-	Adds a post patch status field in JEM metadata.
-
-	Parameters: 
-		df (dataframe): a pandas dataframe.
-
-	Returns:
-		df (dataframe): a pandas dataframe.
-	"""
-
-	df["jem-nucleus_post_patch_detail"] = np.where(((df["jem-nucleus_post_patch"]=="nucleus_present")|(df["jem-nucleus_post_patch"]=="entire_cell"))&(df["jem-res_final_seal"]>=1000), "Nuc-giga-seal",
-                                          np.where(((df["jem-nucleus_post_patch"]=="nucleus_present")|(df["jem-nucleus_post_patch"]=="entire_cell"))&(df["jem-res_final_seal"]<1000), "Nuc-low-seal",
-                                          np.where(df["jem-nucleus_post_patch"]=="nucleus_absent", "No-seal",
-                                          np.where(df["jem-nucleus_post_patch"]=="unknown", "Unknown", "Not applicable"))))
 
 	return df
 
