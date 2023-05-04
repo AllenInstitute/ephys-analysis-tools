@@ -317,6 +317,11 @@ def replace_value(df):
 																			 "entire_cell": "Nucleus Present",
 																			 "No-Seal": "Nucleus Absent",
 																			 "unknown": "Unknown"})
+	if "jem-health_fill_quality" in df.columns:
+		df["jem-health_fill_quality"] = df["jem-health_fill_quality"].replace({"0: No fill or plume": 0,
+																			   "1: low visibility of the fill (heavily truncated or fill leaking)": 1,
+																			   "2: medium visibility of the fill (some truncations with some intact dendrites)": 2,
+																			   "3: high visibility of the fill (no or very little truncations with intact dendrites)": 3})
 	
 	return df
 
