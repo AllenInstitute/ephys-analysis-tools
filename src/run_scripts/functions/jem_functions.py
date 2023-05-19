@@ -310,13 +310,13 @@ def replace_value(df):
 	if "jem-project_retrograde_labeling_exp" in df.columns:
 		df["jem-project_retrograde_labeling_exp"] = df["jem-project_retrograde_labeling_exp"].replace({np.nan: "None"})
 	if "jem-nucleus_post_patch" in df.columns:
-		df["jem-nucleus_post_patch"] = df["jem-nucleus_post_patch"].replace({"nucleus_absent": "Nucleus Absent",
-																			 "nucleus_present": "Nucleus Present",
-																			 "Nucleated": "Nucleus Present",
-																			 "Partial-Nucleus": "Nucleus Present",
-																			 "entire_cell": "Nucleus Present",
-																			 "No-Seal": "Nucleus Absent",
-																			 "unknown": "Unknown"})
+		df["jem-nucleus_post_patch"] = df["jem-nucleus_post_patch"].replace({"nucleus_absent": "nucleus_absent",
+																			 "nucleus_present": "nucleus_present",
+																			 "Nucleated": "nucleus_present",
+																			 "Partial-Nucleus": "nucleus_present",
+																			 "entire_cell": "nucleus_present",
+																			 "No-Seal": "nucleus_absent",
+																			 "unknown": "unknown"})
 	if "jem-health_fill_quality" in df.columns:
 		df["jem-health_fill_quality"] = df["jem-health_fill_quality"].replace({"0: No fill or plume": 0,
 																			   "1: low visibility of the fill (heavily truncated or fill leaking)": 1,
