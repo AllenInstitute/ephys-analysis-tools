@@ -168,6 +168,16 @@
     "project_code": "Project",
     "jem-id_cell_specimen": "Cell Specimen ID"
 },
+"collab_daily_tx_report_dictionary":
+{
+    "jem-id_patched_cell_container": "Patch Tube Name",
+    "jem-date_blank": "Blank Fill Date",
+    "jem-date_patch": "Patch Date",
+    "jem-roi_major": "ROI Major",
+    "jem-roi_minor": "ROI Minor",
+    "jem-nucleus_post_patch": "Comments",
+    "jem-id_cell_specimen": "Cell Specimen ID"
+},
 "cortical_list":
     [    
         "CBX",
