@@ -252,7 +252,7 @@ df['storage_dir'] = '\\' + df['storage_dir']
 #print("saving lims and json data")
 #df.to_csv(data_path + "lims_and_json_data.csv")
 
-shiny_columns = ['cell_name', 'batch_vendor_name', 'patchseq_roi', 'Norm_Marker_Sum.0.4_label', 'rna_amplification_pass_fail']
+shiny_columns = ['cell_name', 'batch_vendor_name', 'patchseq_roi', 'rna_amplification_pass_fail'] # 'Norm_Marker_Sum.0.4_label' 
 shiny_mouse = pd.read_csv(shiny_visp_mouse_path + 'mapping.df.with.bp.40.lastmap.csv', usecols=shiny_columns)
 shiny_human = pd.read_csv(shiny_mtg_human_path + 'mapping.df.lastmap.csv', usecols=shiny_columns)
 shiny = pd.concat([shiny_mouse, shiny_human])
@@ -273,7 +273,7 @@ for cell_name in cell_list:
 
         for stim in core1_stims:
 
-            stim_df = df[df['description'].str.startswith(stim)]
+            stim_df = df[df['description'].str.startswith(stim)].copy()
             stim_df.sort_values(by=['sweep_number'], inplace=True)
 
             if len(stim_df) > 0:
