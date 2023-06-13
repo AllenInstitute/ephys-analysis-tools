@@ -496,14 +496,10 @@ def fix_jem_versions_collab(df):
 	# Rename necessary fields for concatenating dataframes
 	df = df.rename(columns={"jem-date_blank_old": "jem-date_blank"})
 
-		# Split datetime field into date and time field
+	# Split datetime field into date and time field
 	split_date_time = df["jem-date_patch"].str.split(" ", n=1, expand=True) # Splitting date and time into 2 columns
 	df["jem-date_patch"] = split_date_time[0] # Choosing column with only the dates
 	df["jem-time_patch"] = split_date_time[1] # Choosing column with only the times
-	# Remove timezones from time field 
-	#for time_value in df["jem-time_patch"]:
-	#	split_timezone = df["jem-time_patch"].str.split(" ", n=1, expand=True) # Splitting time and timezone into 2 columns
-	#	df["jem-time_patch"] = split_timezone[0] # Choosing column with only the time
 	# Duplicate date field
 	df["jem-date_patch_y-m-d"] = df["jem-date_patch"]
 	# Split date field and add in year, month, day fields
@@ -521,8 +517,6 @@ def fix_jem_versions_collab(df):
 	df["jem-date_blank"] = df["jem-date_blank"].dt.strftime("%m/%d/%Y")
 	df["jem-date_internal"] = df["jem-date_internal"].dt.strftime("%m/%d/%Y")
 	df["jem-date_patch"] = df["jem-date_patch"].dt.strftime("%m/%d/%Y")
-
-
 	# Replace values in column (roi-major_minor)
 	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace({"layer ": "L", "/": "-"}, regex=True)
 	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary_regex_false"], regex=False)

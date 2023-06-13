@@ -301,6 +301,37 @@ def generate_lims_df(group, date):
     return lims_df
 
 
+def generate_external_lims_df():
+    """
+    Generates a lims dataframe based on the specified date.
+
+    Parameters:
+        group (string): "ivscc" to exclude the hct list or "hct" to only include the hct list.
+        date (string): a date in the format of YYMMDD.
+
+    Returns:
+        lims_df (dataframe): a pandas dataframe.
+    """
+
+    lims_df = get_lims()
+    # Rename columns based on jem_dictionary
+    lims_df.rename(columns=data_variables["lims_dictionary"], inplace=True)
+    # Include Collaborator containers
+    lims_df = lims_df[(~lims_df["lims-id_patched_cell_container"].str.startswith("PGS4")) & 
+                      (~lims_df["lims-id_patched_cell_container"].str.startswith("PHS4"))]
+    # Only run if patched cell containers were collected
+    if len(lims_df) > 0:
+        # Replace values
+        lims_df["lims-id_species"].replace({"Homo Sapiens": "Human", "Mus musculus": "Mouse"}, inplace=True)
+        lims_df["lims-id_slice_genotype"].replace({None: ""}, inplace=True)
+        # Apply specimen id
+        lims_df["lims-id_cell_specimen_id"] = lims_df.apply(get_specimen_id, axis=1)
+        # Sort by patched_cell_container in ascending order
+        lims_df.sort_values(by="lims-id_patched_cell_container", inplace=True)
+
+    return lims_df
+
+
 def get_specimen_id(row):
     species = row["lims-id_species"]
     specimen_id = row["lims-id_cell_specimen_id"]
