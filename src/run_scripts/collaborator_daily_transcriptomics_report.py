@@ -91,9 +91,17 @@ lims_df = generate_external_lims_df()
 # Merge dataframes by outer join based on specimen id 
 jem_lims_df = pd.merge(left=jem_df, right=lims_df, left_on="jem-id_cell_specimen", right_on="lims-id_cell_specimen", how="outer")
 
-# Renaming columns names
-jem_lims_df.rename(columns = data_variables["collab_daily_tx_report_dictionary"], inplace=True)
-jem_lims_df = jem_lims_df[data_variables["collab_daily_tx_report_dictionary"].values()]
-jem_lims_df.insert(loc=3, column="Library Prep Day1 Date", value="")
-jem_lims_df.sort_values(by=["Patch Date", "Patch Tube Name"], inplace=True)
-jem_lims_df.to_csv("C:/Users/ramr/Documents/Github/ai_repos/ephys-analysis-tools/Final.csv")
+if (len(jem_df) > 0) & (len(lims_df) > 0):
+    # Adding new column with project codes
+    jem_lims_df["project_code"] = np.where((jem_lims_df["lims-id_project_code"].str.startswith("q")), data_variables["project_dictionary"]["nhp"],
+                                  np.where((jem_lims_df["jem-roi_minor"] == "MD"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["mouse_human"]))
+
+    try:
+        # Renaming columns names
+        jem_lims_df.rename(columns = data_variables["collab_daily_tx_report_dictionary"], inplace=True)
+        jem_lims_df = jem_lims_df[data_variables["collab_daily_tx_report_dictionary"].values()]
+        jem_lims_df.insert(loc=3, column="Library Prep Day1 Date", value="")
+        jem_lims_df.sort_values(by=["Patch Date", "Patch Tube Name"], inplace=True)
+        jem_lims_df.to_csv("C:/Users/ramr/Documents/Github/ai_repos/ephys-analysis-tools/Final.csv")
+    except IOError:
+            print("\nUnable to save the excel sheet. \nMake sure you don't already have a file with the same name opened.")

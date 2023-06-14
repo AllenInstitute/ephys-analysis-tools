@@ -179,6 +179,7 @@
     "jem-roi_major": "ROI Major",
     "jem-roi_minor": "ROI Minor",
     "jem-nucleus_post_patch": "Comments",
+    "project_code": "Project",
     "jem-id_cell_specimen": "Cell Specimen ID"
 },
 "cortical_list":
