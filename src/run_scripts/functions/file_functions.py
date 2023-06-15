@@ -211,3 +211,9 @@ def load_data_variables():
         data_variables = json.load(json_file)
 
     return data_variables
+
+def get_modification_date(filename):
+    file_time_mod = os.path.getmtime(filename)
+    file_date_mod = datetime.fromtimestamp(file_time_mod)
+    file_date_mod_str = str(file_date_mod)[0:10]
+    return file_date_mod_str
