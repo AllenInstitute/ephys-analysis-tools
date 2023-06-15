@@ -24,7 +24,7 @@ from tkinter.filedialog import askdirectory
 # File imports
 from functions.file_functions import get_jsons, load_data_variables
 from functions.jem_data_set import JemDataSet
-from functions.io_functions import validated_input, validated_date_input,save_xlsx, get_jsons_walk
+from functions.io_functions import validated_input, validated_date_input, get_jsons_walk
 from functions.jem_functions import generate_jem_df, fix_jem_versions_collab, add_jem_patch_tube_field
 from functions.lims_functions import generate_external_lims_df
 
@@ -43,11 +43,59 @@ project_dictionary details: Old project codes
 - 102-04-009-10: CTY SR: Targeted CNS Gene Therapy (Dravet pilot) # IVSCC (Dates?)
 """
 
+def save_xlsx(df, dirname, spreadname, norm_d, head_d):
+    """Save an excel spreadsheet from dataframe
+    
+    Parameters
+    ----------
+    df : pandas dataframe
+    dirname : string
+    spreadname : string
+    norm_d, head_d: dictionaries
+    
+    Returns
+    -------
+    Saved .xlsx file with name spreadname in directory dirname.
+    """
+    
+    # Create a Pandas Excel writer using XlsxWriter as the engine.
+    writer = pd.ExcelWriter(os.path.join(dirname, spreadname), engine="xlsxwriter", date_format="mm/dd/yy")
+    
+    # Convert the dataframe to an XlsxWriter Excel object.
+    df.to_excel(writer, sheet_name='Sheet1', index=False)    
+    
+    # Get the xlsxwriter workbook and worksheet objects.
+    workbook  = writer.book
+    worksheet = writer.sheets['Sheet1']
+    norm_fmt = workbook.add_format(norm_d)
+    head_fmt = workbook.add_format(head_d)
+    worksheet.set_column('A:N', 26, norm_fmt)
+
+    # Write the column headers with the defined format.
+    for col_num, value in enumerate(df.columns.values):
+        worksheet.write(0, col_num, value, head_fmt)
+    try:
+        writer.save()
+    except IOError:
+        print("\nOh no! Unable to save spreadsheet :(\nMake sure you don't already have a file with the same name opened.")
+
+
 #-----Variables-----#
 # Load json file
 data_variables = load_data_variables()
 # Ask user for input on file directory location
 json_dir = askdirectory()
+# File name
+name_report = "ps_transcriptomics_report.xlsx"
+
+
+# Excel document details 
+norm_d = {"font_name":"Arial", "font_size":10, "align":"left", "bold": False, "num_format":"0.00"}
+head_d = norm_d.copy()
+head_d["bg_color"] = "#ABCF8F"
+
+# Directories
+external_temporary_report_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/collaborator-data-warehouse/transcriptomic-reports/shipment-reports/temporary"
 
 # Compiling all JSON files from user chosen file directory
 jem_paths = get_jsons_walk(dirname=json_dir, expt="PS")
@@ -60,6 +108,13 @@ for jem_path in jem_paths:
     success_slice_data = slice_data[slice_data["status"].str.contains("SUCCESS")]
     jem_df = pd.concat([jem_df, slice_data], axis=0, sort=True)
 jem_df.reset_index(drop=True, inplace=True)
+print("Selected JSON directory", json_dir, "\n")
+
+shipment_file_name = os.path.basename(os.path.normpath(json_dir))
+transcriptomic_report_name = shipment_file_name + "_" + name_report
+
+if len(jem_df) == 0:
+    sys.exit("No JSON data found for successful experiments in '%s' directory." %os.path.basename(json_dir))
 
 # Rename columns based on jem_dictionary
 jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
@@ -89,12 +144,12 @@ lims_df = generate_external_lims_df()
 
 #----------Merge jem_df and lims_df----------#
 # Merge dataframes by outer join based on specimen id 
-jem_lims_df = pd.merge(left=jem_df, right=lims_df, left_on="jem-id_cell_specimen", right_on="lims-id_cell_specimen", how="outer")
+jem_lims_df = pd.merge(left=jem_df, right=lims_df, left_on="jem-id_cell_specimen", right_on="lims_cell_name", how="left")
 
 if (len(jem_df) > 0) & (len(lims_df) > 0):
     # Adding new column with project codes
-    jem_lims_df["project_code"] = np.where((jem_lims_df["lims-id_project_code"].str.startswith("q")), data_variables["project_dictionary"]["nhp"],
-                                  np.where((jem_lims_df["jem-roi_minor"] == "MD"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["mouse_human"]))
+    jem_lims_df["project_code"] = np.where((jem_lims_df["jem-id_patched_cell_container"].str.startswith("PDS4", "PRS4")), data_variables["project_dictionary"]["mouse_human"], 
+                                            data_variables["project_dictionary"]["nhp"])
 
     try:
         # Renaming columns names
@@ -102,6 +157,6 @@ if (len(jem_df) > 0) & (len(lims_df) > 0):
         jem_lims_df = jem_lims_df[data_variables["collab_daily_tx_report_dictionary"].values()]
         jem_lims_df.insert(loc=3, column="Library Prep Day1 Date", value="")
         jem_lims_df.sort_values(by=["Patch Date", "Patch Tube Name"], inplace=True)
-        jem_lims_df.to_csv("C:/Users/ramr/Documents/Github/ai_repos/ephys-analysis-tools/Final.csv")
+        save_xlsx(jem_lims_df, external_temporary_report_dir, transcriptomic_report_name, norm_d, head_d)
     except IOError:
             print("\nUnable to save the excel sheet. \nMake sure you don't already have a file with the same name opened.")

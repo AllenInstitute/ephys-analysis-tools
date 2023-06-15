@@ -173,14 +173,15 @@
     "jem-id_patched_cell_container": "Patch Tube Name",
     "jem-date_blank": "Blank Fill Date",
     "jem-date_patch": "Patch Date",
-    "lims-id_species": "Species",
-    "lims-id_cell_specimen_id": "Specimen ID",
-    "lims-id_slice_genotype": "Cell Line",
+    "lims_species_type": "Species",
+    "lims_specimen_id": "Specimen ID",
+    "lims_slice_genotype": "Cell Line",
     "jem-roi_major": "ROI Major",
     "jem-roi_minor": "ROI Minor",
     "jem-nucleus_post_patch": "Comments",
     "project_code": "Project",
-    "jem-id_cell_specimen": "Cell Specimen ID"
+    "jem-id_cell_specimen": "Cell Specimen ID",
+    "prep_type": "Prep Type"
 },
 "cortical_list":
     [    
