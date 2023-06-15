@@ -1,19 +1,19 @@
 WITH Hct AS (
     SELECT
-    C.name AS lims_cell_name,
-    C.patched_cell_container AS lims_patch_tube,
-    SUBSTRING(C.patched_cell_container, 1, 4) AS lims_patch_tube_id,
-    CAST(SUBSTRING(C.patched_cell_container, 6, 6) AS DATE) AS lims_patch_tube_date,
-    SUBSTRING(C.patched_cell_container, 13, 3) AS lims_patch_tube_number,
-    Sp.histology_well_name AS lims_histology_well_name,
-    P.code AS lims_project_code,
-    O.name AS lims_species_type,
-    S.acronym AS lims_structure,
-    CR.name AS lims_cell_reporter,
-    C.cell_depth AS lims_cell_depth,
-    D.name AS lims_donor_name,
-    D.external_donor_name AS lims_specimen_id,
-    D.full_genotype AS lims_slice_genotype
+        C.name AS lims_cell_name,
+        C.patched_cell_container AS lims_patch_tube,
+        SUBSTRING(C.patched_cell_container, 1, 4) AS lims_patch_tube_id,
+        CAST(SUBSTRING(C.patched_cell_container, 6, 6) AS DATE) AS lims_patch_tube_date,
+        SUBSTRING(C.patched_cell_container, 13, 3) AS lims_patch_tube_number,
+        Sp.histology_well_name AS lims_histology_well_name,
+        P.code AS lims_project_code,
+        O.name AS lims_species_type,
+        S.acronym AS lims_structure,
+        CR.name AS lims_cell_reporter,
+        C.cell_depth AS lims_cell_depth,
+        D.name AS lims_donor_name,
+        D.external_donor_name AS lims_specimen_id,
+        D.full_genotype AS lims_slice_genotype
     FROM specimens C
     INNER JOIN specimens Sp
         ON C.parent_id = Sp.id 
@@ -38,7 +38,7 @@ WITH Hct AS (
             'PLS4',
             'PSS4'
         )
-    AND SUBSTRING(C.patched_cell_container FROM 6 FOR 6) >= '171001'
+    AND SUBSTRING(C.patched_cell_container, 6, 6) >= '171001'
 )
 SELECT
     *

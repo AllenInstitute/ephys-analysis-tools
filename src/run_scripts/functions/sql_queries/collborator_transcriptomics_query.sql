@@ -1,17 +1,17 @@
 WITH Collaborators AS (
-    SELECT DISTINCT
-    C.name AS lims_cell_name,
-    C.patched_cell_container AS lims_patch_tube,
-    SUBSTRING(C.patched_cell_container, 1, 4) AS lims_patch_tube_id,
-    CAST(SUBSTRING(C.patched_cell_container, 6, 6) AS DATE) AS lims_patch_tube_date,
-    SUBSTRING(C.patched_cell_container, 13, 3) AS lims_patch_tube_number,
-    C.cell_depth AS lims_cell_depth,
-    D.external_donor_name AS lims_specimen_id,
-    D.full_genotype AS lims_slice_genotype,
-    D.name AS lims_donor_name, 
-    O.name AS lims_species_type,
-    P.code AS lims_project_code, 
-    S.acronym AS lims_structure
+    SELECT
+        C.name AS lims_cell_name,
+        C.patched_cell_container AS lims_patch_tube,
+        SUBSTRING(C.patched_cell_container, 1, 4) AS lims_patch_tube_id,
+        CAST(SUBSTRING(C.patched_cell_container, 6, 6) AS DATE) AS lims_patch_tube_date,
+        SUBSTRING(C.patched_cell_container, 13, 3) AS lims_patch_tube_number,
+        C.cell_depth AS lims_cell_depth,
+        D.external_donor_name AS lims_specimen_id,
+        D.full_genotype AS lims_slice_genotype,
+        D.name AS lims_donor_name, 
+        O.name AS lims_species_type,
+        P.code AS lims_project_code, 
+        S.acronym AS lims_structure
     FROM specimens C
     INNER JOIN specimens Sp
         ON C.parent_id = Sp.id 
@@ -31,7 +31,7 @@ WITH Collaborators AS (
             'PRS4',
             'PWS4'
         )
-    AND SUBSTRING(C.patched_cell_container FROM 6 FOR 6) >= '171001'
+    AND SUBSTRING(C.patched_cell_container, 6, 6) >= '171001'
 )
 SELECT
     *
