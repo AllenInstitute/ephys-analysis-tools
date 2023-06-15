@@ -22,10 +22,12 @@ from functions.file_functions import get_jsons, load_data_variables
 from functions.jem_data_set import JemDataSet
 
 
+#-----Variables-----#
 # Load json file
 data_variables = load_data_variables()
 
 
+#-----Functions-----#
 def generate_jem_df(group, filter_tubes=None):
 	"""
 	Generates a jem metadata dataframe with the previous 30 days of information.
@@ -46,69 +48,25 @@ def generate_jem_df(group, filter_tubes=None):
 	# Date of the previous 30 days from date of today
 	date_prev_30d = date_today - timedelta(days=30)
 	day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
-	if group == "collab":
-		date_prev_30d = date_today - timedelta(days=365)
-		day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
 		
-
 	# Directories
 	if group == "ivscc":
 		json_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/all-metadata-files"
 	if group == "hct":
 		json_dir = "//allen/programs/celltypes/workgroups/hct/HCT_Ephys_Data/JEM_forms"
-	if group == "collab":
-		json_dir = "//allen/programs/celltypes/workgroups/279/Patch-Seq/collab-metadata-files"
 
 	delta_mod_date = (date_today - date_prev_30d).days + 3
 	jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
 	# Flatten JSON files (previous 30 day information) to pandas dataframe jem_df)
 	jem_df = flatten_jem_data(jem_paths, day_prev_30d, day_today)
-	
-	if group == "collab":
-		jem_df.to_csv(os.path.join(json_dir, "collab_daily_master.csv"), index=False)
 
 	# Rename columns based on jem_dictionary
 	jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
 
 	if group == "ivscc":
-		# Filter dataframe to only IVSCC Group 2017-Current
-		jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
-		jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
+		jem_df = ivscc_fix_field_formatting(jem_df)
 	if group == "hct":
-		# Filter dataframe to only HCT Group 
-		jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["hct_rig_users_list"])]
-		jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["hct_rig_numbers_list"])]
-
-	if group == "ivscc":
-		# Fix jem versions
-		jem_df = fix_jem_versions(jem_df)
-	if group == "hct":
-		# Fix jem versions
-		jem_df = fix_jem_versions_hct(jem_df)
-	if group == "collab":
-		# Fix jem versions
-		jem_df = fix_jem_versions_collab(jem_df)
-	if group == "ivscc" or group == "hct":
-		# Clean and add date_fields
-		jem_df = clean_date_field(jem_df)
-	if group == "ivscc":
-		# Clean time and add duration fields
-		jem_df = clean_time_field(jem_df)
-		# Clean numerical fields
-		jem_df = clean_num_field(jem_df)
-	if group == "ivscc" or group == "hct":
-		# Clean and add roi fields
-		jem_df = clean_roi_field(jem_df)
-	if group == "ivscc":
-		# Clean up project_level_nucleus
-		jem_df["jem-project_level_nucleus"] = jem_df.apply(get_project_channel, axis=1)
-	if group == "ivscc" or group == "hct":
-		# Replace value in fields
-		jem_df = replace_value(jem_df)
-		# Add patch tube field
-		jem_df = add_jem_patch_tube_field(jem_df)
-		# Add species field
-		jem_df = add_jem_species_field(jem_df)
+		jem_df = hct_fix_field_formatting(jem_df)
 
 	if group == "ivscc" or group == "hct":
 		# Filter to only successful experiments
@@ -118,6 +76,90 @@ def generate_jem_df(group, filter_tubes=None):
 			jem_df = jem_df[(jem_df["jem-status_patch_tube"] == "Patch Tube")]
 
 	return jem_df
+
+
+#-----Fix formatting-----#
+def ivscc_fix_field_formatting(df, group="ivscc"):
+	"""
+	Cleans up all IVSCC related fields.
+
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
+	"""
+
+	# Filter dataframe to only IVSCC Group 2017-Current
+	df = df[df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
+	df = df[df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
+
+	df = fix_jem_versions(df)
+	df = clean_date_field(df)
+	df = clean_time_field(df)
+	df = clean_num_field(df)
+	df = clean_roi_field(df)
+	# Clean up project_level_nucleus
+	df["jem-project_level_nucleus"] = df.apply(get_project_channel, axis=1)
+	df = replace_value(df)
+	df = add_jem_patch_tube_field(df)
+	df = add_jem_species_field(df)
+
+	return df
+
+
+def hct_fix_field_formatting(df, group="hct"):
+	"""
+	Cleans up all HCT related fields.
+
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
+	"""
+
+	# Filter dataframe to only HCT Group 
+	df = df[df["jem-id_rig_user"].isin(data_variables["hct_rig_users_list"])]
+	df = df[df["jem-id_rig_number"].isin(data_variables["hct_rig_numbers_list"])]
+
+	df = fix_jem_versions_hct(df)
+	df = clean_date_field(df)
+	df = clean_roi_field(df)
+	df = replace_value(df)
+	df = add_jem_patch_tube_field(df)
+	df = add_jem_species_field(df)
+
+	return df
+
+
+def collab_fix_field_formatting(df, group="collab"):
+	"""
+	Cleans up all Collaborator related fields.
+
+	Parameters: 
+		df (dataframe): a pandas dataframe.
+
+	Returns:
+		df (dataframe): a pandas dataframe.
+	"""
+
+	# Lists
+	jem_version_208_list = ["2.0.8"]
+
+	# Rename necessary fields for concatenating dataframes
+	df = df.rename(columns={"jem-date_blank_old": "jem-date_blank"})
+
+	df = clean_date_field(df)
+	df = clean_roi_field(df)
+	df = replace_value(df)
+	df = add_jem_patch_tube_field(df)
+
+	filter_tubes = "only_patch_tubes"
+	if filter_tubes == "only_patch_tubes":
+		df = df[(df["jem-status_patch_tube"] == "Patch Tube")]
+
+	return df
 
 
 #-----Clean-up JEM fields-----#
@@ -479,63 +521,6 @@ def fix_jem_versions_hct(df):
 	return df
 
 
-def fix_jem_versions_collab(df):
-	"""
-	Fixes jem versions in JEM metadata.
-
-	Parameters: 
-		df (dataframe): a pandas dataframe.
-
-	Returns:
-		df (dataframe): a pandas dataframe.
-	"""
-
-	# Lists
-	jem_version_208_list = ["2.0.8"]
-
-	# Rename necessary fields for concatenating dataframes
-	df = df.rename(columns={"jem-date_blank_old": "jem-date_blank"})
-
-	# Split datetime field into date and time field
-	split_date_time = df["jem-date_patch"].str.split(" ", n=1, expand=True) # Splitting date and time into 2 columns
-	df["jem-date_patch"] = split_date_time[0] # Choosing column with only the dates
-	df["jem-time_patch"] = split_date_time[1] # Choosing column with only the times
-	# Duplicate date field
-	df["jem-date_patch_y-m-d"] = df["jem-date_patch"]
-	# Split date field and add in year, month, day fields
-	split_date = df["jem-date_patch_y-m-d"].str.split("-", n=2, expand=True) # Splitting year, month and day
-	df["jem-date_patch_y"] = split_date[0] # Choosing column with years
-	df["jem-date_patch_m"] = split_date[1] # Choosing column with months
-	df["jem-date_patch_d"] = split_date[2] # Choosing column with days
-	# Change date fields to a datetime
-	df["jem-date_acsf"] = pd.to_datetime(df["jem-date_acsf"])
-	df["jem-date_blank"] = pd.to_datetime(df["jem-date_blank"])
-	df["jem-date_internal"] = pd.to_datetime(df["jem-date_internal"])
-	df["jem-date_patch"] = pd.to_datetime(df["jem-date_patch"])
-	# Change date fields format to MM/DD/YYYY
-	df["jem-date_acsf"] = df["jem-date_acsf"].dt.strftime("%m/%d/%Y")
-	df["jem-date_blank"] = df["jem-date_blank"].dt.strftime("%m/%d/%Y")
-	df["jem-date_internal"] = df["jem-date_internal"].dt.strftime("%m/%d/%Y")
-	df["jem-date_patch"] = df["jem-date_patch"].dt.strftime("%m/%d/%Y")
-	# Replace values in column (roi-major_minor)
-	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace({"layer ": "L", "/": "-"}, regex=True)
-	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary_regex_false"], regex=False)
-	df["jem-roi_major_minor"] = df["jem-roi_major_minor"].replace(data_variables["roi_dictionary_regex_true"], regex=True)
-	# Creating roi_major and roi_minor columns
-	roi = df["jem-roi_major_minor"].str.split("_", n=1, expand=True) # Splitting roi_major and roi_minor
-	df["jem-roi_major"] = roi[0] # Choosing column with roi_major
-	df["jem-roi_minor"] = roi[1] # Choosing column with roi_minor
-	# Creating roi_super column
-	df["jem-roi_super"] = df["jem-roi_major"].replace({roi_cor: "Cortical" for roi_cor in data_variables["cortical_list"]}, regex=True)
-	df["jem-roi_super"] = df["jem-roi_super"].replace({roi_sub: "Subcortical" for roi_sub in data_variables["subcortical_list"]}, regex=True)
-	df["jem-roi_super"] = df["jem-roi_super"].replace({roi_bs: "Brainstem" for roi_bs in data_variables["brainstem_list"]}, regex=True)
-	df["jem-roi_super"] = df["jem-roi_super"].replace({"NA": "Unknown"}, regex=True)
-
-	return df
-
-
-
-#-----Agata's code-----#
 def flatten_jem_data(jem_paths, start_day_str, end_day_str):
 	"""
 	Compiles JEM files from paths, returning a pandas dataframe.
@@ -563,5 +548,29 @@ def flatten_jem_data(jem_paths, start_day_str, end_day_str):
 	if len(jem_df) == 0:
 	    print("No JEM data found for experiments between %s and %s" %(start_day_str, end_day_str))
 	    #jem_df = pd.DataFrame(columns=output_cols)
+
+	return jem_df
+
+
+def flatten_collab_jem_data(jem_paths):
+	"""
+	Compiles JEM files from paths, returning a pandas dataframe.
+
+	Parameters:
+		jem_paths : list of strings
+
+	Returns:
+		jem_df (dataframe): a pandas dataframe.
+	"""
+
+	jem_df = pd.DataFrame()
+	for jem_path in jem_paths:
+		jem = JemDataSet(jem_path)
+		slice_data = jem.get_data()
+		if slice_data is None:
+			continue
+		success_slice_data = slice_data[slice_data["status"].str.contains("SUCCESS")]
+		jem_df = pd.concat([jem_df, slice_data], axis=0, sort=True)
+	jem_df.reset_index(drop=True, inplace=True)
 
 	return jem_df

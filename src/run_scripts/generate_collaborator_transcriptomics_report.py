@@ -25,7 +25,7 @@ from tkinter.filedialog import askdirectory
 from functions.file_functions import get_jsons, load_data_variables
 from functions.jem_data_set import JemDataSet
 from functions.io_functions import validated_input, validated_date_input, get_jsons_walk
-from functions.jem_functions import generate_jem_df, fix_jem_versions_collab, add_jem_patch_tube_field
+from functions.jem_functions import generate_jem_df, flatten_collab_jem_data, collab_fix_field_formatting
 from functions.lims_functions import generate_external_lims_df
 
 
@@ -85,16 +85,8 @@ external_temporary_report_dir = "//allen/programs/celltypes/workgroups/279/Patch
 
 # Compiling all JSON files from user chosen file directory
 jem_paths = get_jsons_walk(dirname=json_dir, expt="PS")
-jem_df = pd.DataFrame()
-for jem_path in jem_paths:
-    jem = JemDataSet(jem_path)
-    slice_data = jem.get_data()
-    if slice_data is None:
-        continue
-    success_slice_data = slice_data[slice_data["status"].str.contains("SUCCESS")]
-    jem_df = pd.concat([jem_df, slice_data], axis=0, sort=True)
-jem_df.reset_index(drop=True, inplace=True)
-print("Selected JSON directory", json_dir, "\n")
+jem_df = flatten_collab_jem_data(jem_paths)
+print("\n", "Selected JSON directory:", json_dir)
 
 shipment_file_name = os.path.basename(os.path.normpath(json_dir))
 transcriptomic_report_name = shipment_file_name + "_" + name_report
@@ -102,45 +94,21 @@ transcriptomic_report_name = shipment_file_name + "_" + name_report
 if len(jem_df) == 0:
     sys.exit("No JSON data found for successful experiments in '%s' directory." %os.path.basename(json_dir))
 
-# Rename columns based on jem_dictionary
 jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
-
-# Add patch tube field
-jem_df = add_jem_patch_tube_field(jem_df)
-# Filters dataframe to only patched cell containers
-filter_tubes = "only_patch_tubes"
-if filter_tubes == "only_patch_tubes":
-	jem_df = jem_df[(jem_df["jem-status_patch_tube"] == "Patch Tube")]
-
-jem_df = fix_jem_versions_collab(jem_df)
-
-# Lists
-jem_fields = ["jem-date_patch",
-              "jem-date_blank",
-              "jem-id_cell_specimen",
-              "jem-id_patched_cell_container",
-              "jem-roi_major",
-              "jem-roi_minor",
-              "jem-nucleus_post_patch",
-              "prep_type"]
-
-# Filter dataframe to specified fields
-jem_df = jem_df[jem_fields]
+jem_df = collab_fix_field_formatting(jem_df)
+# Adding new column with project codes
+jem_df["project_code"] = np.where((jem_df["jem-id_patched_cell_container"].str.startswith("PDS4", "PRS4")), data_variables["project_dictionary"]["mouse_human"],
+                                   data_variables["project_dictionary"]["nhp"])
 # Sort by jem-id_patched_cell_container in ascending order
 jem_df.sort_values(by=["jem-date_patch", "jem-id_patched_cell_container"], inplace=True)
 
 # Generate lims_df
 lims_df = generate_external_lims_df()
 
-#----------Merge jem_df and lims_df----------#
-# Merge dataframes by outer join based on specimen id 
+# Merge dataframes by left join based on cell name
 jem_lims_df = pd.merge(left=jem_df, right=lims_df, left_on="jem-id_cell_specimen", right_on="lims_cell_name", how="left")
 
 if (len(jem_df) > 0) & (len(lims_df) > 0):
-    # Adding new column with project codes
-    jem_lims_df["project_code"] = np.where((jem_lims_df["jem-id_patched_cell_container"].str.startswith("PDS4", "PRS4")), data_variables["project_dictionary"]["mouse_human"], 
-                                            data_variables["project_dictionary"]["nhp"])
-
     try:
         # Renaming columns names
         jem_lims_df.rename(columns = data_variables["collab_daily_tx_report_dictionary"], inplace=True)
@@ -148,5 +116,6 @@ if (len(jem_df) > 0) & (len(lims_df) > 0):
         jem_lims_df.insert(loc=3, column="Library Prep Day1 Date", value="")
         jem_lims_df.sort_values(by=["Patch Date", "Patch Tube Name"], inplace=True)
         save_xlsx(jem_lims_df, external_temporary_report_dir, transcriptomic_report_name, norm_d, head_d)
+        print("\n", f"Created the {transcriptomic_report_name}.")
     except IOError:
             print("\nUnable to save the excel sheet. \nMake sure you don't already have a file with the same name opened.")
