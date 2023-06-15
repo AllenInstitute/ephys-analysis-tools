@@ -1,11 +1,11 @@
 """
 ---------------------------------------------------------------------
-File name: collaborator_daily_transcriptomics_report.py
+File name: generate_collaborator_transcriptomics_report.py
 Maintainer: Ramkumar Rajanbabu
 ---------------------------------------------------------------------
 Author: Ramkumar Rajanbabu
 Date/time created: 05/19/2023
-Description: Generate Collaborator daily transcriptomics report (excel document)
+Description: Generate Collaborator transcriptomics report (excel document)
 ---------------------------------------------------------------------
 """
 
@@ -28,20 +28,6 @@ from functions.io_functions import validated_input, validated_date_input, get_js
 from functions.jem_functions import generate_jem_df, fix_jem_versions_collab, add_jem_patch_tube_field
 from functions.lims_functions import generate_external_lims_df
 
-
-#-----General Information-----#
-"""
-project_dictionary details: New project codes (2021-present)
-- 102-01-045-10: CTY IVSCC (Mouse/NHP) # IVSCC
-- 102-01-061-20.3 : CTY BICAN Human and NHP Atlas # IVSCC
-- 122-01-002-20.2.1 : AIND Thalamus U19 # IVSCC
-- 102-04-006-20 : MSP Measuring Consciousness Ph2 (TBD) # HCT
-- 102-01-051-20: CTY Neuromodulation of NHP Cell Types # HCT
-
-project_dictionary details: Old project codes
-- 102-01-020-20: CTY BRAIN Human Cell Types (Human Acute/Culture, U01 shipping pilot) # IVSCC (10/01/2017 - 6/03/2022) 
-- 102-04-009-10: CTY SR: Targeted CNS Gene Therapy (Dravet pilot) # IVSCC (Dates?)
-"""
 
 def save_xlsx(df, dirname, spreadname, norm_d, head_d):
     """Save an excel spreadsheet from dataframe
@@ -129,10 +115,14 @@ if filter_tubes == "only_patch_tubes":
 jem_df = fix_jem_versions_collab(jem_df)
 
 # Lists
-jem_fields = ["jem-date_patch", "jem-date_blank", "jem-id_rig_user", "jem-id_cell_specimen",
-              "jem-id_patched_cell_container", "jem-roi_major", "jem-roi_minor",
+jem_fields = ["jem-date_patch",
+              "jem-date_blank",
+              "jem-id_cell_specimen",
+              "jem-id_patched_cell_container",
+              "jem-roi_major",
+              "jem-roi_minor",
               "jem-nucleus_post_patch",
-              "jem-project_name", "jem-status_reporter", "prep_type"]
+              "prep_type"]
 
 # Filter dataframe to specified fields
 jem_df = jem_df[jem_fields]
