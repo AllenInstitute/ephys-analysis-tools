@@ -82,7 +82,7 @@ def save_xlsx(df, dirname, spreadname, norm_d, head_d):
     worksheet = writer.sheets['Sheet1']
     norm_fmt = workbook.add_format(norm_d)
     head_fmt = workbook.add_format(head_d)
-    worksheet.set_column('A:L', 26, norm_fmt)
+    worksheet.set_column('A:Z', 20, norm_fmt)
 
     # Write the column headers with the defined format.
     for col_num, value in enumerate(df.columns.values):

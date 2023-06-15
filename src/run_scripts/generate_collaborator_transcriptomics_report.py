@@ -24,46 +24,9 @@ from tkinter.filedialog import askdirectory
 # File imports
 from functions.file_functions import get_jsons, load_data_variables
 from functions.jem_data_set import JemDataSet
-from functions.io_functions import validated_input, validated_date_input, get_jsons_walk
+from functions.io_functions import validated_input, validated_date_input, get_jsons_walk, save_xlsx
 from functions.jem_functions import generate_jem_df, flatten_collab_jem_data, collab_fix_field_formatting
 from functions.lims_functions import generate_external_lims_df
-
-
-def save_xlsx(df, dirname, spreadname, norm_d, head_d):
-    """Save an excel spreadsheet from dataframe
-    
-    Parameters
-    ----------
-    df : pandas dataframe
-    dirname : string
-    spreadname : string
-    norm_d, head_d: dictionaries
-    
-    Returns
-    -------
-    Saved .xlsx file with name spreadname in directory dirname.
-    """
-    
-    # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter(os.path.join(dirname, spreadname), engine="xlsxwriter", date_format="mm/dd/yy")
-    
-    # Convert the dataframe to an XlsxWriter Excel object.
-    df.to_excel(writer, sheet_name='Sheet1', index=False)    
-    
-    # Get the xlsxwriter workbook and worksheet objects.
-    workbook  = writer.book
-    worksheet = writer.sheets['Sheet1']
-    norm_fmt = workbook.add_format(norm_d)
-    head_fmt = workbook.add_format(head_d)
-    worksheet.set_column('A:N', 26, norm_fmt)
-
-    # Write the column headers with the defined format.
-    for col_num, value in enumerate(df.columns.values):
-        worksheet.write(0, col_num, value, head_fmt)
-    try:
-        writer.save()
-    except IOError:
-        print("\nOh no! Unable to save spreadsheet :(\nMake sure you don't already have a file with the same name opened.")
 
 
 #-----Variables-----#

@@ -23,7 +23,7 @@ from pandas.tseries.holiday import USFederalHolidayCalendar
 from pathlib import Path, PureWindowsPath
 # File imports
 from functions.file_functions import load_data_variables
-from functions.io_functions import validated_input, validated_date_input,save_xlsx
+from functions.io_functions import validated_input, validated_date_input, save_xlsx
 from functions.jem_functions import generate_jem_df
 from functions.lims_functions import generate_lims_df
 
@@ -633,12 +633,12 @@ def generate_weekly_report(group):
         try:
             if group == "ivscc":
                 # Save dataframe as an excel sheet    
-                save_xlsx_weekly_report(jem_df, ivscc_temporary_report_dir, date_name_report, norm_d, head_d)
+                save_xlsx(jem_df, ivscc_temporary_report_dir, date_name_report, norm_d, head_d)
                 # Message in the terminal
                 terminal_message_weekly(day_prev_monday, day_curr_sunday, ivscc_saved_report_dir, submit_report_dir, jem_df)
             if group == "hct":
                 # Save dataframe as an excel sheet    
-                save_xlsx_weekly_report(jem_df, hct_temporary_report_dir, date_name_report, norm_d, head_d)
+                save_xlsx(jem_df, hct_temporary_report_dir, date_name_report, norm_d, head_d)
                 # Message in the terminal
                 terminal_message_weekly(day_prev_monday, day_curr_sunday, hct_saved_report_dir, submit_report_dir, jem_df)
         except IOError:
@@ -748,47 +748,6 @@ def generate_weekly_jem_df(group, df, dt_start, dt_end):
     df.sort_values(by=["date", "tubeID"], inplace=True)
     
     return df
-
-
-def save_xlsx_weekly_report(df, dirname, spreadname, norm_d, head_d):
-    """
-    Save an excel spreadsheet from dataframe.
-    
-    Parameters:
-        df : pandas dataframe
-        dirname : string
-        spreadname : string
-        norm_d, head_d: dictionaries
-    
-    Returns:
-        Saved .xlsx file with name spreadname in directory dirname.
-    """
-
-    # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter(os.path.join(dirname, spreadname), engine="xlsxwriter", date_format="mm/dd/yyyy")
-    
-    # Convert the dataframe to an XlsxWriter Excel object.
-    df.to_excel(writer, sheet_name='Sheet1', index=False)    
-    
-    # Get the xlsxwriter workbook and worksheet objects.
-    workbook  = writer.book
-    worksheet = writer.sheets['Sheet1']
-    norm_fmt = workbook.add_format(norm_d)
-    head_fmt = workbook.add_format(head_d)
-    worksheet.set_column('A:S', 20, norm_fmt)
-    
-    # This is for weekly transcriptomics reports
-    worksheet.set_column('M:M', 20, norm_fmt) # pressureApplied
-    worksheet.set_column('O:O', 20, norm_fmt) # retractionPressureApplied
-    worksheet.set_column('R:R', 20, norm_fmt) # endPipetteR
-
-    # Write the column headers with the defined format.
-    for col_num, value in enumerate(df.columns.values):
-        worksheet.write(0, col_num, value, head_fmt)
-    try:
-        writer.save()
-    except IOError:
-        print("\nOh no! Unable to save spreadsheet :(\nMake sure you don't already have a file with the same name opened.")
 
 
 def terminal_message_weekly(day_prev_monday, day_curr_sunday, saved_location, report_location, df):
