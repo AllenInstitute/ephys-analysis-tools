@@ -26,7 +26,7 @@ from functions.file_functions import get_jsons, load_data_variables
 from functions.jem_data_set import JemDataSet
 from functions.io_functions import validated_input, validated_date_input, get_jsons_walk, save_xlsx
 from functions.jem_functions import generate_jem_df, flatten_collab_jem_data, collab_fix_field_formatting
-from functions.lims_functions import generate_external_lims_df
+from functions.lims_functions import create_collab_transcriptomics_query_to_df
 
 
 #-----Variables-----#
@@ -66,7 +66,7 @@ jem_df["project_code"] = np.where((jem_df["jem-id_patched_cell_container"].str.s
 jem_df.sort_values(by=["jem-date_patch", "jem-id_patched_cell_container"], inplace=True)
 
 # Generate lims_df
-lims_df = generate_external_lims_df()
+lims_df = create_collab_transcriptomics_query_to_df()
 
 # Merge dataframes by left join based on cell name
 jem_lims_df = pd.merge(left=jem_df, right=lims_df, left_on="jem-id_cell_specimen", right_on="lims_cell_name", how="left")

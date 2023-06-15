@@ -3,6 +3,7 @@ WITH Collaborators AS (
     C.name AS lims_cell_name,
     C.patched_cell_container AS lims_patch_tube,
     SUBSTRING(C.patched_cell_container, 1, 4) AS lims_patch_tube_id,
+    CAST(SUBSTRING(C.patched_cell_container, 6, 6) AS DATE) AS lims_patch_tube_date,
     SUBSTRING(C.patched_cell_container, 13, 3) AS lims_patch_tube_number,
     C.cell_depth AS lims_cell_depth,
     D.external_donor_name AS lims_specimen_id,
@@ -22,7 +23,15 @@ WITH Collaborators AS (
         ON C.project_id = P.id
     LEFT JOIN structures S
         ON C.structure_id = S.id
-    WHERE SUBSTRING(C.patched_cell_container, 1, 4) IN ('PDS4', 'PGS4', 'PHS4', 'PRS4', 'PWS4')
+    WHERE SUBSTRING(C.patched_cell_container, 1, 4) 
+        IN (
+            'PDS4',
+            'PGS4',
+            'PHS4',
+            'PRS4',
+            'PWS4'
+        )
+    AND SUBSTRING(C.patched_cell_container FROM 6 FOR 6) >= '171001'
 )
 SELECT
     *
@@ -35,4 +44,4 @@ OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '601' AND '650'
 OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '701' AND '750'
 OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '801' AND '850'
 OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '901' AND '950'
-ORDER BY lims_patch_tube_id, lims_patch_tube_number
+ORDER BY lims_patch_tube_date DESC, lims_patch_tube_id ASC, lims_patch_tube_number ASC
