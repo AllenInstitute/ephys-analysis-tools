@@ -1,15 +1,24 @@
-# -*- coding: utf-8 -*-
 """
-Created on Wed Mar 6 12:05:00 2019
-
-@author: agatab
+---------------------------------------------------------------------
+File name: io_functions.py
+Maintainer: Ramkumar Rajanbabu
+---------------------------------------------------------------------
+Author: Ramkumar Rajanbabu
+Date/time created: 04/02/2022
+Description: IO related functions
+---------------------------------------------------------------------
 """
 
-import os
+
+#-----Imports-----#
+# General imports
 import fnmatch
-from datetime import datetime
+import os
 import pandas as pd
+from datetime import datetime
 
+
+#-----Functions-----#
 def get_jsons_walk(dirname, expt, delta_days=None):
     """Return filepaths of metadata files that were created within
     delta_days of today. Searches within subdirectories as well.
@@ -83,6 +92,7 @@ def save_xlsx(df, dirname, spreadname, norm_d, head_d):
     except IOError:
         print("\nOh no! Unable to save spreadsheet :(\nMake sure you don't already have a file with the same name opened.")
 
+
 def is_this_py3():
     """'Checks whether interpreter is Python 3.
     
@@ -98,6 +108,7 @@ def is_this_py3():
         return True
     else:
         return False
+
 
 def validated_input(prompt_text, invalid_response, valid_options=None):
     """Keep asking user for input until a valid input has been entered
@@ -127,6 +138,7 @@ def validated_input(prompt_text, invalid_response, valid_options=None):
         else:
             break
     return result
+
 
 def validated_date_input(prompt_text, invalid_response, valid_options=None):
     """Prompt user to enter date, and check whether date is valid input.
@@ -160,6 +172,7 @@ def validated_date_input(prompt_text, invalid_response, valid_options=None):
             break
     return result
 
+
 def get_similar_values(invalid_val, valid_vals):
     """Look for valid values that start with the first letter of user entry.
     
@@ -180,6 +193,7 @@ def get_similar_values(invalid_val, valid_vals):
     else:
         result = []
     return result
+
 
 def get_response_to_invalid(invalid_val, invalid_response, valid_vals=None):
     """Return a non-specific error message, or similar valid values if they exist
@@ -204,6 +218,7 @@ def get_response_to_invalid(invalid_val, invalid_response, valid_vals=None):
             return invalid_response
     else:
         return invalid_response
+
 
 def get_jsons(dirname, expt, delta_days=None):
     """Return filepaths of metadata files that were created within

@@ -14,16 +14,19 @@ Description: LIMS related functions
 # General imports
 import json
 import pandas as pd
+import pg8000
 # File imports
 from functions.file_functions import load_data_variables
+from functions.io_functions import is_this_py3
 
 
+#-----Variables-----#
 # Load json file
 data_variables = load_data_variables()
 
 
+#-----Functions-----#
 def _connect(user="limsreader", host="limsdb2", database="lims2", password="limsro", port=5432):
-    import pg8000
     conn = pg8000.connect(user=user, host=host, database=database, password=password, port=port)
     return conn, conn.cursor()
 
@@ -58,23 +61,6 @@ def limsquery(query, user="limsreader", host="limsdb2", database="lims2", passwo
     return results
 
 
-def is_this_py3():
-    """'Checks whether interpreter is Python 3.
-    
-    
-    Returns
-    -------
-        Boolean: True if interpreter is Python 3 else False
-    
-    """
-
-    import sys
-    if (sys.version_info > (3,0)):
-        return True
-    else:
-        return False
-
-
 def rename_byte_cols(df):
     """A conversion tool for pg8000 byte output (for Python 3 only).
     
@@ -93,22 +79,6 @@ def rename_byte_cols(df):
     return df_renamed
 
 
-
-#-----Rusty's functions----#
-def get_lims_dataframe(query):
-    '''Return a dataframe with lims query'''
-    result = limsquery(query)
-    try:
-        data_df = pd.DataFrame(data=result, columns=result[0].keys())
-    except IndexError:
-        print("Could not find results for your query.")
-        data_df = pd.DataFrame()
-    return data_df
-
-
-
-
-#-----Ram's functions----#
 def get_lims_ephys():
 
     project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "mIVSCC-MET", "mIVSCC-METx", "qIVSCC-METa", "qIVSCC-METc", "MET-NM", "mMPATCHx", "H301", "H301x")
@@ -221,7 +191,6 @@ def get_lims_sweep(cell_name):
     return df
 
 
-
 def get_lims():
     lims_query="""
     SELECT DISTINCT
@@ -249,6 +218,7 @@ def get_lims():
     if is_this_py3:
         df = rename_byte_cols(df)
     return df
+
 
 def get_lims_query_external():
     lims_query="""

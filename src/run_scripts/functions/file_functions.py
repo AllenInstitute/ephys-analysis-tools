@@ -1,10 +1,26 @@
-import os
-from pathlib import Path, PureWindowsPath
+"""
+---------------------------------------------------------------------
+File name: file_functions.py
+Maintainer: Ramkumar Rajanbabu
+---------------------------------------------------------------------
+Author: Ramkumar Rajanbabu
+Date/time created: 04/02/2022
+Description: File related functions
+---------------------------------------------------------------------
+"""
+
+
+#-----Imports-----#
+# General imports
+import json
 import fnmatch
-from datetime import datetime
+import os
 import pandas as pd
+from datetime import datetime
+from pathlib import Path, PureWindowsPath
 
 
+#-----Functions-----#
 def get_similar_values(invalid_val, valid_vals):
     '''Look for valid values that start with the first letter of user entry'''
     if len(invalid_val) > 0:
@@ -26,6 +42,7 @@ def get_response_to_invalid(invalid_val, invalid_response, valid_vals=None):
     else:
         return invalid_response
 
+
 def validated_input(prompt_text, invalid_response, valid_options=None):
     '''Keep asking user for input until a valid input has been entered'''
     while True:
@@ -38,6 +55,7 @@ def validated_input(prompt_text, invalid_response, valid_options=None):
         else:
             break
     return result
+
 
 def validated_date_input(prompt_text, invalid_response, valid_options=None):
     """Prompt user to enter date, and check whether date is valid input.
@@ -70,8 +88,7 @@ def validated_date_input(prompt_text, invalid_response, valid_options=None):
             break
     return result
 
-
-                
+   
 def get_jsons(dirname, expt, delta_days=None):
     """Return filepaths of metadata files that were created within
     delta_days of today.
@@ -144,7 +161,6 @@ def save_xlsx(df, dirname, spreadname, norm_d, head_d):
         print("\nOh no! Unable to save spreadsheet :(\nMake sure you don't already have a file with the same name opened.")
 
 
-
 def get_distributions():
     """Return Python distributions.
 
@@ -160,6 +176,7 @@ def get_distributions():
     import pkg_resources
     distributions = {v.key: v for v in pkg_resources.working_set}
     return distributions
+
 
 def dist_is_editable(dist):
     """Check if an editable installation exists for a distribution.
@@ -185,10 +202,6 @@ def dist_is_editable(dist):
     return False
 
 
-#-----Ram's imports-----#
-import json
-
-#-----Ram's functions-----#
 def load_data_variables():
     """
     Read and load json file (data_variables.json).
@@ -211,6 +224,7 @@ def load_data_variables():
         data_variables = json.load(json_file)
 
     return data_variables
+
 
 def get_modification_date(filename):
     file_time_mod = os.path.getmtime(filename)
