@@ -90,10 +90,6 @@ def ivscc_fix_field_formatting(df, group="ivscc"):
 		df (dataframe): a pandas dataframe.
 	"""
 
-	# Filter dataframe to only IVSCC Group 2017-Current
-	df = df[df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
-	df = df[df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
-
 	df = fix_jem_versions(df)
 	df = clean_date_field(df)
 	df = clean_time_field(df)
@@ -118,10 +114,6 @@ def hct_fix_field_formatting(df, group="hct"):
 	Returns:
 		df (dataframe): a pandas dataframe.
 	"""
-
-	# Filter dataframe to only HCT Group 
-	df = df[df["jem-id_rig_user"].isin(data_variables["hct_rig_users_list"])]
-	df = df[df["jem-id_rig_number"].isin(data_variables["hct_rig_numbers_list"])]
 
 	df = fix_jem_versions_hct(df)
 	df = clean_date_field(df)

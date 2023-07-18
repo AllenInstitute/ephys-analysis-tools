@@ -49,9 +49,6 @@ def main(file_type):
 	jem_df = generate_jem_df()
 	# Rename columns based on jem_dictionary
 	jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
-	# Filter dataframe to only IVSCC Group 2017-Present
-	jem_df = jem_df[jem_df["jem-id_rig_user"].isin(data_variables["ivscc_rig_users_list"])]
-	jem_df = jem_df[jem_df["jem-id_rig_number"].isin(data_variables["ivscc_rig_numbers_list"])]
 
 	# Fix jem versions
 	jem_df = fix_jem_versions(jem_df)
