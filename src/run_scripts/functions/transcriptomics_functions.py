@@ -129,8 +129,7 @@ def generate_daily_report(group):
                                         np.where((jem_lims_name_df["lims-id_project_code"].str.endswith("x")) & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)) & (~jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect - Experimental LIMS Tube", "Not Applicable"))))
 
     # Create a new column (test-jem_projects)
-    jem_lims_name_df["test-jem_projects"] = np.where((jem_lims_name_df["jem-project_name"] == "None") & (jem_lims_name_df["lims-id_project_code"] == "hIVSCC-METx") & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Correct - No Project",
-                                            np.where((jem_lims_name_df["jem-project_name"] == "1% Biocytin Pilot") & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Correct - 1% Biocytin",
+    jem_lims_name_df["test-jem_projects"] = np.where((jem_lims_name_df["jem-project_name"] == "1% Biocytin Pilot") & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Correct - 1% Biocytin",
                                             np.where((jem_lims_name_df["jem-project_name"] == "1% Biocytin Pilot") & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect - 1% Biocytin",  
                                             np.where((jem_lims_name_df["jem-project_name"] == "Extended PBS Morphology Pilot") & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Correct - Extended PBS Morphology",
                                             np.where((jem_lims_name_df["jem-project_name"] == "Extended PBS Morphology Pilot") & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect - Extended PBS Morphology",
@@ -141,7 +140,7 @@ def generate_daily_report(group):
                                             np.where((jem_lims_name_df["jem-project_name"] == "Picrotoxin Validation") & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Correct - Picrotoxin Validation",
                                             np.where((jem_lims_name_df["jem-project_name"] == "Picrotoxin Validation") & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect - Picrotoxin Validation",
                                             np.where((jem_lims_name_df["jem-project_name"] == "None") & (~jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Correct - No Project",
-                                            np.where((jem_lims_name_df["jem-project_name"] == "None") & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect - No Project", "Not Applicable")))))))))))))
+                                            np.where((jem_lims_name_df["jem-project_name"] == "None") & (jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PXS4", na=False)), "Incorrect - No Project", "Not Applicable"))))))))))))
 
     # Create a new column (test-lims_structure) for lims_df
     lims_df["test-lims_structure"] = np.where((lims_df["lims-structure"].isnull()), "Correct",
