@@ -150,7 +150,8 @@ def generate_daily_report(group):
         # Adding new column with project codes
         if group == "ivscc":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["lims-id_project_code"].str.startswith("q")), data_variables["project_dictionary"]["nhp"],
-                                               np.where((jem_lims_name_df["jem-roi_minor"] == "MD"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["mouse_human"]))
+                                               np.where((jem_lims_name_df["lims-id_project_code"].str.startswith("h")), data_variables["project_dictionary"]["nhp"],
+                                               np.where((jem_lims_name_df["jem-roi_minor"] == "MD"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["mouse_human"])))
         if group == "hct":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
