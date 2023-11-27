@@ -149,10 +149,10 @@ def generate_daily_report(group):
     if (len(jem_df) > 0) & (len(lims_df) > 0):
         # Adding new column with project codes
         if group == "ivscc":
-            jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["lims-id_project_code"].str.startswith("q")), data_variables["project_dictionary"]["nhp"],
-                                               np.where((jem_lims_name_df["lims-id_project_code"].str.startswith("h")) & (~jem_lims_name_df["lims-id_project_code"].str.contains("SCH")), data_variables["project_dictionary"]["nhp"],
-                                               np.where((jem_lims_name_df["lims-id_cell_specimen"].str.startswith(r"H\d\d.51")), data_variables["project_dictionary"]["mouse_human"],
-                                               np.where((jem_lims_name_df["jem-roi_minor"] == "MD"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["mouse_human"]))))
+            jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-slice_level_project"] == "PGA"), data_variables["project_dictionary"]["mouse_human"],
+                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "HMBA-UM1"), data_variables["project_dictionary"]["nhp"],
+                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "Mouse Connects-UM1"), data_variables["project_dictionary"]["nhp"],
+                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "Thalamus-U19"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["mouse_human"]))))
         if group == "hct":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
@@ -290,7 +290,7 @@ def generate_daily_jem_df(df, date):
     # Lists
     jem_fields = ["jem-date_patch", "jem-date_blank", "jem-id_rig_user", "jem-id_cell_specimen",
                   "jem-id_patched_cell_container", "jem-roi_major", "jem-roi_minor",
-                  "jem-nucleus_post_patch",
+                  "jem-nucleus_post_patch", "jem-slice_level_project",
                   "jem-project_name", "jem-status_reporter"]
 
     # Filter dataframe to specified fields
