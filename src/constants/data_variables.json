@@ -189,7 +189,8 @@
     "jem-nucleus_post_patch": "Comments",
     "project_code": "Project",
     "jem-id_cell_specimen": "Cell Specimen ID",
-    "prep_type": "Prep Type"
+    "prep_type": "Prep Type",
+    "expt_type": "Experiment Type"
 },
 "cortical_list":
     [    
