@@ -347,6 +347,8 @@ def replace_value(df):
 		df["jem-status_reporter"] = df["jem-status_reporter"].replace({"Cre+": "Positive", "Cre-": "Negative", "human": np.nan, "None": np.nan})
 	if "jem-virus_enhancer" in df.columns:
 		df["jem-virus_enhancer"] = df["jem-virus_enhancer"].replace({np.nan: "None"})
+	if "jem-dic" in df.columns:
+		df["jem-dic"] = df["jem-dic"].replace({np.nan: "NA"})
 	if "jem-project_level_nucleus" in df.columns:
 		df["jem-project_level_nucleus"] = df["jem-project_level_nucleus"].replace({np.nan: "None"})
 	if "jem-project_name" in df.columns:
