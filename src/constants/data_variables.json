@@ -20,6 +20,7 @@
         "slice_quality.sliceComments": "jem-slice_quality_comments",
         "approach.cellHealth": "jem-cell_health",
         "approach.creCell": "jem-status_reporter",
+        "approach.virusCell": "jem-cell_virus_enhancer",
         "approach.pilotName": "jem-project_name",
         "approach.project_icv_injection_fluorescent_roi": "jem-project_icv_injection_fluorescent_roi",
         "approach.project_retrograde_labeling_hemisphere": "jem-project_retrograde_labeling_hemisphere",
@@ -283,6 +284,7 @@
         "jem-break_in_status_failure",
         "jem-status_success_failure",
         "jem-status_reporter",
+        "jem-cell_virus_enhancer",
         "jem-roi_super",
         "jem-roi_major_minor",
         "jem-roi_major",
@@ -314,6 +316,7 @@
         "jem-time_exp_retraction_end",
         "jem-time_exp_channel_end",
         "jem-virus_enhancer",
+        ""
         "jem-dic",
         "jem-slice_level_project",
         "jem-project_level_nucleus",
