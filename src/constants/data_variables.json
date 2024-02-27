@@ -159,7 +159,8 @@
     "Visp": "VISp_L",
     "VISp": "VISp_L",
     "HBLC": "HB_LC",
-    "OT": "OT_L"
+    "OT": "OT_L",
+    "CNUCEA": "CNU_CEA"
 },
 "project_dictionary":
 {
@@ -205,6 +206,7 @@
     [    
         "CBX",
         "CCx",
+        "CNU",
         "CTXsp",
         "CTXpl",
         "PFCx",
