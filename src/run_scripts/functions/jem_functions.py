@@ -45,9 +45,9 @@ def generate_jem_df(group, filter_tubes=None):
 	dt_today = datetime.today()
 	date_today = dt_today.date()
 	day_today = date_today.strftime("%y%m%d") # "YYMMDD"
-	# Date of the previous 30 days from date of today
-	date_prev_30d = date_today - timedelta(days=30)
-	day_prev_30d = date_prev_30d.strftime("%y%m%d") # "YYMMDD"
+	# Date of the previous 60 days from date of today
+	date_prev_60d = date_today - timedelta(days=60)
+	day_prev_60d = date_prev_60d.strftime("%y%m%d") # "YYMMDD"
 		
 	# Directories
 	if group == "ivscc":
@@ -55,10 +55,10 @@ def generate_jem_df(group, filter_tubes=None):
 	if group == "hct":
 		json_dir = "//allen/programs/celltypes/workgroups/hct/HCT_Ephys_Data/JEM_forms"
 
-	delta_mod_date = (date_today - date_prev_30d).days + 3
+	delta_mod_date = (date_today - date_prev_60d).days + 3
 	jem_paths = get_jsons(dirname=json_dir, expt="PS", delta_days=delta_mod_date)
 	# Flatten JSON files (previous 30 day information) to pandas dataframe jem_df)
-	jem_df = flatten_jem_data(jem_paths, day_prev_30d, day_today)
+	jem_df = flatten_jem_data(jem_paths, day_prev_60d, day_today)
 
 	# Rename columns based on jem_dictionary
 	jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
