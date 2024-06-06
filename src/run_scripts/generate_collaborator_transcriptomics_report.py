@@ -60,8 +60,8 @@ if len(jem_df) == 0:
 jem_df.rename(columns=data_variables["jem_dictionary"], inplace=True)
 jem_df = collab_fix_field_formatting(jem_df)
 # Adding new column with project codes
-jem_df["project_code"] = np.where((jem_df["jem-id_patched_cell_container"].str.startswith("PDS4", "PRS4")), data_variables["project_dictionary"]["mouse_human"],
-                                   data_variables["project_dictionary"]["nhp"])
+jem_df["project_code"] = np.where((jem_df["jem-id_patched_cell_container"].str.startswith("PDS4", "PRS4")), data_variables["project_dictionary"]["PGA"],
+                                   data_variables["project_dictionary"]["HMBA"])
 # Sort by jem-id_patched_cell_container in ascending order
 jem_df.sort_values(by=["jem-date_patch", "jem-id_patched_cell_container"], inplace=True)
 
