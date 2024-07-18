@@ -40,7 +40,6 @@ WITH Ivscc AS (
             'PAS4',
             'PBS4',
             'PFS4',
-            'PNS4',
             'PVS4'
         )
     AND SUBSTRING(C.patched_cell_container, 6, 6) >= '171001'

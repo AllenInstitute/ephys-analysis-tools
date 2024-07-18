@@ -245,7 +245,9 @@ def generate_lims_df(group, date):
     # Rename columns based on jem_dictionary
     lims_df.rename(columns=data_variables["lims_dictionary"], inplace=True)
     # Exclude Collaborator containers
-    lims_df = lims_df[(~lims_df["lims-id_patched_cell_container"].str.startswith("PGS4")) & (~lims_df["lims-id_patched_cell_container"].str.startswith("PHS4"))]
+    lims_df = lims_df[(~lims_df["lims-id_patched_cell_container"].str.startswith("PGS4")) & (~lims_df["lims-id_patched_cell_container"].str.startswith("PHS4"))
+    & (~lims_df["lims-id_patched_cell_container"].str.startswith("PNS4")) & (~lims_df["lims-id_patched_cell_container"].str.startswith("PDS4"))
+    & (~lims_df["lims-id_patched_cell_container"].str.startswith("PRS4")) & (~lims_df["lims-id_patched_cell_container"].str.startswith("PZS4"))]
     # Filters dataframe to user specified date
     lims_df = lims_df[lims_df["lims-id_patched_cell_container"].str.contains(date)]
     # Only run if patched cell containers were collected
@@ -346,7 +348,6 @@ def create_ivscc_transcriptomics_query_to_df():
                 'PAS4',
                 'PBS4',
                 'PFS4',
-                'PNS4',
                 'PVS4'
             )
         AND SUBSTRING(C.patched_cell_container, 6, 6) >= '171001'
