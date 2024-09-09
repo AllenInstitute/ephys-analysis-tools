@@ -30,7 +30,7 @@ import time # To measure program execution time
 program_start_time = time.time()
 
 # Directories
-shiny_visp_mouse_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/mouse_patchseq_VISp_current/'
+shiny_visp_mouse_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/mouse/mouse_patchseq_VISp_current/'
 shiny_mtg_human_path = '//allen/programs/celltypes/workgroups/rnaseqanalysis/shiny/patch_seq/star/human/human_patchseq_MTG_current/'
 data_path = "//allen/programs/celltypes/workgroups/279/Patch-Seq/ivscc-data-warehouse/data-sources"
 
@@ -253,7 +253,7 @@ df['storage_dir'] = '\\' + df['storage_dir']
 #df.to_csv(data_path + "lims_and_json_data.csv")
 
 shiny_columns = ['cell_name', 'batch_vendor_name', 'patchseq_roi', 'rna_amplification_pass_fail'] # 'Norm_Marker_Sum.0.4_label' 
-shiny_mouse = pd.read_csv(shiny_visp_mouse_path + 'mapping.df.with.bp.40.lastmap.csv', usecols=shiny_columns)
+shiny_mouse = pd.read_csv(shiny_visp_mouse_path + 'mapping.df.lastmap.csv', usecols=shiny_columns)
 shiny_human = pd.read_csv(shiny_mtg_human_path + 'mapping.df.lastmap.csv', usecols=shiny_columns)
 shiny = pd.concat([shiny_mouse, shiny_human])
 
