@@ -81,7 +81,7 @@ def rename_byte_cols(df):
 
 def get_lims_ephys():
 
-    project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "hIVSCC-MET-SCH", "hIVSCC-METc-SCH", "mIVSCC-MET", "mIVSCC-METx", "mIVSCC-MET-HiMC", "mIVSCC-MET-R01_LC", "mIVSCC-MET-U19_AIBS", "qIVSCC-METa", "qIVSCC-METc", "MET-NM", "mMPATCHx", "H301", "H301x")
+    project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "hIVSCC-MET-SCH", "hIVSCC-METc-SCH", "mIVSCC-MET", "mIVSCC-METx", "mIVSCC-MET-HiMC", "mIVSCC-MET-R01_LC", "mIVSCC-MET-U19_AIBS", "mIVSCC-MET-U01_AIBS", "qIVSCC-METa", "qIVSCC-METc", "MET-NM", "mMPATCHx", "H301", "H301x")
     user_codes = ("PC", "PX", "P1", "P2", "P4", "P6", "P8", "P9", "PA", "PB", "PE", "PF", "PI", "PJ", "PR", "PV")
 
     lims_query = """
@@ -475,8 +475,10 @@ def create_collab_transcriptomics_query_to_df():
                 'PDS4',
                 'PGS4',
                 'PHS4',
+                'PNS4',
                 'PRS4',
-                'PWS4'
+                'PWS4',
+                'PZS4'
             )
         AND SUBSTRING(C.patched_cell_container, 6, 6) >= '171001'
     )
@@ -488,8 +490,10 @@ def create_collab_transcriptomics_query_to_df():
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '201' AND '250'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '501' AND '550'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '601' AND '650'
+    OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '651' AND '700'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '701' AND '750'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '801' AND '850'
+    OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '851' AND '900'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '901' AND '950'
     ORDER BY lims_patch_tube_date DESC, lims_patch_tube_id ASC, lims_patch_tube_number ASC
     """
