@@ -404,7 +404,7 @@ class JemDataSet(object):
                     'extraction.retractionPressureApplied',
                     'extraction.sampleObservations','extraction.timeExtractionEnd',
                     'extraction.timeExtractionStart','extraction.timeRetractionEnd',
-                    'extraction.fillquality','failureNotes','qcNotes','recording.pipetteR',
+                    'extraction.fillquality','failureNotes','qcNotes','hypCellType','recording.pipetteR',
                     'recording.timeStart','recording.timeWholeCellStart','status',
                     'attempt','roi','container']
         

@@ -22,6 +22,7 @@
         "approach.creCell": "jem-status_reporter",
         "approach.virusCell": "jem-cell_virus_enhancer",
         "approach.pilotName": "jem-project_name",
+        "approach.project_patch_link": "jem-project_patch_link",
         "approach.project_icv_injection_fluorescent_roi": "jem-project_icv_injection_fluorescent_roi",
         "approach.project_retrograde_labeling_hemisphere": "jem-project_retrograde_labeling_hemisphere",
         "approach.project_retrograde_labeling_region": "jem-project_retrograde_labeling_region",
@@ -46,6 +47,7 @@
         "pipetteSpecName": "jem-id_cell_specimen",
         "freeFailureNotes": "jem-notes_failure",
         "qcNotes": "jem-notes_qc",
+        "hypCellType": "jem-hyp_cell_type",
         "extraction.blankFillDate": "jem-date_blank",
         "container": "jem-id_patched_cell_container",
         "extraction.postPatch": "jem-nucleus_post_patch",
@@ -140,8 +142,17 @@
     "OLF-NLOT, L1": "OLF-NLOT1",
     "OLF-NLOT, L2": "OLF-NLOT2",
     "OLF-NLOT, L3": "OLF-NLOT3",
-    "CB": "CBXmo"
+    "CB": "CBXmo",
+    "ENTl, L1": "ENTl1",
+    "ENTl, L2a": "ENTl2a",
+    "ENTl, L2b": "ENTl2b",
+    "ENTl, L3": "ENTl3",
+    "ENTl, L4": "ENTl4",
+    "ENTl, L5": "ENTl5",
+    "ENTl, L6a": "ENTl6a",
+    "ENTl, L6b": "ENTl6b"
 },
+
 "roi_dictionary_regex_true":
 {   
     "None, None": "NA_NA",
@@ -162,6 +173,7 @@
     "OCx": "OCx_L",
     "PCx": "PCx_L",
     "TCx": "TCx_L",
+    "ENTl":"ENTl_L",
     "OLF-NLOT": "OLF-NLOT",
     "ORB": "ORB_L",
     "MOp": "MOp_L",
@@ -229,6 +241,7 @@
         "CNU",
         "CTXsp",
         "CTXpl",
+        "ENTl"
         "PFCx",
         "FCx",
         "ICx",
@@ -344,10 +357,12 @@
         "jem-slice_level_project",
         "jem-project_level_nucleus",
         "jem-project_name",
+        "jem-project_patch_link",
         "jem-project_icv_injection_fluorescent_roi",
         "jem-project_retrograde_labeling_hemisphere",
         "jem-project_retrograde_labeling_region",
         "jem-project_retrograde_labeling_exp",
+        "jem-hyp_cell_type",
         "jem-notes_overall",
         "jem-notes_qc",
         "jem-notes_extraction",
