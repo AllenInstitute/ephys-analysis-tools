@@ -184,12 +184,10 @@ def clean_date_field(df):
 	# Change date fields to a datetime
 	df["jem-date_acsf"] = pd.to_datetime(df["jem-date_acsf"])
 	df["jem-date_blank"] = pd.to_datetime(df["jem-date_blank"])
-	df["jem-date_internal"] = pd.to_datetime(df["jem-date_internal"])
 	df["jem-date_patch"] = pd.to_datetime(df["jem-date_patch"])
 	# Change date fields format to MM/DD/YYYY
 	df["jem-date_acsf"] = df["jem-date_acsf"].dt.strftime("%m/%d/%Y")
 	df["jem-date_blank"] = df["jem-date_blank"].dt.strftime("%m/%d/%Y")
-	df["jem-date_internal"] = df["jem-date_internal"].dt.strftime("%m/%d/%Y")
 	df["jem-date_patch"] = df["jem-date_patch"].dt.strftime("%m/%d/%Y")
 
 	return df
