@@ -153,6 +153,7 @@ def generate_daily_report(group):
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "HMBA-UM1"), data_variables["project_dictionary"]["HMBA"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "Mouse Connects-UM1"), data_variables["project_dictionary"]["mouse_connects"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "LC/DR - R01"), data_variables["project_dictionary"]["lc_dr"],
+                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "D1R KO Pilot"), data_variables["project_dictionary"]["PGA"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "PatchLink"), data_variables["project_dictionary"]["patchlink"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "Thalamus-U19"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["PGA"]))))))
         if group == "hct":
