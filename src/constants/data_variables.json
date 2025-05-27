@@ -124,12 +124,6 @@
     "VISp, L5": "VISp5",
     "VISp, L6a": "VISp6a",
     "VISp, L6b": "VISp6b",
-    "SFG, L1": "SFG1",
-    "SFG, L2": "SFG2",
-    "SFG, L3": "SFG3",
-    "SFG, L4": "SFG4",
-    "SFG, L5": "SFG5",
-    "SFG, L6": "SFG6",
     "PFCx, L1": "PFCx1",
     "PFCx, L2": "PFCx2",
     "PFCx, L3": "PFCx3",
@@ -174,7 +168,6 @@
     "CBX": "CBX_",
     "CCx": "CCx_L",
     "CTXsp": "CTXsp_",
-    "SFG": "SFG_L",
     "FCx": "FCx_L",
     "ICx": "ICx_L",
     "OCx": "OCx_L",
@@ -209,8 +202,7 @@
     "patchlink": "102-01-068-20",
     "psilocybin": "102-04-006-20",
     "neuromodulation": "102-01-051-20",
-    "dravet": "102-04-009-10",
-    "lc_dr": "122-01-020-20.AIBS"
+    "dravet": "102-04-009-10"
 },
 "daily_tx_report_dictionary":
 {
@@ -250,7 +242,10 @@
         "CTXsp",
         "CTXpl",
         "ENTl",
+<<<<<<< Updated upstream
         "SFG",
+=======
+>>>>>>> Stashed changes
         "PFCx",
         "FCx",
         "ICx",
