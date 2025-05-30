@@ -263,7 +263,7 @@ class JemDataSet(object):
     def _normalize_dates_times(self):
         """ Normalizes date format in available date fields (from different JEM versions) as "YYYY-MM-DD"."""
     
-        date_fields =["acsfProductionDate", "internalFillDate", "blankFillDate"]
+        date_fields =["acsfProductionDate", "blankFillDate"]
         time_fields = ['extraction.timeExtractionEnd', 'extraction.timeExtractionStart', 'extraction.timeRetractionEnd',
                        'extraction.timeRetractionStart', 'recording.timeStart', 'recording.timeWholeCellStart']
         
