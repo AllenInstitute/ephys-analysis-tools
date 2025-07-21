@@ -34,6 +34,7 @@ project_dictionary details: New project codes (2021-present)
 - 102-01-045-10: CTY IVSCC (Mouse/NHP) # IVSCC
 - 102-01-061-20.3 : CTY BICAN Human and NHP Atlas # IVSCC
 - 122-01-002-20.3.1 : AIND Thalamus U19 # IVSCC
+- 102-04-019-20 : Dravet # IVSCC
 - 102-04-006-20 : MSP Measuring Consciousness Ph2 (TBD) # HCT
 - 102-01-051-20: CTY Neuromodulation of NHP Cell Types # HCT
 
@@ -155,7 +156,8 @@ def generate_daily_report(group):
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "LC/DR - R01"), data_variables["project_dictionary"]["lc_dr"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "D1R KO Pilot"), data_variables["project_dictionary"]["PGA"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "PatchLink"), data_variables["project_dictionary"]["patchlink"],
-                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "Thalamus-U19"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["PGA"])))))))
+                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "Dravet"), data_variables["project_dictionary"]["Dravet"],
+                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "Thalamus-U19"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["PGA"]))))))))
         if group == "hct":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
