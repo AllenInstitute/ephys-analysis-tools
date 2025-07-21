@@ -156,7 +156,7 @@ def generate_daily_report(group):
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "LC/DR - R01"), data_variables["project_dictionary"]["lc_dr"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "D1R KO Pilot"), data_variables["project_dictionary"]["PGA"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "PatchLink"), data_variables["project_dictionary"]["patchlink"],
-                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "Dravet"), data_variables["project_dictionary"]["Dravet"],
+                                               np.where((jem_lims_name_df["jem-slice_level_project"] == "Dravet"), data_variables["project_dictionary"]["dravet"],
                                                np.where((jem_lims_name_df["jem-slice_level_project"] == "Thalamus-U19"), data_variables["project_dictionary"]["roi_thalamus"], data_variables["project_dictionary"]["PGA"]))))))))
         if group == "hct":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],

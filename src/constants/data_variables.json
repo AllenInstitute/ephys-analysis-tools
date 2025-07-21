@@ -202,9 +202,9 @@
     "patchlink": "102-01-068-20",
     "psilocybin": "102-04-006-20",
     "neuromodulation": "102-01-051-20",
-    "Dravet": "102-04-019-20",
+    "dravet": "102-04-019-20", 
     "lc_dr": "122-01-020-20"
-},
+ },
 "daily_tx_report_dictionary":
 {
     "jem-id_patched_cell_container": "Patch Tube Name",
