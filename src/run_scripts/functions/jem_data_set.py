@@ -393,10 +393,10 @@ class JemDataSet(object):
         """Ensure that all MET Production JEM form columns are present in 
         final data (add empty values if not)"""
         
-        met_cols = ['acsfProductionDate','blankFillDate','date','flipped',
+        met_cols = ['acsfProductionDate','acsfType','blankFillDate','date','flipped',
                     'formVersion','internalFillDate','limsSpecName',
                     'rigNumber','rigOperator','sliceQuality',
-                    'approach.cellHealth','approach.creCell',
+                    'approach.cellHealth','approach.stimulusSet','approach.creCell',
                     'approach.pilotName','approach.sliceHealth','depth',
                     'extraction.endPipetteR','extraction.extractionObservations',
                     'extraction.nucleus','extraction.postPatch',
