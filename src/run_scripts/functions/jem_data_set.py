@@ -396,7 +396,7 @@ class JemDataSet(object):
         met_cols = ['acsfProductionDate','acsfType','blankFillDate','date','flipped',
                     'formVersion','internalFillDate','limsSpecName',
                     'rigNumber','rigOperator','sliceQuality',
-                    'approach.cellHealth','approach.stimulusSet','approach.creCell',
+                    'approach.cellHealth','approach.creCell',
                     'approach.pilotName','approach.sliceHealth','depth',
                     'extraction.endPipetteR','extraction.extractionObservations',
                     'extraction.nucleus','extraction.postPatch',
@@ -404,7 +404,8 @@ class JemDataSet(object):
                     'extraction.retractionPressureApplied',
                     'extraction.sampleObservations','extraction.timeExtractionEnd',
                     'extraction.timeExtractionStart','extraction.timeRetractionEnd',
-                    'extraction.fillquality','failureNotes','qcNotes','hypCellType','recording.pipetteR',
+                    'extraction.fillquality','failureNotes','qcNotes','hypCellType',
+                    'stimulusSet','recording.pipetteR',
                     'recording.timeStart','recording.timeWholeCellStart','status',
                     'attempt','roi','container']
         
