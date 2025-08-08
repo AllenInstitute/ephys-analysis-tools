@@ -64,6 +64,8 @@
         "extraction.project_level_nucleus": "jem-project_level_nucleus",
         "extraction.timeChannelRecordingEnd": "jem-time_exp_channel_end",
         "extraction.extractionNotes": "jem-notes_extraction",
+        "extraction.autoExtract": "jem-auto_extraction",
+        "extraction.autoNucProfile": "jem-auto_extraction_profile",
         "depth": "jem-depth",
         "roi": "jem-roi_major_minor",
         "roi_major": "jem-roi_major",

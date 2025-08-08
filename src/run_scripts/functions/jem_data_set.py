@@ -404,6 +404,7 @@ class JemDataSet(object):
                     'extraction.retractionPressureApplied',
                     'extraction.sampleObservations','extraction.timeExtractionEnd',
                     'extraction.timeExtractionStart','extraction.timeRetractionEnd',
+                    'extraction.autoExtract','extraction.autoNucProfile',
                     'extraction.fillquality','failureNotes','qcNotes','hypCellType',
                     'stimulusSet','recording.pipetteR',
                     'recording.timeStart','recording.timeWholeCellStart','status',
