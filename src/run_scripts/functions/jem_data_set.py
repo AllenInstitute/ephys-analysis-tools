@@ -404,9 +404,11 @@ class JemDataSet(object):
                     'extraction.retractionPressureApplied',
                     'extraction.sampleObservations','extraction.timeExtractionEnd',
                     'extraction.timeExtractionStart','extraction.timeRetractionEnd',
-                    'extraction.autoExtract','extraction.autoNucProfile',
-                    'extraction.fillquality','failureNotes','qcNotes','hypCellType',
-                    'stimulusSet','recording.pipetteR',
+                    "experiment_auto_extract.autoExtract", "extraction.autoNucProfile", 
+                    "extraction.autoExtractStatus", "extraction.autoExtractFailure", 
+                    "extraction.autoExtractTechFailure", "extraction.autoExtractGenFailure",
+                    "extraction.autoExtractNotes", 'extraction.fillquality','failureNotes',
+                    'qcNotes','hypCellType', 'stimulusSet','recording.pipetteR',
                     'recording.timeStart','recording.timeWholeCellStart','status',
                     'attempt','roi','container']
         
