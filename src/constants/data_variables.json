@@ -161,7 +161,13 @@
     "ENTl, L4": "ENTl4",
     "ENTl, L5": "ENTl5",
     "ENTl, L6a": "ENTl6a",
-    "ENTl, L6b": "ENTl6b"
+    "ENTl, L6b": "ENTl6b",
+    "SUBsp": "SUB_sp",
+    "SUB-mo": "SUB_mo",
+    "SUBsr": "SUB_sr",
+    "SUBpre1": "SUB_pre_L1",
+    "SUBpre2": "SUB_pre_L2",
+    "SUBpre3": "SUB_pre_L3"
 },
 
 "roi_dictionary_regex_true":
@@ -285,6 +291,8 @@
         "PAL",
         "STRd",
         "STRv",
+        "SUB",
+        "SUBpre",
         "TH",
         "dLGN",
         "OT"
