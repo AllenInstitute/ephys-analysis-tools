@@ -397,13 +397,13 @@ class JemDataSet(object):
                     'formVersion','internalFillDate','limsSpecName',
                     'rigNumber','rigOperator','sliceQuality',
                     'approach.cellHealth','approach.creCell','approach.pilotName','approach.automation','approach.sliceHealth',
-                    'depth','auto_cell_attached','auto_break_in',
+                    'approach.pipette_cleaned','approach.recycled_pipette','depth','auto_cell_attached','auto_break_in',
                     'extraction.endPipetteR','extraction.extractionObservations','extraction.nucleus','extraction.postPatch','extraction.pressureApplied',
                     'extraction.retractionPressureApplied','extraction.sampleObservations','extraction.timeExtractionEnd','extraction.timeExtractionStart',
                     'extraction.timeRetractionEnd','extraction.autoExtract','extraction.autoNucProfile','extraction.autoExtractStatus',
                     'extraction.autoExtractFailure','extraction.autoExtractTechFailure','extraction.autoExtractGenFailure','extraction.autoExtractNotes',
-                    'extraction.fillquality','failureNotes',
-                    'qcNotes','hypCellType','stimulusSet','recording.pipetteR',
+                    'extracion.autoNucDeposit','extraction.autoNucDepositStatus','extraction.autoNucDepositFailure','extraction.fillquality',
+                    'failureNotes','qcNotes','hypCellType','stimulusSet','recording.pipetteR',
                     'recording.timeStart','recording.timeWholeCellStart','status',
                     'attempt','roi','container']
         
