@@ -115,13 +115,13 @@ def generate_jem_df():
 	jem_na_df = pd.read_csv(os.path.join(jem_raw_data_dir, "NA_jem_metadata.csv"), low_memory=False)
 	jem_fail_df = pd.read_csv(os.path.join(jem_raw_data_dir, "jem_metadata_wFAILURE.csv"), low_memory=False)
 	# Replace status values
-	jem_df["status"] = jem_df["status"].replace({"SUCCESS (high confidence)": "SUCCESS"})
-	jem_fail_df["status"] = jem_fail_df["status"].replace({"SUCCESS (high confidence)": "SUCCESS", "NO ATTEMPTS": "FAILURE", "Failure": "FAILURE"})
+	jem_df["status"] = jem_df["status"].replace({"Success (high confidence)": "Success"})
+	jem_fail_df["status"] = jem_fail_df["status"].replace({"Success (high confidence)": "Success", "NO ATTEMPTS": "Failure", "Failure": "Failure"})
 	# Filter dataframe to only FAILURE
-	jem_fail_df = jem_fail_df[jem_fail_df["status"] == "FAILURE"]
+	jem_fail_df = jem_fail_df[jem_fail_df["status"] == "Failure"]
 	# Filter tubes and NAs
-	jem_df = jem_df[(jem_df["status"] == "SUCCESS")&(~jem_df["container"].isnull())]
-	jem_na_df = jem_na_df[(jem_na_df["status"] == "SUCCESS")&(jem_na_df["container"].isnull())]
+	jem_df = jem_df[(jem_df["status"] == "Success")&(~jem_df["container"].isnull())]
+	jem_na_df = jem_na_df[(jem_na_df["status"] == "Success")&(jem_na_df["container"].isnull())]
 	# Replace experiments without tubes with NA
 	jem_df["container"] = jem_df["container"].replace({np.nan: "NA"})
 	jem_na_df["container"] = jem_na_df["container"].replace({np.nan: "NA"})
