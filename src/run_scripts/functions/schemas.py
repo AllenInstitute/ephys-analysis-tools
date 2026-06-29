@@ -152,7 +152,7 @@ schemas = {
         'status': {
             'type': 'string',
             'required': True,
-            'allowed': ['SUCCESS', 'FAILURE']
+            'allowed': ['Success', 'Failure']
         }
     },
     'met_tube' : {

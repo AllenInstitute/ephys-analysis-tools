@@ -64,7 +64,7 @@ def generate_jem_raw_data():
 	jem_df.sort_values(by="date").to_csv(os.path.join(output_dir, "%s_wFAILURE.csv" %file_name), encoding='utf-8-sig', index=False, date_format="%Y-%m-%d")
 	jem_df.sort_values(by=["date"], ascending=False, inplace=True)
 
-	success_df = jem_df[jem_df["status"].str.contains("SUCCESS")]
+	success_df = jem_df[jem_df["status"].str.contains("Success")]
 	success_df["container"].fillna(value="NA", inplace=True)
 	tube_df = success_df[~(success_df["container"].isin(["NA", "na", "N/A", "n/a"]))]
 	na_df = success_df[success_df["container"].isin(["NA", "na", "N/A", "n/a"])]

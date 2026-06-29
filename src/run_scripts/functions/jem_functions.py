@@ -70,7 +70,7 @@ def generate_jem_df(group, filter_tubes=None):
 
 	if group == "ivscc" or group == "hct":
 		# Filter to only successful experiments
-		jem_df = jem_df[(jem_df["jem-status_success_failure"] == "SUCCESS")]
+		jem_df = jem_df[(jem_df["jem-status_success_failure"] == "Success")]
 		# Filters dataframe to only patched cell containers
 		if filter_tubes == "only_patch_tubes":
 			jem_df = jem_df[(jem_df["jem-status_patch_tube"] == "Patch Tube")]
@@ -340,7 +340,7 @@ def replace_value(df):
 	if "jem-status_misinformation" in df.columns:
 		df["jem-status_misinformation"] = df["jem-status_misinformation"].replace({np.nan: "No"})
 	if "jem-status_success_failure" in df.columns:
-		df["jem-status_success_failure"] = df["jem-status_success_failure"].replace({"SUCCESS (high confidence)": "SUCCESS", "NO ATTEMPTS": "FAILURE", "Failure": "FAILURE"})
+		df["jem-status_success_failure"] = df["jem-status_success_failure"].replace({"Success (high confidence)": "Success", "NO ATTEMPTS": "Failure", "Failure": "Failure"})
 	if "jem-status_reporter" in df.columns:
 		df["jem-status_reporter"] = df["jem-status_reporter"].replace({"Cre+": "Positive", "Cre-": "Negative", "human": np.nan, "None": np.nan})
 	if "jem-virus_enhancer" in df.columns:
@@ -388,8 +388,8 @@ def add_jem_patch_tube_field(df):
 		df (dataframe): a pandas dataframe.
 	"""
 
-	df["jem-status_patch_tube"] = np.where((df["jem-id_patched_cell_container"].str.startswith("P"))&(df["jem-status_success_failure"] == "SUCCESS"), "Patch Tube",
-								  np.where((df["jem-id_patched_cell_container"] == "NA")&(df["jem-status_success_failure"] == "SUCCESS"), "No Tube", "No Experiment"))
+	df["jem-status_patch_tube"] = np.where((df["jem-id_patched_cell_container"].str.startswith("P"))&(df["jem-status_success_failure"] == "Success"), "Patch Tube",
+								  np.where((df["jem-id_patched_cell_container"] == "NA")&(df["jem-status_success_failure"] == "Success"), "No Tube", "No Experiment"))
 
 	return df
 
@@ -562,7 +562,7 @@ def flatten_collab_jem_data(jem_paths):
 		slice_data = jem.get_data()
 		if slice_data is None:
 			continue
-		success_slice_data = slice_data[slice_data["status"].str.contains("SUCCESS")]
+		success_slice_data = slice_data[slice_data["status"].str.contains("Success")]
 		jem_df = pd.concat([jem_df, slice_data], axis=0, sort=True)
 	jem_df.reset_index(drop=True, inplace=True)
 
