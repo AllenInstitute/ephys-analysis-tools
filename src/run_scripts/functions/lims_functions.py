@@ -81,8 +81,8 @@ def rename_byte_cols(df):
 
 def get_lims_ephys():
 
-    project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "hIVSCC-MET-SCH", "hIVSCC-METc-SCH", "mIVSCC-MET", "mIVSCC-METx", "mIVSCC-MET-HiMC", "mIVSCC-MET-R01_LC", "mIVSCC-MET-U19_AIBS", "mIVSCC-MET-U01_AIBS", "qIVSCC-METa", "qIVSCC-METc", "MET-NM", "mMPATCHx", "H301", "H301x")
-    user_codes = ("PC", "PX", "P1", "P2", "P4", "P6", "P8", "P9", "PA", "PB", "PE", "PF", "PI", "PJ", "PR", "PV")
+    project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "hIVSCC-MET-SCH", "hIVSCC-METc-SCH", "mIVSCC-MET", "mIVSCC-METx", "mIVSCC-MET-HiMC", "mIVSCC-MET-R01_LC", "mIVSCC-MET-U19_AIBS", "mIVSCC-MET-U01_AIBS", "qIVSCC-METa", "qIVSCC-METc", "MET-NM", "mMPATCHx", "H301", "H301x", "BHA-ODa")
+    user_codes = ("PC", "PX", "P1", "P2", "P4", "P6", "P8", "P9", "PA", "PB", "PE", "PF", "PI", "PJ", "PR", "PV", "PL")
 
     lims_query = """
     SELECT cell.name AS cell_name, 
@@ -419,7 +419,8 @@ def create_hct_transcriptomics_query_to_df():
                 'PJS4',
                 'PKS4',
                 'PLS4',
-                'PSS4'
+                'PSS4',
+                'PLS4'
             )
         AND SUBSTRING(C.patched_cell_container, 6, 6) >= '171001'
     )
@@ -429,6 +430,7 @@ def create_hct_transcriptomics_query_to_df():
     WHERE SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '101' AND '150'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '301' AND '350'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '751' AND '800'
+    OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '801' AND '850'
     ORDER BY lims_patch_tube_date DESC, lims_patch_tube_id ASC, lims_patch_tube_number ASC
     """
 
