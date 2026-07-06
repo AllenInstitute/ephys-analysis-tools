@@ -363,7 +363,7 @@ class JemDataSet(object):
         temp_df = self.data
         date = parser.parse(self._date).strftime("%y%m%d")
         
-        if self.project != "ME" and (sum(temp_df["status"].str.contains("Success"))>=1):
+        if self.project != "ME" and (sum(temp_df["status"].str.contains("SUCCESS"))>=1):
             if self._version >= "2.0.2":
                 containers = temp_df["extraction.tubeID"]             
             else:
@@ -486,7 +486,7 @@ class JemDataSet(object):
                 
         
             if self._valid_attempts:
-                if d["status"] == "Success":
+                if d["status"] == "SUCCESS":
                     tube_v = sliceValidator(schemas.schemas["met_tube"])
                     tube_v.allow_unknown = True
                     tube_v.validate(d)
