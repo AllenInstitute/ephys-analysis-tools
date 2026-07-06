@@ -419,8 +419,7 @@ def create_hct_transcriptomics_query_to_df():
                 'PJS4',
                 'PKS4',
                 'PLS4',
-                'PSS4',
-                'PLS4'
+                'PSS4'
             )
         AND SUBSTRING(C.patched_cell_container, 6, 6) >= '171001'
     )

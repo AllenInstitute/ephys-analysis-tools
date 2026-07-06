@@ -37,6 +37,7 @@ project_dictionary details: New project codes (2021-present)
 - 102-04-019-20 : Dravet # IVSCC
 - 102-04-006-20 : MSP Measuring Consciousness Ph2 (TBD) # HCT
 - 102-01-051-20: CTY Neuromodulation of NHP Cell Types # HCT
+- 127-01-003-10: BHA Open Discovery # HCT
 
 project_dictionary details: Old project codes
 - 102-01-020-20: CTY BRAIN Human Cell Types (Human Acute/Culture, U01 shipping pilot) # IVSCC (10/01/2017 - 6/03/2022) 
@@ -162,7 +163,7 @@ def generate_daily_report(group):
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"], data_variables["project_dictionary"]["PGA"],
-                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PLS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PLS4")), data_variables["project_dictionary"]["BHA_open_discovery"]))))
+                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PLS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PLS4")) & (jem_lims_name_df["lims-id_project_code"] == "BHA-ODa"), data_variables["project_dictionary"]["BHA_open_discovery"]))))
         
         # Create a date check for jem 
         jem_lims_name_df["jem-date_container"] = jem_lims_name_df["jem-id_patched_cell_container"].str[5:11]

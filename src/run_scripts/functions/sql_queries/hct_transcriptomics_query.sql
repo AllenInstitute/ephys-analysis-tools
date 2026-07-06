@@ -46,4 +46,5 @@ FROM Hct
 WHERE SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '101' AND '150'
 OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '301' AND '350'
 OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '751' AND '800'
+OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '801' AND '850'
 ORDER BY lims_patch_tube_date DESC, lims_patch_tube_id ASC, lims_patch_tube_number ASC
