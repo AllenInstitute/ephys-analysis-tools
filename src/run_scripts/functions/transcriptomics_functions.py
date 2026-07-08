@@ -99,7 +99,7 @@ def generate_daily_report(group):
         lims_df = generate_lims_df("hct", date_report)
         jem_df = generate_jem_df("hct", "only_patch_tubes")
     # Generate jem_df in daily transcriptomics report format
-    jem_df = generate_daily_jem_df(jem_df, dt_report)
+    jem_df = generate_daily_jem_df(jem_df, dt_report, group)
 
     #----------Merge jem_df and lims_df----------#
     # Merge dataframes by outer join based on specimen id 
@@ -162,8 +162,8 @@ def generate_daily_report(group):
         if group == "hct":
             jem_lims_name_df["project_code"] = np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PYS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PYS4")), data_variables["project_dictionary"]["psilocybin"],
                                                np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("P7S4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"],
-                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"], data_variables["project_dictionary"]["PGA"],
-                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PLS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PLS4")) & (jem_lims_name_df["lims-id_project_code"] == "BHA-ODa"), data_variables["project_dictionary"]["BHA_open_discovery"]))))
+                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PLS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PLS4")) & (jem_lims_name_df["lims-id_project_code"] == "BHA-ODa"), data_variables["project_dictionary"]["BHA_open_discovery"],
+                                               np.where((jem_lims_name_df["jem-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_patched_cell_container"].str.startswith("PCS4")) & (jem_lims_name_df["lims-id_project_code"] == "MET-NM"), data_variables["project_dictionary"]["neuromodulation"], data_variables["project_dictionary"]["PGA"]))))
         
         # Create a date check for jem 
         jem_lims_name_df["jem-date_container"] = jem_lims_name_df["jem-id_patched_cell_container"].str[5:11]
@@ -282,7 +282,7 @@ def user_prompts_daily(last_bday, last_bday_str):
     return date_report, dt_report
 
 
-def generate_daily_jem_df(df, date):
+def generate_daily_jem_df(df, date, group):
     """
     Generates a jem metadata dataframe based on the specified date.
 
@@ -295,9 +295,19 @@ def generate_daily_jem_df(df, date):
     """
 
     # Lists
-    jem_fields = ["jem-date_patch", "jem-date_blank", "jem-id_rig_user", "jem-id_cell_specimen",
+    # jem_fields = ["jem-date_patch", "jem-date_blank", "jem-id_rig_user", "jem-id_cell_specimen",
+    #               "jem-id_patched_cell_container", "jem-roi_major", "jem-roi_minor",
+    #               "jem-nucleus_post_patch", "jem-slice_level_project",
+    #               "jem-project_name", "jem-status_reporter"]
+    if group == "ivscc":
+        jem_fields = ["jem-date_patch", "jem-date_blank", "jem-id_rig_user", "jem-id_cell_specimen",
                   "jem-id_patched_cell_container", "jem-roi_major", "jem-roi_minor",
                   "jem-nucleus_post_patch", "jem-slice_level_project",
+                  "jem-project_name", "jem-status_reporter"]
+    if group == "hct":
+        jem_fields = ["jem-date_patch", "jem-date_blank", "jem-id_rig_user", "jem-id_cell_specimen",
+                  "jem-id_patched_cell_container", "jem-roi_major", "jem-roi_minor",
+                  "jem-nucleus_post_patch",
                   "jem-project_name", "jem-status_reporter"]
 
     # Filter dataframe to specified fields
