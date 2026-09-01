@@ -82,7 +82,7 @@ def rename_byte_cols(df):
 def get_lims_ephys():
 
     project_codes = ("hIVSCC-MET", "hIVSCC-METx", "hIVSCC-METc", "hIVSCC-MET-SCH", "hIVSCC-METc-SCH", "mIVSCC-MET", "mIVSCC-METx", "mIVSCC-MET-HiMC", "mIVSCC-MET-R01_LC", "mIVSCC-MET-U19_AIBS", "mIVSCC-MET-U01_AIBS", "qIVSCC-METa", "qIVSCC-METc", "MET-NM", "mMPATCHx", "H301", "H301x", "BHA-ODa")
-    user_codes = ("PC", "PX", "P1", "P2", "P4", "P6", "P8", "P9", "PA", "PB", "PE", "PF", "PI", "PJ", "PR", "PV", "PL")
+    user_codes = ("PC", "PX", "P1", "P2", "P4", "P6", "P8", "P9", "PA", "PB", "PE", "PF", "PI", "PJ", "PR", "PV", "PL", "PD")
 
     lims_query = """
     SELECT cell.name AS cell_name, 
@@ -236,10 +236,12 @@ def generate_lims_df(group, date):
     hct_jt = [str(x) for x in range(101, 151, 1)]          # Jonathan(101-150)
     hct_cr = [str(x) for x in range(225, 251, 1)]          # Cristina(225-250)
     hct_bk_mk = [str(x) for x in range(301, 351, 1)]       # Brian K(301-350), Meanhwan(325-350)
-    #hct_ln = [str(x) for x in range(351, 401, 1)]          # Lindsay(351-400)
+    #hct_ln = [str(x) for x in range(351, 401, 1)]         # Lindsay(351-400)
     hct_ss = [str(x) for x in range(751, 801, 1)]          # Scott(751-800)
     hct_sl = [str(x) for x in range(801, 851, 1)]          # Sami (801-850) - was Sara, updated to Sami
-    hct_user_tube_num_list = hct_jt + hct_cr + hct_bk_mk + hct_ss + hct_sl
+    hct_kb = [str(x) for x in range(401, 451, 1)]          # Krista (401-450)
+    hct_dm = [str(x) for x in range(501, 551, 1)]          # David (501-550)
+    hct_user_tube_num_list = hct_jt + hct_cr + hct_bk_mk + hct_ss + hct_sl + hct_kb + hct_dm
 
     lims_df = get_lims()
     # Rename columns based on jem_dictionary
@@ -343,7 +345,6 @@ def create_ivscc_transcriptomics_query_to_df():
                 'P2S4',
                 'P4S4',
                 'P5S4',
-                'P6S4',
                 'P8S4',
                 'PAS4',
                 'PBS4',
@@ -361,8 +362,6 @@ def create_ivscc_transcriptomics_query_to_df():
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '201' AND '250'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '251' AND '300'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '351' AND '400'
-    OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '401' AND '450'
-    OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '501' AND '550'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '701' AND '750'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '851' AND '900'
     ORDER BY lims_patch_tube_date DESC, lims_patch_tube_id ASC, lims_patch_tube_number ASC
@@ -419,7 +418,9 @@ def create_hct_transcriptomics_query_to_df():
                 'PJS4',
                 'PKS4',
                 'PLS4',
-                'PSS4'
+                'PSS4',
+                'P6S4',
+                'PDS4'
             )
         AND SUBSTRING(C.patched_cell_container, 6, 6) >= '171001'
     )
@@ -428,6 +429,8 @@ def create_hct_transcriptomics_query_to_df():
     FROM Hct
     WHERE SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '101' AND '150'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '301' AND '350'
+    OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '401' AND '450'
+    OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '501' AND '550'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '751' AND '800'
     OR SUBSTRING(lims_patch_tube, 13, 3) BETWEEN '801' AND '850'
     ORDER BY lims_patch_tube_date DESC, lims_patch_tube_id ASC, lims_patch_tube_number ASC
